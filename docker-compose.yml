@@ -1,0 +1,46 @@
+
+version: "3.8"
+services:
+  db:
+    image: postgres
+    container_name: postgresdb
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: notebook
+    volumes: 
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - my_network
+
+  adminer:
+    image: adminer
+    container_name: postgresadminer
+    restart: always
+    ports:
+      - 8079:8079
+    networks:
+      - my_network
+
+  surrealdb:
+    image: surrealdb/surrealdb:v2
+    container_name: surrealdb
+    restart: always
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./surreal_data:/mydata
+    environment:
+      - SURREAL_EXPERIMENTAL_GRAPHQL=true
+    command: start --log info --user root --pass root 
+    # command: start --log info --user root --pass root rocksdb:/mydata/mydatabase.db
+    networks:
+      - my_network
+
+volumes:
+  pgdata:
+
+networks:
+  my_network:
+    external: true
