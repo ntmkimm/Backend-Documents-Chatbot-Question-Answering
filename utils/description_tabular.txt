@@ -1,0 +1,30 @@
+Bảng: youtube_influencers
+
+**Mô tả**: Bảng chứa thông tin chi tiết về các video YouTube và nhà sáng tạo nội dung, dùng để phân tích hiệu suất video, xu hướng nội dung và mức độ tương tác của người dùng.
+
+(Tên cột (Kiểu dữ liệu): Mô tả)
+
+- **video_link**: *string* — Link video
+- **video_views**: *integer* — Lượng view của video
+- **video_title**: *string* — Tiêu đề video
+- **channel_url**: *string* — Link kênh
+- **creator_name**: *string* — Tên nhà sáng tạo nội dung
+- **creator_gender**: *string* — Giới tính nhà sáng tạo nội dung
+- **total_channel_subscribers**: *integer* — Số người đăng ký kênh
+- **total_channel_views**: *integer* — Tổng lượng view của kênh
+- **duration_of_video**: *string* — Thời gian của video
+- **duration_in_seconds**: *float* — Thời gian của video (Tính bằng giây)
+- **date_of_video_upload**: *string* — Ngày đăng video
+- **no_of_likes**: *integer* — Số lượng like
+- **language_of_video**: *string* — Ngôn ngữ của video
+- **subtitle**: *string* — Có phụ đề hay không
+- **video_description**: *string* — Có mô tả video hay không
+- **hashtags**: *integer* — Số lượng hashtag
+- **no_of_comments**: *integer* — Số lượng bình luận
+- **date_of_last_comment**: *string* — Ngày bình luận cuối cùng
+- **maximum_quality_of_video**: *integer* — Số lượng video tối đa
+- **no_of_videos_channel**: *integer* — Số lượng video của kênh
+- **no_of_playlist**: *integer* — Số lượng playlist
+- **premiered_or_not**: *string* — Có premiered hay không
+- **community_engagement_posts_per_week**: *integer* — Số lượng post mỗi tuần
+- **intern_who_collected_data**: *string* — Người thu thập dữ liệu

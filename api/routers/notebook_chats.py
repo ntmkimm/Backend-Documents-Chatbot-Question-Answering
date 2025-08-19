@@ -176,7 +176,7 @@ async def stream_chat(chat_request: ChatRequest):
                 'event_type': StreamEvent.STREAM_END, 
             }
             parts = []
-            start = False
+
             async for event in graph.astream_events(input_payload, config):
                 kind = event["event"]
                 # print(kind)
@@ -189,11 +189,11 @@ async def stream_chat(chat_request: ChatRequest):
                     if text:
                         yield f"data: {json.dumps({'event_type': StreamEvent.TEXT_GENERATION, 'content': text, 'thinking': False})}\n\n"
                 
-                elif not start and kind == 'on_chain_start':
+                elif kind == 'on_chain_start' and event['name'] == 'LangGraph':
+                    print("event: ", event)
                     data = {'event_type': StreamEvent.STREAM_START, 'session_id': event['metadata']['thread_id']}
                     data_end['session_id'] = event['metadata']['thread_id']
                     yield f"data: {json.dumps(data)}\n\n"
-                    start = True
                     
             final_messages = "".join(parts)
             ai_text = _content(final_messages)
