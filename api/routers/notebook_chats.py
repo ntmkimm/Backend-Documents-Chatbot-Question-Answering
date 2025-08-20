@@ -97,8 +97,9 @@ async def send_message(chat_request: ChatRequest):
 
         graph = await get_conversation_graph(state={}, config=config)
 
+        previous_messages = current_state.get("messages", [])
         input_payload = {
-            "messages": [HumanMessage(content=chat_request.chat_message)],
+            "messages": previous_messages + [HumanMessage(content=chat_request.chat_message)],
             "context": context
         }
         
@@ -167,8 +168,9 @@ async def stream_chat(chat_request: ChatRequest):
 
             graph = await get_conversation_graph(state={}, config=config)
 
+            previous_messages = current_state.get("messages", [])
             input_payload = {
-                "messages": [HumanMessage(content=chat_request.chat_message)],
+                "messages": previous_messages + [HumanMessage(content=chat_request.chat_message)],
                 "context": context
             }
             
@@ -190,7 +192,7 @@ async def stream_chat(chat_request: ChatRequest):
                         yield f"data: {json.dumps({'event_type': StreamEvent.TEXT_GENERATION, 'content': text, 'thinking': False})}\n\n"
                 
                 elif kind == 'on_chain_start' and event['name'] == 'LangGraph':
-                    print("event: ", event)
+                    # print("event: ", event)
                     data = {'event_type': StreamEvent.STREAM_START, 'session_id': event['metadata']['thread_id']}
                     data_end['session_id'] = event['metadata']['thread_id']
                     yield f"data: {json.dumps(data)}\n\n"
@@ -272,38 +274,44 @@ async def _get_graph_state(graph, thread_id: str):
 
 async def get_session(current_notebook: Notebook, session_id) -> Union[ChatSession, None]:
     """Get the current chat session for the notebook."""
-    if session_id and 'chat_session:' not in session_id: session_id = 'chat_session:' + session_id
+    if session_id and 'chat_session:' not in session_id:
+        session_id = 'chat_session:' + session_id
+
     chat_session: Union[ChatSession, None] = None
+    sessions: List[ChatSession] = []  # Define sessions early
+
     if session_id:
         try:
             chat_session = await ChatSession.get(session_id)
         except Exception as e:
-            # Log the error but continue
             logger.warning(f"Could not fetch ChatSession {session_id}: {str(e)}")
     
     if not chat_session:
-        sessions: List[ChatSession] = []
         try:
             chat_session = await create_session_for_notebook(current_notebook.id, None)
-            sessions = await  current_notebook.get_chat_sessions()
-            logger.debug(f"Multiple sessions found: {len(sessions)}. Using the last updated session.")
-            chat_session = sessions[0]
+            sessions = await current_notebook.get_chat_sessions()
+            if sessions:
+                logger.debug(f"Multiple sessions found: {len(sessions)}. Using the last updated session.")
+                chat_session = sessions[0]
         except Exception as e:
             logger.warning(f"Could not fetch chat sessions for notebook {current_notebook.id}: {str(e)}")
 
         logger.debug("Creating new chat session")
     else:
-        logger.debug(f"Multiple sessions found: {len(sessions)}. Using the last updated session.")
-        chat_session = sessions[0]
+        # Don't use `sessions` here -just log the current session
+        logger.debug(f"Using existing session: {chat_session.id}")
+
     if not chat_session or chat_session.id is None:
         raise ValueError("Problem acquiring chat session")
+    
     thread_id = session_id or f"thread-{uuid4().hex}"
 
     config = RunnableConfig(configurable={"thread_id": thread_id})
     graph = await get_conversation_graph(state={}, config=config)
 
     current_state = await _get_graph_state(graph, thread_id)
-    return chat_session, current_state  
+    return chat_session, current_state
+
 
 
 async def get_source_references(text: str):

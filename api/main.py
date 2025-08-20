@@ -21,7 +21,7 @@ from api.routers import (
     search,
     settings,
     sources,
-    sources_tabular,
+    # sources_tabular,
     speaker_profiles,
     transformations,
     notebook_chats,
@@ -68,7 +68,7 @@ app.include_router(embedding.router, prefix="/api", tags=["embedding"])
 app.include_router(settings.router, prefix="/api", tags=["settings"])
 app.include_router(context.router, prefix="/api", tags=["context"])
 app.include_router(sources.router, prefix="/api", tags=["sources"])
-app.include_router(sources_tabular.router, prefix="/api", tags=["sources_tabular"])
+# app.include_router(sources_tabular.router, prefix="/api", tags=["sources_tabular"])
 app.include_router(insights.router, prefix="/api", tags=["insights"])
 app.include_router(commands_router.router, prefix="/api", tags=["commands"])
 app.include_router(podcasts.router, prefix="/api", tags=["podcasts"])
