@@ -49,11 +49,11 @@ connection_kwargs = {
 
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "notebook")
-POSTGRES_HOST = os.getenv("POSTGRES_ADDRESS", "db")
+POSTGRES_ADDRESS = os.getenv("POSTGRES_ADDRESS", "db")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres")
 
-DB_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+DB_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_ADDRESS}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 async def get_checkpointer() -> AsyncPostgresSaver:
     global _checkpointer, _pool

@@ -9,7 +9,7 @@ from langgraph.types import Send
 from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
 
-from open_notebook.domain.notebook import vector_search
+from open_notebook.domain.notebook import vector_search, text_search
 from open_notebook.graphs.utils import provision_langchain_model
 from open_notebook.utils import clean_thinking_content
 
@@ -55,7 +55,8 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig) -
     )
     model = await provision_langchain_model(
         system_prompt,
-        config.get("configurable", {}).get("strategy_model"),
+        # config.get("configurable", {}).get("strategy_model"),
+        config.get("configurable", {}).get("model_id"),
         "tools",
         max_tokens=2000,
         structured=dict(type="json"),
@@ -87,13 +88,76 @@ async def trigger_queries(state: ThreadState, config: RunnableConfig):
         for s in state["strategy"].searches
     ]
 
+def normalize_relevance_scores(text_results):
+    """Normalize text search relevance scores to [0, 1] range"""
+    if not text_results: return None
+    scores = [r["relevance"] for r in text_results]
+    min_score = min(scores)
+    max_score = max(scores)
+    range_score = max_score - min_score if max_score > min_score else 1e-5
+
+    for r in text_results:
+        r["relevance_normalized"] = (r["relevance"] - min_score) / range_score
+    return text_results
+
+
+def combine_results(text_results, vector_results, alpha_text=0.2, alpha_vector=0.8):
+    text_results = normalize_relevance_scores(text_results)
+
+    text_map = {r["id"]: r for r in (text_results or []) if r and "id" in r}
+    vector_map = {r["id"]: r for r in (vector_results or []) if r and "id" in r}
+
+
+    all_ids = set(text_map) | set(vector_map)
+    combined = []
+
+    for rid in all_ids:
+        text = text_map.get(rid)
+        vector = vector_map.get(rid)
+
+        # Base fields
+        item = {
+            "id": rid,
+            "title": text["title"] if text else vector.get("title", ""),
+            "content": text["content"] if text else vector.get("content", ""),
+            "parent_id": text["parent_id"] if text else vector.get("parent_id", ""),
+        }
+
+        # Scores
+        text_score = text["relevance_normalized"] if text else 0
+        vector_score = vector["similarity"] if vector else 0
+
+        # Weighted score
+        combined_score = text_score * alpha_text + vector_score * alpha_vector
+        item["combined_score"] = combined_score
+
+        # Optional: keep original scores too
+        item["similarity"] = vector_score
+        item["relevance_normalized"] = text_score
+
+        combined.append(item)
+
+    # Sort by combined score descending
+    combined.sort(key=lambda x: -x["combined_score"])
+    return combined
 
 async def provide_answer(state: SubGraphState, config: RunnableConfig) -> dict:
     payload = state
     # if state["type"] == "text":
     #     results = text_search(state["term"], 10, True, True)
-    # else:
-    results = await vector_search(state["term"], 10, True, True)
+    # elif state["type"] == "vector":
+    #     results = vector_search(state["term"], 10, True, True)
+    
+    text_results = await text_search(state["term"], 10, True, True) 
+    vector_results = await vector_search(state["term"], 10, True, True)
+    
+    results = combine_results(
+        text_results=text_results, 
+        vector_results=vector_results, 
+        alpha_text=0.2, 
+        alpha_vector=0.8
+    )
+
     if len(results) == 0:
         return {"answers": []}
     payload["results"] = results
@@ -102,7 +166,8 @@ async def provide_answer(state: SubGraphState, config: RunnableConfig) -> dict:
     system_prompt = Prompter(prompt_template="ask/query_process").render(data=payload)
     model = await provision_langchain_model(
         system_prompt,
-        config.get("configurable", {}).get("answer_model"),
+        # config.get("configurable", {}).get("answer_model"),
+        config.get("configurable", {}).get("model_id"),
         "tools",
         max_tokens=2000,
     )
@@ -114,7 +179,8 @@ async def write_final_answer(state: ThreadState, config: RunnableConfig) -> dict
     system_prompt = Prompter(prompt_template="ask/final_answer").render(data=state)
     model = await provision_langchain_model(
         system_prompt,
-        config.get("configurable", {}).get("final_answer_model"),
+        # config.get("configurable", {}).get("final_answer_model"),
+        config.get("configurable", {}).get("model_id"),
         "tools",
         max_tokens=2000,
     )

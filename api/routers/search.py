@@ -59,7 +59,8 @@ async def search_knowledge_base(search_request: SearchRequest):
 
 
 async def stream_ask_response(
-    question: str, strategy_model: Model, answer_model: Model, final_answer_model: Model
+    question: str, 
+    # strategy_model: Model, answer_model: Model, final_answer_model: Model
 ) -> AsyncGenerator[str, None]:
     """Stream the ask response as Server-Sent Events."""
     try:
@@ -69,9 +70,9 @@ async def stream_ask_response(
             input=dict(question=question),
             config=dict(
                 configurable=dict(
-                    strategy_model=strategy_model.id,
-                    answer_model=answer_model.id,
-                    final_answer_model=final_answer_model.id,
+                    # strategy_model=strategy_model.id,
+                    # answer_model=answer_model.id,
+                    # final_answer_model=final_answer_model.id,
                 )
             ),
             stream_mode="updates",
@@ -111,25 +112,25 @@ async def ask_knowledge_base(ask_request: AskRequest):
     """Ask the knowledge base a question using AI models."""
     try:
         # Validate models exist
-        strategy_model = await Model.get(ask_request.strategy_model)
-        answer_model = await Model.get(ask_request.answer_model)
-        final_answer_model = await Model.get(ask_request.final_answer_model)
+        # strategy_model = await Model.get(ask_request.strategy_model)
+        # answer_model = await Model.get(ask_request.answer_model)
+        # final_answer_model = await Model.get(ask_request.final_answer_model)
 
-        if not strategy_model:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Strategy model {ask_request.strategy_model} not found",
-            )
-        if not answer_model:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Answer model {ask_request.answer_model} not found",
-            )
-        if not final_answer_model:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Final answer model {ask_request.final_answer_model} not found",
-            )
+        # if not strategy_model:
+        #     raise HTTPException(
+        #         status_code=400,
+        #         detail=f"Strategy model {ask_request.strategy_model} not found",
+        #     )
+        # if not answer_model:
+        #     raise HTTPException(
+        #         status_code=400,
+        #         detail=f"Answer model {ask_request.answer_model} not found",
+        #     )
+        # if not final_answer_model:
+        #     raise HTTPException(
+        #         status_code=400,
+        #         detail=f"Final answer model {ask_request.final_answer_model} not found",
+        #     )
 
         # Check if embedding model is available
         if not await model_manager.get_embedding_model():
@@ -140,8 +141,10 @@ async def ask_knowledge_base(ask_request: AskRequest):
 
         # For streaming response
         return StreamingResponse(
-            await stream_ask_response(
-                ask_request.question, strategy_model, answer_model, final_answer_model
+            # await stream_ask_response(
+            stream_ask_response(
+                ask_request.question, 
+                # strategy_model, answer_model, final_answer_model
             ),
             media_type="text/plain",
         )
@@ -158,25 +161,25 @@ async def ask_knowledge_base_simple(ask_request: AskRequest):
     """Ask the knowledge base a question and return a simple response (non-streaming)."""
     try:
         # Validate models exist
-        strategy_model = await Model.get(ask_request.strategy_model)
-        answer_model = await Model.get(ask_request.answer_model)
-        final_answer_model = await Model.get(ask_request.final_answer_model)
+        # strategy_model = await Model.get(ask_request.strategy_model)
+        # answer_model = await Model.get(ask_request.answer_model)
+        # final_answer_model = await Model.get(ask_request.final_answer_model)
 
-        if not strategy_model:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Strategy model {ask_request.strategy_model} not found",
-            )
-        if not answer_model:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Answer model {ask_request.answer_model} not found",
-            )
-        if not final_answer_model:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Final answer model {ask_request.final_answer_model} not found",
-            )
+        # if not strategy_model:
+        #     raise HTTPException(
+        #         status_code=400,
+        #         detail=f"Strategy model {ask_request.strategy_model} not found",
+        #     )
+        # if not answer_model:
+        #     raise HTTPException(
+        #         status_code=400,
+        #         detail=f"Answer model {ask_request.answer_model} not found",
+        #     )
+        # if not final_answer_model:
+        #     raise HTTPException(
+        #         status_code=400,
+        #         detail=f"Final answer model {ask_request.final_answer_model} not found",
+        #     )
 
         # Check if embedding model is available
         if not await model_manager.get_embedding_model():
@@ -191,9 +194,9 @@ async def ask_knowledge_base_simple(ask_request: AskRequest):
             input=dict(question=ask_request.question),
             config=dict(
                 configurable=dict(
-                    strategy_model=strategy_model.id,
-                    answer_model=answer_model.id,
-                    final_answer_model=final_answer_model.id,
+                    # strategy_model=strategy_model.id,
+                    # answer_model=answer_model.id,
+                    # final_answer_model=final_answer_model.id,
                 )
             ),
             stream_mode="updates",

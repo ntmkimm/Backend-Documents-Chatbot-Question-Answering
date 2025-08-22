@@ -99,17 +99,16 @@ class AsyncMigrationManager:
             AsyncMigration.from_file("migrations/1.surrealql"),
             AsyncMigration.from_file("migrations/2.surrealql"),
             AsyncMigration.from_file("migrations/3.surrealql"),
-            AsyncMigration.from_file("migrations/4.surrealql"),
+            # AsyncMigration.from_file("migrations/4.surrealql"),
             AsyncMigration.from_file("migrations/5.surrealql"),
             AsyncMigration.from_file("migrations/6.surrealql"),
             AsyncMigration.from_file("migrations/7.surrealql"),
-            AsyncMigration.from_file("migrations/8.surrealql"),
         ]
         self.down_migrations = [
             AsyncMigration.from_file("migrations/1_down.surrealql"),
             AsyncMigration.from_file("migrations/2_down.surrealql"),
             AsyncMigration.from_file("migrations/3_down.surrealql"),
-            AsyncMigration.from_file("migrations/4_down.surrealql"),
+            # AsyncMigration.from_file("migrations/4_down.surrealql"),
             AsyncMigration.from_file("migrations/5_down.surrealql"),
             AsyncMigration.from_file("migrations/6_down.surrealql"),
             AsyncMigration.from_file("migrations/7_down.surrealql"),
@@ -183,3 +182,5 @@ async def lower_version() -> None:
     current_version = await get_latest_version()
     if current_version > 0:
         await repo_query(f"DELETE _sbl_migrations:{current_version};")
+
+
