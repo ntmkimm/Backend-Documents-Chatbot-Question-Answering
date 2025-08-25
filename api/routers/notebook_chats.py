@@ -122,6 +122,10 @@ async def send_message(chat_request: ChatRequest):
         final_messages = "".join(parts)
         ai_text = _content(final_messages)
         _, cleaned_content = parse_thinking_content(ai_text)
+        await graph.aupdate_state(
+            config,
+            {"messages": [AIMessage(content=cleaned_content)]}
+        )
         data_end['final_messages'] = cleaned_content
         reference_sources = await get_source_references(cleaned_content)
         data_end['reference_sources'] = reference_sources
@@ -200,6 +204,10 @@ async def stream_chat(chat_request: ChatRequest):
             final_messages = "".join(parts)
             ai_text = _content(final_messages)
             _, cleaned_content = parse_thinking_content(ai_text)
+            await graph.aupdate_state(
+                config,
+                {"messages": [AIMessage(content=cleaned_content)]}
+            )
             data_end['answer'] = cleaned_content
             reference_sources = await get_source_references(cleaned_content)
             data_end['reference'] = reference_sources
