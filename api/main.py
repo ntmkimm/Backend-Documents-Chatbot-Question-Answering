@@ -26,6 +26,7 @@ from api.routers import (
     transformations,
     notebook_chats,
     notebook_sources,
+    notebook_ask_chat,
 )
 
 # Import commands to register them in the API process
@@ -76,6 +77,7 @@ app.include_router(episode_profiles.router, prefix="/api", tags=["episode-profil
 app.include_router(speaker_profiles.router, prefix="/api", tags=["speaker-profiles"])
 app.include_router(notebook_chats.router, prefix="/api", tags=["notebook-chats"])
 app.include_router(notebook_sources.router, prefix="/api", tags=["notebook-source"])
+app.include_router(notebook_ask_chat.router, prefix="/api", tags=["notebook-ask-chat"])
 import asyncio
 
 @app.get("/")

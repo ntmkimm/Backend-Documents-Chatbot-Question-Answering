@@ -35,11 +35,12 @@ class NotebookResponse(BaseModel):
 # Search models
 class SearchRequest(BaseModel):
     query: str = Field(..., description="Search query")
-    type: Literal["text", "vector"] = Field("text", description="Search type")
+    type: Literal["text", "vector", "notebook_vector", "notebook_text"] = Field("text", description="Search type")
     limit: int = Field(100, description="Maximum number of results", le=1000)
     search_sources: bool = Field(True, description="Include sources in search")
     search_notes: bool = Field(True, description="Include notes in search")
     minimum_score: float = Field(0.2, description="Minimum score for vector search", ge=0, le=1)
+    notebook_id: str = ""
 
 
 class SearchResponse(BaseModel):

@@ -391,3 +391,69 @@ async def vector_search(
         logger.error(f"Error performing vector search: {str(e)}")
         logger.exception(e)
         raise DatabaseOperationError(e)
+
+
+async def vector_search_in_notebook(
+    notebook_id: str,
+    keyword: str,
+    results: int,
+    source: bool = True,
+    note: bool = True,
+    minimum_score=0.2,
+):
+    if not keyword:
+        raise InvalidInputError("Search keyword cannot be empty")
+    if not ensure_record_id(notebook_id):
+        raise InvalidInputError("Search notebook_id may be wrong")
+    try:
+        EMBEDDING_MODEL = await model_manager.get_embedding_model()
+        embed = (await EMBEDDING_MODEL.aembed([keyword]))[0]
+
+        params = {
+            "embed": embed,
+            "results": results,
+            "source": source,
+            "note": note,
+            "minimum_score": minimum_score,
+            "notebook_id": ensure_record_id(notebook_id),
+        }
+        
+        results = await repo_query(
+            """
+            SELECT * FROM fn::vector_search_in_notebook($embed, $results, $source, $note, $minimum_score, $notebook_id);
+            """,
+            params,
+        )
+        return results
+    except Exception as e:
+        logger.error(f"Error performing vector search: {str(e)}")
+        logger.exception(e)
+        raise DatabaseOperationError(e)
+    
+async def text_search_in_notebook(
+    notebook_id: str, keyword: str, results: int, source: bool = True, note: bool = True
+):
+    if not keyword:
+        raise InvalidInputError("Search keyword cannot be empty")
+    if not ensure_record_id(notebook_id):
+        raise InvalidInputError("Search notebook_id may be wrong")
+    try:
+        params = {
+            "keyword": keyword, 
+            "results": results, 
+            "source": source, 
+            "note": note, 
+            "notebook_id": ensure_record_id(notebook_id),
+        }
+        results = await repo_query(
+            """
+            select *
+            from fn::text_search_in_notebook($keyword, $results, $source, $note, $notebook_id)
+            """,
+            params
+        )
+        return results
+    except Exception as e:
+        logger.error(f"Error performing text search: {str(e)}")
+        logger.exception(e)
+        raise DatabaseOperationError(e)

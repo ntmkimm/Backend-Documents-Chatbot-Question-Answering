@@ -15,7 +15,8 @@ from open_notebook.domain.notebook import ChatSession, Notebook, Source
 from api.context_service import context_service
 from api.models import ChatRequest, ChatResponse
 
-from open_notebook.graphs.chat import get_conversation_graph
+from open_notebook.graphs.ask_chat import get_conversation_graph
+from open_notebook.domain.notebook import vector_search_in_notebook, text_search_in_notebook
 
 from open_notebook.utils import parse_thinking_content, token_count
 from pages.stream_app.utils import convert_source_references
@@ -73,7 +74,7 @@ def _chunk_text(chunk) -> str:
     return ""
 
 
-@router.post("/notebooks/chat")
+@router.post("/notebooks/ask_chat")
 async def send_message(chat_request: ChatRequest):
     """Send a message to a notebook and get a complete response."""
     try:
@@ -81,7 +82,8 @@ async def send_message(chat_request: ChatRequest):
             
         async for obj in build_context(
             notebook_id=chat_request.notebook_id,
-            source_ids=chat_request.source_ids or []
+            keyword=chat_request.chat_message,
+            limit=5,
         ):
             context = obj
 
@@ -109,7 +111,6 @@ async def send_message(chat_request: ChatRequest):
         parts = []
         async for event in graph.astream_events(input_payload, config):
             kind = event["event"]
-
             if kind == "on_chain_stream":
                 chunk = event["data"]["chunk"]
 
@@ -118,7 +119,6 @@ async def send_message(chat_request: ChatRequest):
             
             elif kind == 'on_chain_start':
                 data_end['session_id'] = event['metadata']['thread_id']
-            
             elif kind == 'on_chain_end':
                 break
                 
@@ -149,7 +149,7 @@ async def send_message(chat_request: ChatRequest):
         raise HTTPException(status_code=500, detail=f"Chat operation failed: {str(e)}")
 
 
-@router.post("/notebooks/chat/stream")
+@router.post("/notebooks/ask_chat/stream")
 async def stream_chat(chat_request: ChatRequest):
 
     async def event_generator():
@@ -158,10 +158,11 @@ async def stream_chat(chat_request: ChatRequest):
             
             async for obj in build_context(
                 notebook_id=chat_request.notebook_id,
-                source_ids=chat_request.source_ids or []
+                keyword=chat_request.chat_message,
+                limit=5,
             ):
                 context = obj
-
+            print("CONTEXT: ", context)
             if context is None:
                 error_data = {"type": "error", "message": f"No context found for notebook {chat_request.notebook_id}"}
                 yield f"data: {json.dumps(error_data)}\n\n"
@@ -180,7 +181,7 @@ async def stream_chat(chat_request: ChatRequest):
                 "messages": previous_messages + [HumanMessage(content=chat_request.chat_message)],
                 "context": context
             }
-            print(input_payload)
+            
             data_end = {
                 'event_type': StreamEvent.STREAM_END, 
             }
@@ -228,45 +229,22 @@ async def stream_chat(chat_request: ChatRequest):
     
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
-async def build_context(notebook_id: str, source_ids: List[str] = []):
+async def build_context(notebook_id: str, keyword: str, limit=5):
     """Build context for the notebook."""
-    notebook: Notebook = await Notebook.get(notebook_id)
 
-    context_config = {"sources": {}, "notes": {}}
-    sources = await notebook.get_sources()
-    for source in sources:
-        context_config["sources"][source.id] = "full content"
-
-    context_data = {"note": [], "source": []}
-
-    if len(source_ids) > 0 and not any(source_id in context_config['sources'].keys() for source_id in source_ids):
-        yield None
-
-    for source_id, status in context_config['sources'].items():
-        if len(source_ids) > 0 and source_id not in source_ids:
-            continue
-        if "not in" in status:
-            continue
-
-        try:
-            full_source_id = source_id if source_id.startswith("source:") else f"source:{source_id}"
-            try:
-                source = await Source.get(full_source_id)
-            except Exception:
-                continue
-
-            if "insights" in status:
-                source_context = await source.get_context(context_size="short")
-                context_data["source"].append(source_context)
-            elif "full content" in status:
-                source_context = await source.get_context(context_size="long")
-                context_data["source"].append(source_context)
-
-        except Exception as e:
-            logger.warning(f"Error processing source {source_id}: {str(e)}")
-            continue
-
-    yield context_data
+    context_data = await vector_search_in_notebook(
+        notebook_id=notebook_id,
+        keyword=keyword,
+        results=limit,
+        source=True,
+        note=True,
+        minimum_score=0.2
+    )
+    final_context = {}
+    for item in context_data:
+        final_context[item["id"]] = item["content"]
+        
+    yield final_context
 
 async def create_session_for_notebook(notebook_id: str, session_name: str = None):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -332,6 +310,6 @@ async def get_source_references(text: str):
     """
     Extract [source_insight:...], [note:...], [source:...], [source_embedding:...] IDs.
     """
-    pattern = r"\[((?:source_insight|note|source|source_embedding):[\w\d]+)\]"
+    pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
     matches = re.findall(pattern, text or "")
     return list(set(matches))

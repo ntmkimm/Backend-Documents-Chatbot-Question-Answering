@@ -83,14 +83,16 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
         max_tokens=10000,
     )
 
-    # parts = []
+    parts = []
     async for chunk in model.astream(payload):
         content = getattr(chunk, "content", None)
         if not content:
             continue
 
-        # parts.append(content)
+        parts.append(content)
         yield {"content": content}
+    final_output = "".join(parts)
+    print(final_output)
 
 async def create_conversation_graph(state: ThreadState, config: RunnableConfig):
     agent_state = StateGraph(ThreadState)

@@ -76,31 +76,18 @@ def load_notebook_id() -> str:
         sys.exit(1)
 
 payload = {
-  "query": "thái lan",
-  "type": "notebook_text",
+  "chat_message": "where is thailand?",
   "notebook_id": load_notebook_id(),
-  "minimum_score": 0,
+  "session_id": "",
+#   "mode": "stream"  # stream
 }
-print(payload)
 
 events = []
-with requests.post(API_BASE + "/search",
-                   headers=headers, json=payload, stream=False) as r:
+with requests.post(API_BASE + "/notebooks/ask_chat",
+                   headers=headers, json=payload, stream=True) as r:
     r.raise_for_status()
     for line in r.iter_lines(decode_unicode=True):
         if not line:
             continue
         print(line)
-        
-# payload = {
-#   "question": "where is thailand on earth",
-# }
 
-# events = []
-# with requests.post(API_BASE + "/search/ask",
-#                    headers=headers, json=payload, stream=True) as r:
-#     r.raise_for_status()
-#     for line in r.iter_lines(decode_unicode=True):
-#         if not line:
-#             continue
-#         print(line)

@@ -7,7 +7,7 @@ from loguru import logger
 
 from api.models import AskRequest, AskResponse, SearchRequest, SearchResponse
 from open_notebook.domain.models import Model, model_manager
-from open_notebook.domain.notebook import text_search, vector_search
+from open_notebook.domain.notebook import text_search, vector_search, vector_search_in_notebook, text_search_in_notebook
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
 from open_notebook.graphs.ask import graph as ask_graph
 
@@ -33,13 +33,30 @@ async def search_knowledge_base(search_request: SearchRequest):
                 note=search_request.search_notes,
                 minimum_score=search_request.minimum_score,
             )
-        else:
+        elif search_request.type == "text":
             # Text search
             results = await text_search(
                 keyword=search_request.query,
                 results=search_request.limit,
                 source=search_request.search_sources,
                 note=search_request.search_notes,
+            )
+        elif search_request.type == "notebook_vector":
+            results = await vector_search_in_notebook(
+                keyword=search_request.query,
+                results=search_request.limit,
+                source=search_request.search_sources,
+                note=search_request.search_notes,
+                minimum_score=search_request.minimum_score,
+                notebook_id=search_request.notebook_id,
+            )
+        else:
+            results = await text_search_in_notebook(
+                keyword=search_request.query,
+                results=search_request.limit,
+                source=search_request.search_sources,
+                note=search_request.search_notes,
+                notebook_id=search_request.notebook_id,
             )
 
         return SearchResponse(
