@@ -102,7 +102,7 @@ async def send_message(chat_request: ChatRequest):
                 parts.append(text)
             elif kind == 'on_chain_start':
                 data_end['session_id'] = event['metadata']['thread_id']
-            elif kind == 'on_chain_end':
+            elif kind == 'on_chain_end' and event['name'] == 'chat_agent':
                 break
 
         final_messages = "".join(parts)
@@ -159,7 +159,7 @@ async def stream_chat(chat_request: ChatRequest):
 
             async for event in graph.astream_events(input_payload, config):
                 kind = event["event"]
-                # print(event, "\n\n")
+                print(event, "\n\n")
                 if kind == 'on_chain_stream':
                     chunk = event["data"]["chunk"]
                     text = _chunk_text(chunk)
@@ -173,7 +173,6 @@ async def stream_chat(chat_request: ChatRequest):
                     yield f"data: {json.dumps(data)}\n\n"
 
                 elif kind == 'on_chain_end' and event['name'] == 'chat_agent':
-                    print(event, "\n\n")
                     break
 
             final_messages = "".join(parts)
