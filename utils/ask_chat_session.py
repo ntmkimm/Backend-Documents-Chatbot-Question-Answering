@@ -83,7 +83,7 @@ payload = {
 }
 
 events = []
-with requests.post(API_BASE + "/notebooks/ask_chat",
+with requests.post(API_BASE + "/notebooks/ask_chat/stream",
                    headers=headers, json=payload, stream=True) as r:
     r.raise_for_status()
     for line in r.iter_lines(decode_unicode=True):

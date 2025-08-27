@@ -73,28 +73,13 @@ def _chunk_text(chunk) -> str:
 
     return ""
 
-
 @router.post("/notebooks/ask_chat")
 async def send_message(chat_request: ChatRequest):
-    """Send a message to a notebook and get a complete response."""
     try:
-        context = None
-            
-        async for obj in build_context(
-            notebook_id=chat_request.notebook_id,
-            keyword=chat_request.chat_message,
-            limit=5,
-        ):
-            context = obj
-
-        if context is None:
-            error_data = {"type": "error", "message": f"No context found for notebook {chat_request.notebook_id}"}
-            return
-        
+        # LẤY notebook & session như cũ
         current_notebook = await Notebook.get(chat_request.notebook_id)
         current_session, current_state = await get_session(current_notebook, chat_request.session_id)
         thread_id = current_session.id
-        
         config = RunnableConfig(configurable={"thread_id": thread_id})
 
         graph = await get_conversation_graph(state={}, config=config)
@@ -102,38 +87,38 @@ async def send_message(chat_request: ChatRequest):
         previous_messages = current_state.get("messages", [])
         input_payload = {
             "messages": previous_messages + [HumanMessage(content=chat_request.chat_message)],
-            "context": context
+            "question": chat_request.chat_message,
+            "notebook_id": chat_request.notebook_id,
+            "retrieval_limit": 5,
         }
-        
-        data_end = {
-            'event_type': StreamEvent.STREAM_END, 
-        }
+
+        data_end = {'event_type': StreamEvent.STREAM_END}
         parts = []
         async for event in graph.astream_events(input_payload, config):
             kind = event["event"]
             if kind == "on_chain_stream":
                 chunk = event["data"]["chunk"]
-
                 text = _chunk_text(chunk)
                 parts.append(text)
-            
             elif kind == 'on_chain_start':
                 data_end['session_id'] = event['metadata']['thread_id']
             elif kind == 'on_chain_end':
                 break
-                
+
         final_messages = "".join(parts)
         ai_text = _content(final_messages)
         _, cleaned_content = parse_thinking_content(ai_text)
+
         await graph.aupdate_state(
             config,
             {"messages": [AIMessage(content=cleaned_content)]}
         )
+
         data_end['final_messages'] = cleaned_content
         reference_sources = await get_source_references(cleaned_content)
         data_end['reference_sources'] = reference_sources
-        
-        await current_session.save()      
+
+        await current_session.save()
 
         return ChatResponse(
             ai_message=data_end['final_messages'],
@@ -149,102 +134,87 @@ async def send_message(chat_request: ChatRequest):
         raise HTTPException(status_code=500, detail=f"Chat operation failed: {str(e)}")
 
 
+# 3) Trong stream_chat(), cũng bỏ build_context() cũ và truyền question/notebook_id
 @router.post("/notebooks/ask_chat/stream")
 async def stream_chat(chat_request: ChatRequest):
-
     async def event_generator():
         try:
-            context = None
-            
-            async for obj in build_context(
-                notebook_id=chat_request.notebook_id,
-                keyword=chat_request.chat_message,
-                limit=5,
-            ):
-                context = obj
-            print("CONTEXT: ", context)
-            if context is None:
-                error_data = {"type": "error", "message": f"No context found for notebook {chat_request.notebook_id}"}
-                yield f"data: {json.dumps(error_data)}\n\n"
-                return
-            
             current_notebook = await Notebook.get(chat_request.notebook_id)
             current_session, current_state = await get_session(current_notebook, chat_request.session_id)
             thread_id = current_session.id
-            
-            config = RunnableConfig(configurable={"thread_id": thread_id})
 
+            config = RunnableConfig(configurable={"thread_id": thread_id})
             graph = await get_conversation_graph(state={}, config=config)
 
             previous_messages = current_state.get("messages", [])
             input_payload = {
                 "messages": previous_messages + [HumanMessage(content=chat_request.chat_message)],
-                "context": context
+                "question": chat_request.chat_message,
+                "notebook_id": chat_request.notebook_id,
+                "retrieval_limit": 5,
             }
-            
-            data_end = {
-                'event_type': StreamEvent.STREAM_END, 
-            }
+
+            data_end = {'event_type': StreamEvent.STREAM_END}
             parts = []
 
             async for event in graph.astream_events(input_payload, config):
                 kind = event["event"]
-                # print(kind)
-                # if kind in ("on_chat_model_stream", "on_chain_stream"):
+                # print(event, "\n\n")
                 if kind == 'on_chain_stream':
                     chunk = event["data"]["chunk"]
-                    # print(event)
                     text = _chunk_text(chunk)
                     parts.append(text)
                     if text:
                         yield f"data: {json.dumps({'event_type': StreamEvent.TEXT_GENERATION, 'content': text, 'thinking': False})}\n\n"
-                
+
                 elif kind == 'on_chain_start' and event['name'] == 'LangGraph':
-                    # print("event: ", event)
                     data = {'event_type': StreamEvent.STREAM_START, 'session_id': event['metadata']['thread_id']}
                     data_end['session_id'] = event['metadata']['thread_id']
                     yield f"data: {json.dumps(data)}\n\n"
-                    
-                elif kind == 'on_chain_end':
+
+                elif kind == 'on_chain_end' and event['name'] == 'chat_agent':
+                    print(event, "\n\n")
                     break
-                    
+
             final_messages = "".join(parts)
             ai_text = _content(final_messages)
             _, cleaned_content = parse_thinking_content(ai_text)
+
             await graph.aupdate_state(
                 config,
                 {"messages": [AIMessage(content=cleaned_content)]}
             )
+
             data_end['answer'] = cleaned_content
             reference_sources = await get_source_references(cleaned_content)
             data_end['reference'] = reference_sources
-            
-            await current_session.save()      
+
+            await current_session.save()
             yield f"data: {json.dumps(data_end)}\n\n"
 
         except Exception as e:
             logger.exception(f"Error in chat streaming: {str(e)}")
             error_data = {"type": "error", "message": "An error occurred during the chat stream."}
             yield f"data: {json.dumps(error_data)}\n\n"
-    
+
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
-async def build_context(notebook_id: str, keyword: str, limit=5):
-    """Build context for the notebook."""
+# async def build_context(notebook_id: str, keyword: str, limit=5):
+#     """Build context for the notebook."""
 
-    context_data = await vector_search_in_notebook(
-        notebook_id=notebook_id,
-        keyword=keyword,
-        results=limit,
-        source=True,
-        note=True,
-        minimum_score=0.2
-    )
-    final_context = {}
-    for item in context_data:
-        final_context[item["id"]] = item["content"]
+#     context_data = await vector_search_in_notebook(
+#         notebook_id=notebook_id,
+#         keyword=keyword,
+#         results=limit,
+#         source=True,
+#         note=True,
+#         minimum_score=0.2
+#     )
+#     final_context = {}
+#     for item in context_data:
+#         final_context[item["id"]] = item["content"]
         
-    yield final_context
+#     yield final_context
 
 async def create_session_for_notebook(notebook_id: str, session_name: str = None):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
