@@ -15,6 +15,7 @@ from open_notebook.graphs.utils import provision_langchain_model
 # from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from psycopg_pool import AsyncConnectionPool
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from open_notebook.utils import clean_thinking_content 
 from dotenv import load_dotenv
 load_dotenv()
 import os
@@ -83,20 +84,24 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
         max_tokens=10000,
     )
 
-    # parts = []
+    parts = []
     async for chunk in model.astream(payload):
         content = getattr(chunk, "content", None)
         if not content:
             continue
 
-        # parts.append(content)
+        parts.append(content)
         yield {"content": content}
+    
+    raw = "".join(parts)
+    cleaned = clean_thinking_content(raw)
+    yield {"end_node": "chat_agent", "cleaned_content": cleaned}
 
 async def create_conversation_graph(state: ThreadState, config: RunnableConfig):
     agent_state = StateGraph(ThreadState)
-    agent_state.add_node("agent", call_model_with_messages) # Use the async version
-    agent_state.add_edge(START, "agent")
-    agent_state.add_edge("agent", END)
+    agent_state.add_node("chat_agent", call_model_with_messages) # Use the async version
+    agent_state.add_edge(START, "chat_agent")
+    agent_state.add_edge("chat_agent", END)
     checkpointer = await get_checkpointer()
     return agent_state.compile(checkpointer=checkpointer)
 

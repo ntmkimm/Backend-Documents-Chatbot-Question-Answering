@@ -79,7 +79,7 @@ payload = {
   "chat_message": "hello?",
   "notebook_id": load_notebook_id(),
   "source_ids": [],
-  "session_id": "chat_session:z4j2fwm48k72noipume2",
+  "session_id": "",
 #   "mode": "stream"  # stream
 }
 

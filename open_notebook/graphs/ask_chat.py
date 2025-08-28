@@ -66,11 +66,21 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
         max_tokens=2000,
         structured=dict(type="json"),
     )
-    raw = await model.ainvoke(system_prompt)
-    cleaned = clean_thinking_content(getattr(raw, "content", "") or str(raw))
+
+    parts = []
+    async for chunk in model.astream(system_prompt):
+        content = getattr(chunk, "content", None)
+        if not content:
+            continue
+
+        parts.append(content)
+        yield {"content": content}
+        
+    raw = "".join(parts)
+    cleaned = clean_thinking_content(raw)
     strategy = parser.parse(cleaned)
     terms = [s.term.strip() for s in strategy.searches if s.term.strip()][:5]
-    return {"strategy": strategy, "search_terms": terms}
+    yield {"end_node": "plan_strategy", "strategy": strategy, "search_terms": terms}
 
 
 async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
@@ -122,14 +132,18 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
         max_tokens=10000,
     )
 
+    parts = []
     async for chunk in model.astream(payload):
         # STREAM token
         content = getattr(chunk, "content", None)
         if not content:
             continue
-
+        parts.append(content)
         yield {"content": content}
-
+    raw = "".join(parts)
+    cleaned = clean_thinking_content(raw)
+    
+    yield {"end_node": "chat_agent", "cleaned_content": cleaned}
 
 def _last_user_text(state: ThreadState) -> str:
     """Lấy nội dung message cuối cùng của user (nếu không truyền question)."""

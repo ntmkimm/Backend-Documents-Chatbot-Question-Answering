@@ -31,49 +31,6 @@ async def token_stream(text: str):
 from uuid import uuid4
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 
-def _content(msg) -> str:
-    if hasattr(msg, "content"):
-        return msg.content or ""
-    if isinstance(msg, tuple) and len(msg) >= 2:
-        return str(msg[1] or "")
-    if isinstance(msg, dict) and "content" in msg:
-        return str(msg["content"] or "")
-    return str(msg or "")
-
-# def _chunk_text(chunk) -> str:
-
-#     if hasattr(chunk, "content"):
-#         return chunk.content or ""
-  
-#     if isinstance(chunk, dict):
-#         if "content" in chunk and chunk["content"]:
-#             return chunk["content"]
-#         if "messages" in chunk and chunk["messages"]:
-#             last = chunk["messages"][-1]
-#             return _content(last)
-#     return ""
-
-def _chunk_text(chunk) -> str:
-    # Trường hợp model stream trả về AIMessageChunk
-    if isinstance(chunk, AIMessageChunk):
-        return ""
-    if hasattr(chunk, "content"):
-        return getattr(chunk, "content", "") or ""
-
-    # Trường hợp LangGraph trả dict {"messages": [AIMessageChunk(...)]}
-    if isinstance(chunk, dict):
-        if "content" in chunk and chunk["content"]:
-            return str(chunk["content"])
-        if "messages" in chunk and chunk["messages"]:
-            return _content(chunk["messages"][-1])
-
-    # Chuỗi/bytes
-    if isinstance(chunk, (str, bytes)):
-        return chunk.decode() if isinstance(chunk, bytes) else chunk
-
-    return ""
-
-
 @router.post("/notebooks/chat")
 async def send_message(chat_request: ChatRequest):
     """Send a message to a notebook and get a complete response."""
@@ -108,35 +65,29 @@ async def send_message(chat_request: ChatRequest):
         data_end = {
             'event_type': StreamEvent.STREAM_END, 
         }
-        parts = []
+
         async for event in graph.astream_events(input_payload, config):
             kind = event["event"]
             if kind == "on_chain_stream":
                 chunk = event["data"]["chunk"]
-
-                text = _chunk_text(chunk)
-                parts.append(text)
-            
+                
+                end_node = chunk.get("end_node", "")
+                if end_node == "chat_agent":
+                    reference_sources = await get_source_references(chunk["cleaned_content"])
+                    data_end['reference_sources'] = reference_sources
+                    data_end['ai_message'] = chunk["cleaned_content"]
+                    await graph.aupdate_state(
+                        config,
+                        {"messages": [AIMessage(content=chunk["cleaned_content"])]}
+                    )
+                          
             elif kind == 'on_chain_start':
                 data_end['session_id'] = event['metadata']['thread_id']
-            elif kind == 'on_chain_end':
-                break
-                
-        final_messages = "".join(parts)
-        ai_text = _content(final_messages)
-        _, cleaned_content = parse_thinking_content(ai_text)
-        await graph.aupdate_state(
-            config,
-            {"messages": [AIMessage(content=cleaned_content)]}
-        )
-        data_end['final_messages'] = cleaned_content
-        reference_sources = await get_source_references(cleaned_content)
-        data_end['reference_sources'] = reference_sources
         
         await current_session.save()      
 
         return ChatResponse(
-            ai_message=data_end['final_messages'],
+            ai_message=data_end['ai_message'],
             reference_sources=data_end['reference_sources'],
             session_id=data_end['session_id'],
             notebook_id=chat_request.notebook_id,
@@ -162,7 +113,7 @@ async def stream_chat(chat_request: ChatRequest):
                 limit=5,
             ):
                 context = obj
-            print("CONTEXT: ", context)
+
             if context is None:
                 error_data = {"type": "error", "message": f"No context found for notebook {chat_request.notebook_id}"}
                 yield f"data: {json.dumps(error_data)}\n\n"
@@ -185,39 +136,32 @@ async def stream_chat(chat_request: ChatRequest):
             data_end = {
                 'event_type': StreamEvent.STREAM_END, 
             }
-            parts = []
-
+            
             async for event in graph.astream_events(input_payload, config):
                 kind = event["event"]
-                # print(kind)
-                # if kind in ("on_chat_model_stream", "on_chain_stream"):
-                if kind == 'on_chain_stream':
+                if kind == "on_chain_stream":
                     chunk = event["data"]["chunk"]
-                    # print(event)
-                    text = _chunk_text(chunk)
-                    parts.append(text)
-                    if text:
-                        yield f"data: {json.dumps({'event_type': StreamEvent.TEXT_GENERATION, 'content': text, 'thinking': False})}\n\n"
+                    
+                    end_node = chunk.get("end_node", "")
+                    if end_node == "chat_agent":
+                        reference_sources = await get_source_references(chunk["cleaned_content"])
+                        data_end['reference'] = reference_sources
+                        data_end['answer'] = chunk["cleaned_content"]
+                        await graph.aupdate_state(
+                            config,
+                            {"messages": [AIMessage(content=chunk["cleaned_content"])]}
+                        )
+                    
+                    if event['name'] == "chat_agent":
+                        text = chunk.get("content", "")
+                        if text:
+                            yield f"data: {json.dumps({'event_type': StreamEvent.TEXT_GENERATION, 'content': text, 'thinking': False})}\n\n"
                 
                 elif kind == 'on_chain_start' and event['name'] == 'LangGraph':
-                    # print("event: ", event)
                     data = {'event_type': StreamEvent.STREAM_START, 'session_id': event['metadata']['thread_id']}
                     data_end['session_id'] = event['metadata']['thread_id']
                     yield f"data: {json.dumps(data)}\n\n"
-                    
-                elif kind == 'on_chain_end':
-                    break
-                    
-            final_messages = "".join(parts)
-            ai_text = _content(final_messages)
-            _, cleaned_content = parse_thinking_content(ai_text)
-            await graph.aupdate_state(
-                config,
-                {"messages": [AIMessage(content=cleaned_content)]}
-            )
-            data_end['answer'] = cleaned_content
-            reference_sources = await get_source_references(cleaned_content)
-            data_end['reference'] = reference_sources
+
             
             await current_session.save()      
             yield f"data: {json.dumps(data_end)}\n\n"
