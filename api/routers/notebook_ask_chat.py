@@ -45,7 +45,6 @@ async def send_message(chat_request: ChatRequest):
         previous_messages = current_state.get("messages", [])
         input_payload = {
             "messages": previous_messages + [HumanMessage(content=chat_request.chat_message)],
-            "question": chat_request.chat_message,
             "notebook_id": chat_request.notebook_id,
             "retrieval_limit": 5,
         }
@@ -60,10 +59,9 @@ async def send_message(chat_request: ChatRequest):
                     end_node = chunk.get("end_node", "")
                     if end_node == "plan_strategy":
                         data_end['strategy'] = chunk["strategy"].dict() 
-                        data_end['search_terms'] = chunk["search_terms"]
                         await graph.aupdate_state(
                             config,
-                            {"strategy": chunk["strategy"], "search_terms": chunk["search_terms"]}
+                            {"strategy": chunk["strategy"]}
                         )
                     elif end_node == "chat_agent":
                         reference_sources = await get_source_references(chunk["cleaned_content"])
@@ -81,8 +79,8 @@ async def send_message(chat_request: ChatRequest):
         await current_session.save()
 
         return ChatResponse(
-            ai_message=data_end['final_messages'],
-            reference_sources=data_end['reference_sources'],
+            ai_message=data_end['answer'],
+            reference_sources=data_end['reference'],
             session_id=data_end['session_id'],
             notebook_id=chat_request.notebook_id,
         )
@@ -108,7 +106,6 @@ async def stream_chat(chat_request: ChatRequest):
             previous_messages = current_state.get("messages", [])
             input_payload = {
                 "messages": previous_messages + [HumanMessage(content=chat_request.chat_message)],
-                "question": chat_request.chat_message,
                 "notebook_id": chat_request.notebook_id,
                 "retrieval_limit": 5,
             }
@@ -125,10 +122,9 @@ async def stream_chat(chat_request: ChatRequest):
                     end_node = chunk.get("end_node", "")
                     if end_node == "plan_strategy":
                         data_end['strategy'] = chunk["strategy"].dict() 
-                        data_end['search_terms'] = chunk["search_terms"]
                         await graph.aupdate_state(
                             config,
-                            {"strategy": chunk["strategy"], "search_terms": chunk["search_terms"]}
+                            {"strategy": chunk["strategy"]}
                         )
                     elif end_node == "chat_agent":
                         reference_sources = await get_source_references(chunk["cleaned_content"])

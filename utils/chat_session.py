@@ -76,10 +76,10 @@ def load_notebook_id() -> str:
         sys.exit(1)
 
 payload = {
-  "chat_message": "hello?",
+  "chat_message": "what is my name?",
   "notebook_id": load_notebook_id(),
   "source_ids": [],
-  "session_id": "",
+  "session_id": "chat_session:cavvcxknq83j1mh61jeq",
 #   "mode": "stream"  # stream
 }
 

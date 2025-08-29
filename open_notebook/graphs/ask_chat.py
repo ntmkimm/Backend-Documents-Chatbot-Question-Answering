@@ -14,7 +14,7 @@ from langgraph.types import Send
 from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, AIMessageChunk
 
-from open_notebook.graphs.utils import provision_langchain_model
+from open_notebook.graphs.utils import provision_langchain_model, combine_results
 from open_notebook.domain.notebook import (
     vector_search_in_notebook,
     text_search_in_notebook,
@@ -47,9 +47,7 @@ class ThreadState(TypedDict, total=False):
     context_config: Optional[dict]
 
     # fields for strategy & retrieval
-    question: str
     strategy: Strategy
-    search_terms: List[str]
     retrieval_limit: int
 
 
@@ -57,7 +55,7 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     """LLM tạo chiến lược và các search terms trước khi build context."""
     parser = PydanticOutputParser(pydantic_object=Strategy)
     system_prompt = Prompter(prompt_template="ask/entry", parser=parser).render(
-        data={"question": state.get("question") or _last_user_text(state)}
+        data={"question": _last_user_text(state)}
     )
     model = await provision_langchain_model(
         system_prompt,
@@ -80,14 +78,16 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     cleaned = clean_thinking_content(raw)
     strategy = parser.parse(cleaned)
     terms = [s.term.strip() for s in strategy.searches if s.term.strip()][:5]
-    yield {"end_node": "plan_strategy", "strategy": strategy, "search_terms": terms}
+    yield {"end_node": "plan_strategy", "strategy": strategy}
 
 
 async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     """Thực thi text+vector search theo search_terms và build context dict."""
-    terms: list[str] = state.get("search_terms", [])
-    nb_id = state.get("notebook_id") or (state.get("notebook").id if state.get("notebook") else None)
+    strategy = state.get("strategy")
     k = int(state.get("retrieval_limit") or 5)
+    terms = [s.term.strip() for s in strategy.searches if s.term.strip()][:k]
+    
+    nb_id = state.get("notebook_id") or (state.get("notebook").id if state.get("notebook") else None)
 
     if not terms or not nb_id:
         return {"context": {}}
@@ -95,13 +95,22 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     aggregated: list[dict] = []
 
     for term in terms:
-        text_res = await vector_search_in_notebook(
+        vector_results = await vector_search_in_notebook(
             notebook_id=nb_id, keyword=term, results=k, source=True, note=True, minimum_score=0.2
         )
-        aggregated.extend(text_res[:k])
+        text_results = await text_search_in_notebook(
+            notebook_id=nb_id, keyword=term, results=k, source=True, note=True
+        )
+        results = combine_results(
+            text_results=text_results, 
+            vector_results=vector_results, 
+            alpha_text=0.2, 
+            alpha_vector=0.8
+        )
+        aggregated.extend(results[:k])
 
     # gộp & chọn top-k theo combined_score
-    aggregated.sort(key=lambda x: -x["similarity"])
+    aggregated.sort(key=lambda x: -x["combined_score"])
     top = []
     seen = set()
     for r in aggregated:
@@ -124,7 +133,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     # Tạo system prompt cho chat
     system_prompt = Prompter(prompt_template="chat").render(data=state)
     payload = [SystemMessage(content=system_prompt)] + (state.get("messages") or [])
-
+    print("messsages: ", state.get("messages", []))
     model = await provision_langchain_model(
         str(payload),
         config.get("configurable", {}).get("model_id"),
