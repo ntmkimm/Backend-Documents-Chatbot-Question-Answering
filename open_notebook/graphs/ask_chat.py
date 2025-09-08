@@ -14,7 +14,15 @@ from langgraph.types import Send
 from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, AIMessageChunk
 
-from open_notebook.graphs.utils import provision_langchain_model, combine_results
+from langchain.chains import ConversationalRetrievalChain
+from open_notebook.graphs.utils import (
+    provision_langchain_model, 
+    combine_results,
+    upsert_long_term_memory,
+    vectorstore,
+    short_memory
+)
+
 from open_notebook.domain.notebook import (
     vector_search_in_notebook,
     text_search_in_notebook,
@@ -40,7 +48,8 @@ class Strategy(BaseModel):
     searches: List[Search] = Field(default_factory=list, description="<= 5 searches")
 
 class ThreadState(TypedDict, total=False):
-    messages: Annotated[list, operator.add]
+    # messages: Annotated[list, operator.add]
+    message: Optional[HumanMessage]
     notebook: Optional[Notebook]  
     notebook_id: Optional[str]
     context: Optional[Dict[str, str]]
@@ -55,7 +64,7 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     """LLM tạo chiến lược và các search terms trước khi build context."""
     parser = PydanticOutputParser(pydantic_object=Strategy)
     system_prompt = Prompter(prompt_template="ask/entry", parser=parser).render(
-        data={"question": _last_user_text(state)}
+        data={"question": state.get("message", HumanMessage(content=""))}
     )
     model = await provision_langchain_model(
         system_prompt,
@@ -77,6 +86,7 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     raw = "".join(parts)
     cleaned = clean_thinking_content(raw)
     strategy = parser.parse(cleaned)
+    print(strategy)
     terms = [s.term.strip() for s in strategy.searches if s.term.strip()][:5]
     yield {"end_node": "plan_strategy", "strategy": strategy}
 
@@ -124,47 +134,48 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     context_dict: Dict[str, str] = {item["id"]: item["content"] for item in top if item.get("content")}
     return {"context": context_dict}
 
-
 async def chat_agent(state: ThreadState, config: RunnableConfig):
     """
     Node sinh câu trả lời và STREAM từng token ra ngoài.
     - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
     """
-    # Tạo system prompt cho chat
     system_prompt = Prompter(prompt_template="chat").render(data=state)
-    payload = [SystemMessage(content=system_prompt)] + (state.get("messages") or [])
-    print("messsages: ", state.get("messages", []))
+    message = state.get("message", HumanMessage(content=""))
+    payload = [SystemMessage(content=system_prompt)]
+    thread_id = config.get("configurable", {}).get("thread_id")
+
     model = await provision_langchain_model(
         str(payload),
         config.get("configurable", {}).get("model_id"),
         "chat",
         max_tokens=10000,
     )
-
-    parts = []
-    async for chunk in model.astream(payload):
-        # STREAM token
-        content = getattr(chunk, "content", None)
-        if not content:
-            continue
-        parts.append(content)
-        yield {"content": content}
-    raw = "".join(parts)
-    cleaned = clean_thinking_content(raw)
+    retriever = vectorstore.as_retriever(
+        search_kwargs={
+            "k": 4,
+            "expr": f"thread_id == '{thread_id}'"  # đảm bảo chỉ lấy memory của đúng user
+        }
+    )
     
-    yield {"end_node": "chat_agent", "cleaned_content": cleaned}
+    qa = ConversationalRetrievalChain.from_llm(
+        llm=model,
+        retriever=retriever,   
+        memory=short_memory,  
+        verbose=False,
+    )
+    raw = ""
 
-def _last_user_text(state: ThreadState) -> str:
-    """Lấy nội dung message cuối cùng của user (nếu không truyền question)."""
-    msgs = state.get("messages") or []
-    for msg in reversed(msgs):
-        # LangChain HumanMessage
-        if isinstance(msg, HumanMessage):
-            return msg.content or ""
-        # dict-like
-        if isinstance(msg, dict) and msg.get("type") == "human":
-            return msg.get("content", "")
-    return ""
+    async for msg in qa.astream_events({"question": message.content}):
+        if msg.get("event", "") == 'on_chat_model_stream':
+            yield { "content": msg.get("data", {}).get("chunk").content }
+        elif msg.get("event", "") == 'on_chat_model_end':
+            raw = msg.get("data", {}).get("output").content
+        else:
+            print("chunk: ", msg)
+
+    cleaned = clean_thinking_content(raw)
+    upsert_long_term_memory(user_text=message, ai_text=cleaned, thread_id=thread_id)
+    yield {"end_node": "chat_agent", "cleaned_content": cleaned}
 
 _checkpointer: Optional[AsyncPostgresSaver] = None
 _pool: Optional[AsyncConnectionPool] = None  # Optional global to keep the pool alive
@@ -190,7 +201,6 @@ async def get_checkpointer() -> AsyncPostgresSaver:
         await checkpointer.setup()
         _checkpointer = checkpointer
     return _checkpointer
-
 
 async def build_ask_chat_graph(state: ThreadState, config: RunnableConfig) -> StateGraph:
     agent_state = StateGraph(ThreadState)

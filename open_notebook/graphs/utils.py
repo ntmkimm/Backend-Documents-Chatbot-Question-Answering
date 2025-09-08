@@ -84,3 +84,47 @@ def combine_results(text_results, vector_results, alpha_text=0.2, alpha_vector=0
     # Sort by combined score descending
     combined.sort(key=lambda x: -x["combined_score"])
     return combined
+
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+MILVUS_ADDRESS = os.getenv("MILVUS_ADDRESS", "192.168.20.156")
+MILVUS_PORT = int(os.getenv("MILVUS_PORT", "19530"))
+MILVUS_URI = os.getenv("MILVUS_URI", f"http://{MILVUS_ADDRESS}:{MILVUS_PORT}")
+MILVUS_COLLECTION = os.getenv("MILVUS_COLLECTION", "agent_memory1")
+
+from datetime import datetime
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_milvus import Milvus
+from langchain.memory import ConversationBufferWindowMemory
+from langchain.schema import Document
+
+embeddings = OpenAIEmbeddings(model=os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-3-small"))
+vectorstore = Milvus(
+    connection_args={
+        "uri": MILVUS_URI,
+    },
+    collection_name=MILVUS_COLLECTION,
+    embedding_function=embeddings,
+    index_params={
+        "metric_type": "COSINE",
+        "index_type": "HNSW",
+    },
+)
+
+short_memory = ConversationBufferWindowMemory(
+    k=4,  # giữ 4 messages gần nhất (2 user + 2 assistant)
+    memory_key="chat_history",
+    return_messages=True,
+)
+
+def upsert_long_term_memory(user_text: str, ai_text: str, thread_id: str):
+    """Gộp 1 lượt chat thành 1 chunk và lưu vào Milvus."""
+    ts = datetime.utcnow().isoformat()
+    text = f"[Turn @ {ts} UTC]\nUser({thread_id}): {user_text}\nAssistant: {ai_text}"
+    doc = Document(
+        page_content=text,
+        metadata={"thread_id": thread_id, "ts": ts, "type": "chat_turn"}
+    )
+    vectorstore.add_documents([doc])

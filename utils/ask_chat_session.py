@@ -76,14 +76,14 @@ def load_notebook_id() -> str:
         sys.exit(1)
 
 payload = {
-  "chat_message": "what is my previous question?",
+  "chat_message": "no, my name is nhung",
   "notebook_id": load_notebook_id(),
-  "session_id": "chat_session:cavvcxknq83j1mh61jeq",
+  "session_id": "chat_session:cdu2meyyn3bk9hd578g4",
 #   "mode": "stream"  # stream
 }
 
 events = []
-with requests.post(API_BASE + "/notebooks/ask_chat",
+with requests.post(API_BASE + "/notebooks/ask_chat/stream",
                    headers=headers, json=payload, stream=True) as r:
     r.raise_for_status()
     for line in r.iter_lines(decode_unicode=True):

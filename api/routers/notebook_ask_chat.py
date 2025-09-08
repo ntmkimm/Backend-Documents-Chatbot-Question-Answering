@@ -23,13 +23,7 @@ from pages.stream_app.utils import convert_source_references
 
 router = APIRouter()
 
-async def token_stream(text: str):
-    for token in text:
-        yield f"{token}"
-        # await asyncio.sleep(0.02)
-
 from uuid import uuid4
-from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 
 @router.post("/notebooks/ask_chat")
 async def send_message(chat_request: ChatRequest):
@@ -42,9 +36,8 @@ async def send_message(chat_request: ChatRequest):
 
         graph = await get_conversation_graph(state={}, config=config)
 
-        previous_messages = current_state.get("messages", [])
         input_payload = {
-            "messages": previous_messages + [HumanMessage(content=chat_request.chat_message)],
+            "message": HumanMessage(content=chat_request.chat_message),
             "notebook_id": chat_request.notebook_id,
             "retrieval_limit": 5,
         }
@@ -67,10 +60,10 @@ async def send_message(chat_request: ChatRequest):
                         reference_sources = await get_source_references(chunk["cleaned_content"])
                         data_end['reference'] = reference_sources
                         data_end['answer'] = chunk["cleaned_content"]
-                        await graph.aupdate_state(
-                            config,
-                            {"messages": [AIMessage(content=chunk["cleaned_content"])]}
-                        )
+                        # await graph.aupdate_state(
+                        #     config,
+                        #     {"messages": [AIMessage(content=chunk["cleaned_content"])]}
+                        # )
 
                 elif kind == 'on_chain_start' and event['name'] == 'LangGraph':
                     data_end['session_id'] = event['metadata']['thread_id']
@@ -103,9 +96,8 @@ async def stream_chat(chat_request: ChatRequest):
             config = RunnableConfig(configurable={"thread_id": thread_id})
             graph = await get_conversation_graph(state={}, config=config)
 
-            previous_messages = current_state.get("messages", [])
             input_payload = {
-                "messages": previous_messages + [HumanMessage(content=chat_request.chat_message)],
+                "message": HumanMessage(content=chat_request.chat_message),
                 "notebook_id": chat_request.notebook_id,
                 "retrieval_limit": 5,
             }
@@ -130,10 +122,10 @@ async def stream_chat(chat_request: ChatRequest):
                         reference_sources = await get_source_references(chunk["cleaned_content"])
                         data_end['reference'] = reference_sources
                         data_end['answer'] = chunk["cleaned_content"]
-                        await graph.aupdate_state(
-                            config,
-                            {"messages": [AIMessage(content=chunk["cleaned_content"])]}
-                        )
+                        # await graph.aupdate_state(
+                        #     config,
+                        #     {"messages": [AIMessage(content=chunk["cleaned_content"])]}
+                        # )
                         
                     if event['name'] == 'chat_agent':
                         text = chunk.get("content", "")

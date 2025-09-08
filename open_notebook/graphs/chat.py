@@ -8,11 +8,22 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
-from langchain_core.messages import SystemMessage, AIMessage, AIMessageChunk
+from langchain_core.messages import SystemMessage, AIMessage, AIMessageChunk, HumanMessage, HumanMessageChunk
 from open_notebook.domain.notebook import Notebook
 from open_notebook.graphs.utils import provision_langchain_model
 # from langgraph.checkpoint.postgres import PostgresSaver
 # from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+
+
+from langchain.chains import ConversationalRetrievalChain
+from open_notebook.graphs.utils import (
+    provision_langchain_model, 
+    combine_results,
+    upsert_long_term_memory,
+    vectorstore,
+    short_memory
+)
+
 from psycopg_pool import AsyncConnectionPool
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from open_notebook.utils import clean_thinking_content 
@@ -67,15 +78,21 @@ async def get_checkpointer() -> AsyncPostgresSaver:
 
 
 class ThreadState(TypedDict):
-    messages: Annotated[list, add_messages]
+    # messages: Annotated[list, add_messages]
+    message: Optional[HumanMessage]
     notebook: Optional[Notebook]
     context: Optional[str]
     context_config: Optional[dict]
 
 async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
-    """Async node that streams tokens and then returns the final message."""
+    """
+    Node sinh câu trả lời và STREAM từng token ra ngoài.
+    - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
+    """
     system_prompt = Prompter(prompt_template="chat").render(data=state)
-    payload = [SystemMessage(content=system_prompt)] + state.get("messages", [])
+    message = state.get("message", HumanMessage(content=""))
+    payload = [SystemMessage(content=system_prompt)] 
+    thread_id = config.get("configurable", {}).get("thread_id")
 
     model = await provision_langchain_model(
         str(payload),
@@ -83,18 +100,31 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
         "chat",
         max_tokens=10000,
     )
-
-    parts = []
-    async for chunk in model.astream(payload):
-        content = getattr(chunk, "content", None)
-        if not content:
-            continue
-
-        parts.append(content)
-        yield {"content": content}
+    retriever = vectorstore.as_retriever(
+        search_kwargs={
+            "k": 4,
+            "expr": f"thread_id == '{thread_id}'"  # đảm bảo chỉ lấy memory của đúng user
+        }
+    )
     
-    raw = "".join(parts)
+    qa = ConversationalRetrievalChain.from_llm(
+        llm=model,
+        retriever=retriever,   
+        memory=short_memory,  
+        verbose=False,
+    )
+    raw = ""
+
+    async for msg in qa.astream_events({"question": message.content}):
+        if msg.get("event", "") == 'on_chat_model_stream':
+            yield { "content": msg.get("data", {}).get("chunk").content }
+        elif msg.get("event", "") == 'on_chat_model_end':
+            raw = msg.get("data", {}).get("output").content
+        else:
+            print("chunk: ", msg)
+
     cleaned = clean_thinking_content(raw)
+    upsert_long_term_memory(user_text=message, ai_text=cleaned, thread_id=thread_id)
     yield {"end_node": "chat_agent", "cleaned_content": cleaned}
 
 async def create_conversation_graph(state: ThreadState, config: RunnableConfig):
