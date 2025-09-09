@@ -4,3 +4,5 @@ api/__pycache__/
 *.pyo
 .env
 docker.env
+
+data/*
