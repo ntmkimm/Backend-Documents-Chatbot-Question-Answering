@@ -223,6 +223,12 @@ class SourceUpdate(BaseModel):
     title: Optional[str] = Field(None, description="Source title")
     topics: Optional[List[str]] = Field(None, description="Source topics")
 
+class SourceEmbeddingResponse(BaseModel):
+    id: str
+    source: Optional[str] = Field(None, description="Source id")
+    order: Optional[int] = None
+    content: Optional[str] = None
+    embedding: Optional[List[float]] = None
 
 class SourceResponse(BaseModel):
     id: str

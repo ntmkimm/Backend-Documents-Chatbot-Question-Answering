@@ -11,8 +11,9 @@ from api.models import (
     SourceListResponse,
     SourceResponse,
     SourceUpdate,
+    SourceEmbeddingResponse
 )
-from open_notebook.domain.notebook import Notebook, Source
+from open_notebook.domain.notebook import Notebook, Source, SourceEmbedding
 from open_notebook.domain.transformation import Transformation
 from open_notebook.exceptions import InvalidInputError
 from open_notebook.graphs.source import source_graph
@@ -308,3 +309,22 @@ async def create_source_insight(
     except Exception as e:
         logger.error(f"Error creating insight for source {source_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error creating insight: {str(e)}")
+
+
+
+@router.get("/sources/embeddings/{source_embedding_id}", response_model=SourceEmbeddingResponse)
+async def get_source_embedding(source_embedding_id: str, 
+                               include_embedding: bool = False):
+    """Get source_embedding context for a specific id."""
+    try:
+        source_embedding = await SourceEmbedding.get_context(source_embedding_id, include_embedding)
+        if not source_embedding:
+            raise HTTPException(status_code=404, detail="Source embedding not found")
+        
+        return source_embedding
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching source_embedding for source {source_embedding_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching source_embedding: {str(e)}")

@@ -76,9 +76,9 @@ def load_notebook_id() -> str:
         sys.exit(1)
 
 payload = {
-  "chat_message": "no, my name is nhung",
+  "chat_message": "where is thailand?",
   "notebook_id": load_notebook_id(),
-  "session_id": "chat_session:cdu2meyyn3bk9hd578g4",
+  "session_id": "",
 #   "mode": "stream"  # stream
 }
 

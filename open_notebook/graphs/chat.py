@@ -91,7 +91,7 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
     """
     system_prompt = Prompter(prompt_template="chat").render(data=state)
     message = state.get("message", HumanMessage(content=""))
-    payload = [SystemMessage(content=system_prompt)] 
+    payload = [SystemMessage(content=system_prompt)] + [message]
     thread_id = config.get("configurable", {}).get("thread_id")
 
     model = await provision_langchain_model(
@@ -115,7 +115,7 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
     )
     raw = ""
 
-    async for msg in qa.astream_events({"question": message.content}):
+    async for msg in qa.astream_events({"question": str(payload)}):
         if msg.get("event", "") == 'on_chat_model_stream':
             yield { "content": msg.get("data", {}).get("chunk").content }
         elif msg.get("event", "") == 'on_chat_model_end':

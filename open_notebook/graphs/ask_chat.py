@@ -139,9 +139,16 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     Node sinh câu trả lời và STREAM từng token ra ngoài.
     - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
     """
-    system_prompt = Prompter(prompt_template="chat").render(data=state)
-    message = state.get("message", HumanMessage(content=""))
-    payload = [SystemMessage(content=system_prompt)]
+    system_prompt = Prompter(prompt_template="ask/query_process").render(
+        data={
+            "question": state.get("message", HumanMessage(content="")),
+            "term": state.get("strategy").searches[0].term,
+            "instruction": state.get("strategy").searches[0].instructions,
+            "results": state.get("context"),
+            "ids": state.get("context").keys(),
+        }
+    )
+    payload = [SystemMessage(content=system_prompt)] 
     thread_id = config.get("configurable", {}).get("thread_id")
 
     model = await provision_langchain_model(
@@ -165,7 +172,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     )
     raw = ""
 
-    async for msg in qa.astream_events({"question": message.content}):
+    async for msg in qa.astream_events({"question": str(payload)}):
         if msg.get("event", "") == 'on_chat_model_stream':
             yield { "content": msg.get("data", {}).get("chunk").content }
         elif msg.get("event", "") == 'on_chat_model_end':
@@ -174,7 +181,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
             print("chunk: ", msg)
 
     cleaned = clean_thinking_content(raw)
-    upsert_long_term_memory(user_text=message, ai_text=cleaned, thread_id=thread_id)
+    upsert_long_term_memory(user_text=state.get("message", HumanMessage(content="")).content, ai_text=cleaned, thread_id=thread_id)
     yield {"end_node": "chat_agent", "cleaned_content": cleaned}
 
 _checkpointer: Optional[AsyncPostgresSaver] = None

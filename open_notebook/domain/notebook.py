@@ -93,6 +93,10 @@ class Asset(BaseModel):
 class SourceEmbedding(ObjectModel):
     table_name: ClassVar[str] = "source_embedding"
     content: str
+    id: str
+    source: Optional[Any] = None
+    order: Optional[int] = None
+    embedding: Optional[List[float]] = None
 
     async def get_source(self) -> "Source":
         try:
@@ -105,6 +109,29 @@ class SourceEmbedding(ObjectModel):
             return Source(**src[0]["source"])
         except Exception as e:
             logger.error(f"Error fetching source for embedding {self.id}: {str(e)}")
+            logger.exception(e)
+            raise DatabaseOperationError(e)
+        
+    @classmethod
+    async def get_context(
+        cls,
+        source_embedding_id: str,
+        include_embedding: bool = False
+    ) -> Dict[str, Any]:
+        try:
+            rid = ensure_record_id(source_embedding_id)
+            if not rid:
+                return {}
+
+            if include_embedding:
+                q = "SELECT id, source, order, content, embedding FROM source_embedding WHERE id = $id"
+            else:
+                q = "SELECT id, source, order, content FROM source_embedding WHERE id = $id"
+
+            rows = await repo_query(q, {"id": rid})
+            return rows[0] if rows else {}
+        except Exception as e:
+            logger.error(f"Error fetching context for source embedding {source_embedding_id}: {str(e)}")
             logger.exception(e)
             raise DatabaseOperationError(e)
 
