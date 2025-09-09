@@ -20,13 +20,12 @@ def token_count(input_string) -> int:
     Returns:
         int: The number of tokens in the input string.
     """
-    # import tiktoken
+    import tiktoken
 
-    # encoding = tiktoken.get_encoding("o200k_base")
-    # tokens = encoding.encode(input_string)
-    # token_count = len(tokens)
-    # return token_count
-    return len(input_string)
+    encoding = tiktoken.get_encoding("o200k_base")
+    tokens = encoding.encode(input_string)
+    token_count = len(tokens)
+    return token_count
 
 
 def token_cost(token_count, cost_per_million=0.150) -> float:

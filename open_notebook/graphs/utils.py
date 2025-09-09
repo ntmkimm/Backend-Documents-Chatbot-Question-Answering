@@ -110,6 +110,10 @@ vectorstore = Milvus(
     index_params={
         "metric_type": "COSINE",
         "index_type": "HNSW",
+        "params": {
+            "M": 16,
+            "efConstruction": 200
+        }
     },
 )
 
