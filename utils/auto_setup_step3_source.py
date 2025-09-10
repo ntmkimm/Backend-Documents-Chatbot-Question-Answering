@@ -168,9 +168,7 @@ def delete_existing_sources(sources: List[Dict], notebook_id: str):
     sources_to_delete = []
     
     for source in sources:
-        # Check if source belongs to our notebook
-        if source.get('notebook_id') == notebook_id:
-            sources_to_delete.append(source.get('id'))
+        sources_to_delete.append(source.get('id'))
     
     # Delete sources
     if sources_to_delete:

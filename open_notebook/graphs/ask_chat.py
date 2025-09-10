@@ -54,7 +54,7 @@ class ThreadState(TypedDict, total=False):
     notebook_id: Optional[str]
     context: Optional[Dict[str, str]]
     context_config: Optional[dict]
-
+    source_ids: Optional[List[str]]
     # fields for strategy & retrieval
     strategy: Strategy
     retrieval_limit: int
@@ -94,7 +94,8 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
 async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     """Thực thi text+vector search theo search_terms và build context dict."""
     strategy = state.get("strategy")
-    # print(strategy)  
+    source_ids = state.get("source_ids")
+
     k = int(state.get("retrieval_limit") or 5)
     terms = [s.term.strip() for s in strategy.searches if s.term.strip()][:k]
     
@@ -103,38 +104,23 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     if not terms or not nb_id:
         return {"context": {}}
 
-    aggregated: list[dict] = []
-
+    # aggregated: list[dict] = []
+    context_dict = {}
     for term in terms:
-        vector_results = await vector_search_in_notebook(
-            notebook_id=nb_id, keyword=term, results=k, source=True, note=True, minimum_score=0
+        param = {
+            "keyword": term,
+            "results": k,
+            "source_ids": source_ids,
+            "notebook_id":nb_id,
+        }
+        res = await vector_search_in_notebook(
+            **param
         )
-        text_results = await text_search_in_notebook(
-            notebook_id=nb_id, keyword=term, results=k, source=True, note=True
-        )
-        results = combine_results(
-            text_results=text_results, 
-            vector_results=vector_results, 
-            alpha_text=0.4, 
-            alpha_vector=0.6
-        )
-        aggregated.extend(results[:k])
+        context_dict.update(res)
 
-    # gộp & chọn top-k theo combined_score
-    aggregated.sort(key=lambda x: -x["combined_score"])
-    top = []
-    seen = set()
-    for r in aggregated:
-        if r["id"] in seen:
-            continue
-        seen.add(r["id"])
-        top.append(r)
-        if len(top) >= k:
-            break
-
-    context_dict: Dict[str, str] = {item["id"]: item["content"] for item in top if item.get("content")}
-    print("context in retrieval: ", context_dict)
     return {"context": context_dict}
+
+
 
 async def chat_agent(state: ThreadState, config: RunnableConfig):
     """

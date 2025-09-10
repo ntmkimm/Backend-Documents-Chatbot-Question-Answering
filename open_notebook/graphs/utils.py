@@ -90,7 +90,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-MILVUS_ADDRESS = os.getenv("MILVUS_ADDRESS", "192.168.20.156")
+MILVUS_ADDRESS = os.getenv("MILVUS_ADDRESS", "localhost")
 MILVUS_PORT = int(os.getenv("MILVUS_PORT", "19530"))
 MILVUS_URI = os.getenv("MILVUS_URI", f"http://{MILVUS_ADDRESS}:{MILVUS_PORT}")
 MILVUS_COLLECTION = os.getenv("MILVUS_COLLECTION", "agent_memory1")

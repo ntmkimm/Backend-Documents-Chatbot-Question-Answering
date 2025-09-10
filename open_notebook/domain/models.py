@@ -146,19 +146,19 @@ class ModelManager:
         if model_type == "chat":
             model_id = {
                 "name": os.getenv("DEFAULT_CHAT_MODEL"),
-                "provider": "openrouter",
+                "provider": os.getenv("LANGUAGE_MODEL_PROVIDER"),
                 "type": "language",
             }
         elif model_type == "transformation":
             model_id = {
                 "name": os.getenv("DEFAULT_TRANSFORMATION_MODEL"),
-                "provider": "openrouter",
+                "provider": os.getenv("LANGUAGE_MODEL_PROVIDER"),
                 "type": "language",
             }
         elif model_type == "tools":
             model_id = {
                 "name": os.getenv("DEFAULT_TOOLS_MODEL"),
-                "provider": "openrouter",
+                "provider": os.getenv("LANGUAGE_MODEL_PROVIDER"),
                 "type": "language",
             }
         elif model_type == "embedding":
@@ -170,19 +170,19 @@ class ModelManager:
         elif model_type == "text_to_speech":
             model_id = {
                 "name": os.getenv("DEFAULT_TEXT_TO_SPEECH_MODEL"),
-                "provider": "openrouter",
+                "provider": os.getenv("LANGUAGE_MODEL_PROVIDER"),
                 "type": "text_to_speech",
             }
         elif model_type == "speech_to_text":
             model_id = {
                 "name": os.getenv("DEFAULT_SPEECH_TO_TEXT_MODEL"),
-                "provider": "openrouter",
+                "provider": os.getenv("LANGUAGE_MODEL_PROVIDER"),
                 "type": "speech_to_text",
             }
         elif model_type == "large_context":
             model_id = {
                 "name": os.getenv("DEFAULT_LARGE_CONTEXT_MODEL"),
-                "provider": "openrouter",
+                "provider": os.getenv("LANGUAGE_MODEL_PROVIDER"),
                 "type": "language"
             }
 

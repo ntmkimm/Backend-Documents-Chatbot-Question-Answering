@@ -10,6 +10,7 @@ from open_notebook.domain.base import ObjectModel
 from open_notebook.domain.models import model_manager
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
 from open_notebook.utils import split_text
+from open_notebook.database.milvus_utils import insert_data, hybrid_search
 
 
 class Notebook(ObjectModel):
@@ -224,7 +225,7 @@ class Source(ObjectModel):
             raise InvalidInputError("Notebook ID must be provided")
         return await self.relate("reference", notebook_id)
 
-    async def vectorize(self) -> None:
+    async def vectorize(self, notebook_id: str) -> None:
         logger.info(f"Starting vectorization for source {self.id}")
         EMBEDDING_MODEL = await model_manager.get_embedding_model()
 
@@ -267,29 +268,27 @@ class Source(ObjectModel):
 
             # Insert results in order (they're already ordered by index)
             for idx, embedding, content in results:
+                print("------\n",len(content.split()), "\n----\n")
                 logger.debug(f"Inserting chunk {idx} into database")
-                await repo_query(
-                    """
-                    CREATE source_embedding CONTENT {
-                            "source": $source_id,
-                            "order": $order,
-                            "content": $content,
-                            "embedding": $embedding,
-                    };""",
-                    {
-                        "source_id": ensure_record_id(self.id),
-                        "order": idx,
+                data={
+                        "dense_vector": embedding, 
                         "content": content,
-                        "embedding": embedding,
-                    },
+                        "order": idx,
+                        "source_id": self.id,
+                        "notebook_id": notebook_id,
+                    }
+                await insert_data(
+                    collection_name="source_embedding",
+                    data=data
                 )
-
             logger.info(f"Vectorization complete for source {self.id}")
 
         except Exception as e:
             logger.error(f"Error vectorizing source {self.id}: {str(e)}")
             logger.exception(e)
             raise DatabaseOperationError(e)
+
+
 
     async def add_insight(self, insight_type: str, content: str) -> Any:
         EMBEDDING_MODEL = await model_manager.get_embedding_model()
@@ -421,12 +420,10 @@ async def vector_search(
 
 
 async def vector_search_in_notebook(
-    notebook_id: str,
-    keyword: str,
+    keyword: str, 
     results: int,
-    source: bool = True,
-    note: bool = True,
-    minimum_score=0.2,
+    notebook_id: str, 
+    source_ids: List[str] = [],
 ):
     if not keyword:
         raise InvalidInputError("Search keyword cannot be empty")
@@ -435,28 +432,22 @@ async def vector_search_in_notebook(
     try:
         EMBEDDING_MODEL = await model_manager.get_embedding_model()
         embed = (await EMBEDDING_MODEL.aembed([keyword]))[0]
-
+        print(f"\n\n embed {source_ids} \n\n")
         params = {
-            "embed": embed,
-            "results": results,
-            "source": source,
-            "note": note,
-            "minimum_score": minimum_score,
-            "notebook_id": ensure_record_id(notebook_id),
+            "collection_name": "source_embedding",
+            "query_keyword": [keyword],
+            "query_vector": [embed],
+            "notebook_id": notebook_id,
+            "limit": results,
+            "source_ids": source_ids,
         }
-        
-        results = await repo_query(
-            """
-            SELECT * FROM fn::vector_search_in_notebook($embed, $results, $source, $note, $minimum_score, $notebook_id);
-            """,
-            params,
-        )
+        results = await hybrid_search(**params)
         return results
     except Exception as e:
-        logger.error(f"Error performing vector search: {str(e)}")
+        logger.error(f"Error performing hybrid search: {str(e)}")
         logger.exception(e)
         raise DatabaseOperationError(e)
-    
+
 async def text_search_in_notebook(
     notebook_id: str, keyword: str, results: int, source: bool = True, note: bool = True
 ):

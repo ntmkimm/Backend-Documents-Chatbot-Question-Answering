@@ -61,7 +61,7 @@ async def save_source(state: SourceState) -> dict:
 
     if state["embed"]:
         logger.debug("Embedding content for vector search")
-        await source.vectorize()
+        await source.vectorize(state["notebook_id"])
 
     return {"source": source}
 

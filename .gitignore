@@ -5,4 +5,11 @@ api/__pycache__/
 .env
 docker.env
 
+*.sqlite
+*.sqlite-shm 
+*.sqlite-wal
+
+*.log
+volumes/
+surreal_data/*
 data/*

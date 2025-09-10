@@ -64,14 +64,14 @@ def split_text(txt: str, chunk_size=500):
             "\n\n",
             "\n",
             ".",
-            ",",
-            " ",
+            # ",",
+            # " ",
             "\u200b",  # Zero-width space
             "\uff0c",  # Fullwidth comma
             "\u3001",  # Ideographic comma
             "\uff0e",  # Fullwidth full stop
             "\u3002",  # Ideographic full stop
-            "",
+            # "",
         ],
     )
     return text_splitter.split_text(txt)

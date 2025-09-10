@@ -35,11 +35,12 @@ async def send_message(chat_request: ChatRequest):
         config = RunnableConfig(configurable={"thread_id": thread_id})
 
         graph = await get_conversation_graph(state={}, config=config)
-
+        print("Request ids", chat_request.source_ids)
         input_payload = {
             "message": HumanMessage(content=chat_request.chat_message),
             "notebook_id": chat_request.notebook_id,
             "retrieval_limit": 5,
+            "source_ids": chat_request.source_ids,  
         }
 
         data_end = {'event_type': StreamEvent.STREAM_END}
@@ -100,6 +101,7 @@ async def stream_chat(chat_request: ChatRequest):
                 "message": HumanMessage(content=chat_request.chat_message),
                 "notebook_id": chat_request.notebook_id,
                 "retrieval_limit": 5,
+                "source_ids": chat_request.source_ids,  
             }
 
             data_end = {'event_type': StreamEvent.STREAM_END}

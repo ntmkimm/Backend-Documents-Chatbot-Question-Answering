@@ -9,6 +9,7 @@ from loguru import logger
 
 from .repository import db_connection, repo_query
 
+from open_notebook.database.milvus_utils import milvus_migration
 
 class AsyncMigration:
     """
@@ -132,6 +133,9 @@ class AsyncMigrationManager:
         """Run all pending migrations."""
         current_version = await self.get_current_version()
         logger.info(f"Current version before migration: {current_version}")
+
+        milvus_migration()
+        logger.info("Milvus migration successful")
 
         if await self.needs_migration():
             try:
