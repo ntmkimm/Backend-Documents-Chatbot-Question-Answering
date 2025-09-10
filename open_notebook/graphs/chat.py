@@ -20,8 +20,8 @@ from open_notebook.graphs.utils import (
     provision_langchain_model, 
     combine_results,
     upsert_long_term_memory,
+    get_postgres_short_memory,
     vectorstore,
-    short_memory
 )
 
 from psycopg_pool import AsyncConnectionPool
@@ -105,6 +105,11 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
             "k": 4,
             "expr": f"thread_id == '{thread_id}'"  # đảm bảo chỉ lấy memory của đúng user
         }
+    )
+    
+    short_memory = get_postgres_short_memory(
+        thread_id=thread_id,
+        k=4,
     )
     
     qa = ConversationalRetrievalChain.from_llm(

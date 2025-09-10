@@ -19,8 +19,8 @@ from open_notebook.graphs.utils import (
     provision_langchain_model, 
     combine_results,
     upsert_long_term_memory,
-    vectorstore,
-    short_memory
+    get_postgres_short_memory,
+    vectorstore
 )
 
 from open_notebook.domain.notebook import (
@@ -86,7 +86,7 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     raw = "".join(parts)
     cleaned = clean_thinking_content(raw)
     strategy = parser.parse(cleaned)
-    print(strategy)
+    # print(strategy)
     terms = [s.term.strip() for s in strategy.searches if s.term.strip()][:5]
     yield {"end_node": "plan_strategy", "strategy": strategy}
 
@@ -94,6 +94,7 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
 async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     """Thực thi text+vector search theo search_terms và build context dict."""
     strategy = state.get("strategy")
+    # print(strategy)  
     k = int(state.get("retrieval_limit") or 5)
     terms = [s.term.strip() for s in strategy.searches if s.term.strip()][:k]
     
@@ -106,7 +107,7 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
 
     for term in terms:
         vector_results = await vector_search_in_notebook(
-            notebook_id=nb_id, keyword=term, results=k, source=True, note=True, minimum_score=0.2
+            notebook_id=nb_id, keyword=term, results=k, source=True, note=True, minimum_score=0
         )
         text_results = await text_search_in_notebook(
             notebook_id=nb_id, keyword=term, results=k, source=True, note=True
@@ -114,8 +115,8 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
         results = combine_results(
             text_results=text_results, 
             vector_results=vector_results, 
-            alpha_text=0.2, 
-            alpha_vector=0.8
+            alpha_text=0.4, 
+            alpha_vector=0.6
         )
         aggregated.extend(results[:k])
 
@@ -132,6 +133,7 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
             break
 
     context_dict: Dict[str, str] = {item["id"]: item["content"] for item in top if item.get("content")}
+    print("context in retrieval: ", context_dict)
     return {"context": context_dict}
 
 async def chat_agent(state: ThreadState, config: RunnableConfig):
@@ -139,16 +141,21 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     Node sinh câu trả lời và STREAM từng token ra ngoài.
     - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
     """
+    # print("state: ", state)
+    searches = state.get("strategy", {}).searches if state.get("strategy") else []
+    first_search = searches[0] if searches else Search(term="default", instructions="")
     system_prompt = Prompter(prompt_template="ask/query_process").render(
         data={
-            "question": state.get("message", HumanMessage(content="")),
-            "term": state.get("strategy").searches[0].term,
-            "instruction": state.get("strategy").searches[0].instructions,
+            "question": state.get("message", HumanMessage(content="")).content,
+            "term": first_search.term,
+            "instruction": first_search.instructions,
             "results": state.get("context"),
             "ids": state.get("context").keys(),
         }
     )
+    # print("context: ", state.get("context"))
     payload = [SystemMessage(content=system_prompt)] 
+    print("system prompt: ", system_prompt)
     thread_id = config.get("configurable", {}).get("thread_id")
 
     model = await provision_langchain_model(
@@ -164,6 +171,11 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
         }
     )
     
+    short_memory = get_postgres_short_memory(
+        thread_id=thread_id,
+        k=4,
+    )
+    
     qa = ConversationalRetrievalChain.from_llm(
         llm=model,
         retriever=retriever,   
@@ -172,14 +184,14 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     )
     raw = ""
 
-    async for msg in qa.astream_events({"question": str(payload)}):
+    async for msg in qa.astream_events({"question": system_prompt}):
         if msg.get("event", "") == 'on_chat_model_stream':
             yield { "content": msg.get("data", {}).get("chunk").content }
         elif msg.get("event", "") == 'on_chat_model_end':
             raw = msg.get("data", {}).get("output").content
         else:
             print("chunk: ", msg)
-
+    print("last: ", raw)
     cleaned = clean_thinking_content(raw)
     upsert_long_term_memory(user_text=state.get("message", HumanMessage(content="")).content, ai_text=cleaned, thread_id=thread_id)
     yield {"end_node": "chat_agent", "cleaned_content": cleaned}

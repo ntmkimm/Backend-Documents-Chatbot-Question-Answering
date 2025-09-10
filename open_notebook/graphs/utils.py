@@ -15,17 +15,18 @@ async def provision_langchain_model(
     If model_id is specified in Config, returns that model
     Otherwise, returns the default model for the given type
     """
-    tokens = token_count(content)
+    # tokens = token_count(content)
 
-    if tokens > 105_000:
-        logger.debug(
-            f"Using large context model because the content has {tokens} tokens"
-        )
-        model = await model_manager.get_default_model("large_context", **kwargs)
-    elif model_id:
-        model = await model_manager.get_model(model_id, **kwargs)
-    else:
-        model = await model_manager.get_default_model(default_type, **kwargs)
+    # if tokens > 105_000:
+    #     logger.debug(
+    #         f"Using large context model because the content has {tokens} tokens"
+    #     )
+    #     model = await model_manager.get_default_model("large_context", **kwargs)
+    # elif model_id:
+    #     model = await model_manager.get_model(model_id, **kwargs)
+    # else:
+        
+    model = await model_manager.get_default_model(default_type, **kwargs)
 
     logger.debug(f"Using model: {model}")
     assert isinstance(model, LanguageModel), f"Model is not a LanguageModel: {model}"
@@ -98,6 +99,7 @@ from datetime import datetime
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_milvus import Milvus
 from langchain.memory import ConversationBufferWindowMemory
+from langchain_community.chat_message_histories import PostgresChatMessageHistory
 from langchain.schema import Document
 
 embeddings = OpenAIEmbeddings(model=os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-3-small"))
@@ -117,11 +119,25 @@ vectorstore = Milvus(
     },
 )
 
-short_memory = ConversationBufferWindowMemory(
-    k=4,  # giữ 4 messages gần nhất (2 user + 2 assistant)
-    memory_key="chat_history",
-    return_messages=True,
-)
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "notebook")
+POSTGRES_ADDRESS = os.getenv("POSTGRES_ADDRESS", "db")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres")
+
+DB_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_ADDRESS}:{POSTGRES_PORT}/{POSTGRES_DB}"
+
+def get_postgres_short_memory(thread_id: str, k: int = 4) -> ConversationBufferWindowMemory:
+    return ConversationBufferWindowMemory(
+        k=k,
+        memory_key="chat_history",
+        return_messages=True,
+        chat_memory=PostgresChatMessageHistory(
+            connection_string=DB_URI,
+            session_id=thread_id,
+            table_name="lc_message_history"
+        )
+    )
 
 def upsert_long_term_memory(user_text: str, ai_text: str, thread_id: str):
     """Gộp 1 lượt chat thành 1 chunk và lưu vào Milvus."""
