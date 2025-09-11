@@ -89,17 +89,8 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
     Node sinh câu trả lời và STREAM từng token ra ngoài.
     - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
     """
-    system_prompt = Prompter(prompt_template="chat").render(data=state)
-    message = state.get("message", HumanMessage(content=""))
-    payload = [SystemMessage(content=system_prompt)] + [message]
+    # print("state: ", state)
     thread_id = config.get("configurable", {}).get("thread_id")
-
-    model = await provision_langchain_model(
-        str(payload),
-        config.get("configurable", {}).get("model_id"),
-        "chat",
-        max_tokens=10000,
-    )
     retriever = vectorstore.as_retriever(
         search_kwargs={
             "k": 4,
@@ -112,26 +103,46 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
         k=4,
     )
     
-    qa = ConversationalRetrievalChain.from_llm(
-        llm=model,
-        retriever=retriever,   
-        memory=short_memory,  
-        verbose=False,
+    # search using retriever to get relevant documents
+    search_results = retriever.get_relevant_documents(query=state.get("message", HumanMessage(content="")).content)
+    chat_history = search_results + short_memory.buffer
+    print("chat history:", chat_history)
+    
+    system_prompt = Prompter(prompt_template="chat").render(
+        data={
+            "context": state.get("context"),
+            "notebook": state.get("notebook"),
+            # "chat_history": chat_history,
+        }
     )
-    raw = ""
+    message = state.get("message", HumanMessage(content=""))
+    payload = [SystemMessage(content=system_prompt)] + [message]
+    
+    model = await provision_langchain_model(
+        str(payload),
+        config.get("configurable", {}).get("model_id"),
+        "chat",
+        max_tokens=10000,
+    )
 
-    async for msg in qa.astream_events({"question": str(payload)}):
-        if msg.get("event", "") == 'on_chat_model_stream':
-            yield { "content": msg.get("data", {}).get("chunk").content }
-        elif msg.get("event", "") == 'on_chat_model_end':
-            raw = msg.get("data", {}).get("output").content
-        else:
-            print("chunk: ", msg)
+    parts = []
+    async for chunk in model.astream(str(payload)):
+        content = getattr(chunk, "content", None)
+        if not content:
+            continue
 
+        parts.append(content)
+        yield {"content": content}
+
+    raw = "".join(parts)
+    print("last: ", raw)
+    
     cleaned = clean_thinking_content(raw)
-    upsert_long_term_memory(user_text=message, ai_text=cleaned, thread_id=thread_id)
+    upsert_long_term_memory(user_text=state.get("message", HumanMessage(content="")).content, ai_text=cleaned, thread_id=thread_id)
+    short_memory.chat_memory.add_user_message(message=state.get("message"))
+    short_memory.chat_memory.add_ai_message(message=AIMessage(content=cleaned))
+    
     yield {"end_node": "chat_agent", "cleaned_content": cleaned}
-
 async def create_conversation_graph(state: ThreadState, config: RunnableConfig):
     agent_state = StateGraph(ThreadState)
     agent_state.add_node("chat_agent", call_model_with_messages) # Use the async version

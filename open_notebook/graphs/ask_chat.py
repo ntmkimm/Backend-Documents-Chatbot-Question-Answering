@@ -128,28 +128,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
     """
     # print("state: ", state)
-    searches = state.get("strategy", {}).searches if state.get("strategy") else []
-    first_search = searches[0] if searches else Search(term="default", instructions="")
-    system_prompt = Prompter(prompt_template="ask/query_process").render(
-        data={
-            "question": state.get("message", HumanMessage(content="")).content,
-            "term": first_search.term,
-            "instruction": first_search.instructions,
-            "results": state.get("context"),
-            "ids": state.get("context").keys(),
-        }
-    )
-    # print("context: ", state.get("context"))
-    payload = [SystemMessage(content=system_prompt)] 
-    print("system prompt: ", system_prompt)
     thread_id = config.get("configurable", {}).get("thread_id")
-
-    model = await provision_langchain_model(
-        str(payload),
-        config.get("configurable", {}).get("model_id"),
-        "chat",
-        max_tokens=10000,
-    )
     retriever = vectorstore.as_retriever(
         search_kwargs={
             "k": 4,
@@ -162,24 +141,47 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
         k=4,
     )
     
-    qa = ConversationalRetrievalChain.from_llm(
-        llm=model,
-        retriever=retriever,   
-        memory=short_memory,  
-        verbose=False,
+    # search using retriever to get relevant documents
+    search_results = retriever.get_relevant_documents(query=state.get("message", HumanMessage(content="")).content)
+    chat_history = search_results + short_memory.buffer
+    print("chat history:", chat_history)
+    
+    searches = state.get("strategy", {}).searches if state.get("strategy") else []
+    first_search = searches[0] if searches else Search(term="default", instructions="")
+    system_prompt = Prompter(prompt_template="ask/chat").render(
+        data={
+            "question": state.get("message", HumanMessage(content="")).content,
+            "term": first_search.term,
+            "instruction": first_search.instructions,
+            "results": state.get("context"),
+            "ids": state.get("context").keys(),
+            "chat_history": chat_history
+        }
     )
-    raw = ""
 
-    async for msg in qa.astream_events({"question": system_prompt}):
-        if msg.get("event", "") == 'on_chat_model_stream':
-            yield { "content": msg.get("data", {}).get("chunk").content }
-        elif msg.get("event", "") == 'on_chat_model_end':
-            raw = msg.get("data", {}).get("output").content
-        else:
-            print("chunk: ", msg)
+    model = await provision_langchain_model(
+        system_prompt,
+        config.get("configurable", {}).get("model_id"),
+        "chat",
+        max_tokens=10000,
+    )
+
+    parts = []
+    async for chunk in model.astream(system_prompt):
+        content = getattr(chunk, "content", None)
+        if not content:
+            continue
+
+        parts.append(content)
+        yield {"content": content}
+
+    raw = "".join(parts)
     print("last: ", raw)
     cleaned = clean_thinking_content(raw)
     upsert_long_term_memory(user_text=state.get("message", HumanMessage(content="")).content, ai_text=cleaned, thread_id=thread_id)
+    short_memory.chat_memory.add_user_message(message=state.get("message"))
+    short_memory.chat_memory.add_ai_message(message=AIMessage(content=cleaned))
+    
     yield {"end_node": "chat_agent", "cleaned_content": cleaned}
 
 _checkpointer: Optional[AsyncPostgresSaver] = None
