@@ -32,6 +32,7 @@ async def send_message(chat_request: ChatRequest):
         context = None
             
         async for obj in build_context(
+            source_ids=chat_request.source_ids,
             notebook_id=chat_request.notebook_id,
             keyword=chat_request.chat_message,
             limit=5,
@@ -101,6 +102,7 @@ async def stream_chat(chat_request: ChatRequest):
             context = None
             
             async for obj in build_context(
+                source_ids=chat_request.source_ids,
                 notebook_id=chat_request.notebook_id,
                 keyword=chat_request.chat_message,
                 limit=5,
@@ -165,16 +167,17 @@ async def stream_chat(chat_request: ChatRequest):
     
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
-async def build_context(notebook_id: str, keyword: str, limit=5):
+async def build_context(notebook_id: str, keyword: str, limit=5, source_ids: List[str] = None):
     """Build context for the notebook."""
 
     context_data = await vector_search_in_notebook(
         notebook_id=notebook_id,
         keyword=keyword,
         results=limit,
-        source=True,
-        note=True,
-        minimum_score=0.2
+        source_ids=source_ids,
+        # source=True,
+        # note=True,
+        # minimum_score=0.2
     )
     final_context = {}
     for item in context_data:

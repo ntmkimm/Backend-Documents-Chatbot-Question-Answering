@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, TypeVar, Union
 
 from loguru import logger
 from surrealdb import AsyncSurreal, RecordID  # type: ignore
-
+import uuid
 T = TypeVar("T", Dict[str, Any], List[Dict[str, Any]])
 
 
@@ -82,7 +82,7 @@ async def repo_query(
 async def repo_create(table: str, data: Dict[str, Any]) -> Dict[str, Any]:
     """Create a new record in the specified table"""
     # Remove 'id' attribute if it exists in data
-    data.pop("id", None)
+    data["id"] = uuid.uuid4().hex
     data["created"] = datetime.now(timezone.utc)
     data["updated"] = datetime.now(timezone.utc)
     try:

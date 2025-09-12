@@ -10,7 +10,7 @@ from open_notebook.domain.base import ObjectModel
 from open_notebook.domain.models import model_manager
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
 from open_notebook.utils import split_text
-from open_notebook.database.milvus_utils import insert_data, hybrid_search
+from open_notebook.database.milvus_utils import MilvusService
 
 
 class Notebook(ObjectModel):
@@ -277,7 +277,7 @@ class Source(ObjectModel):
                         "source_id": self.id,
                         "notebook_id": notebook_id,
                     }
-                await insert_data(
+                await MilvusService.insert_data(
                     collection_name="source_embedding",
                     data=data
                 )
@@ -441,7 +441,7 @@ async def vector_search_in_notebook(
             "limit": results,
             "source_ids": source_ids,
         }
-        results = await hybrid_search(**params)
+        results = await MilvusService.hybrid_search(**params)
         return results
     except Exception as e:
         logger.error(f"Error performing hybrid search: {str(e)}")

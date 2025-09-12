@@ -17,7 +17,7 @@ from open_notebook.domain.notebook import Notebook, Source, SourceEmbedding
 from open_notebook.domain.transformation import Transformation
 from open_notebook.exceptions import InvalidInputError
 from open_notebook.graphs.source import source_graph
-
+from open_notebook.database.milvus_utils import MilvusService
 router = APIRouter()
 
 
@@ -228,7 +228,7 @@ async def delete_source(source_id: str):
         source = await Source.get(source_id)
         if not source:
             raise HTTPException(status_code=404, detail="Source not found")
-
+        await MilvusService.delete_embedding(source_id)
         await source.delete()
 
         return {"message": "Source deleted successfully"}
@@ -313,14 +313,12 @@ async def create_source_insight(
 
 
 @router.get("/sources/embeddings/{source_embedding_id}", response_model=SourceEmbeddingResponse)
-async def get_source_embedding(source_embedding_id: str, 
-                               include_embedding: bool = False):
+async def get_source_embedding(source_embedding_id: str):
     """Get source_embedding context for a specific id."""
     try:
-        source_embedding = await SourceEmbedding.get_context(source_embedding_id, include_embedding)
+        source_embedding = await MilvusService.get_source_embedding_byid("source_embedding", source_embedding_id)
         if not source_embedding:
             raise HTTPException(status_code=404, detail="Source embedding not found")
-        
         return source_embedding
         
     except HTTPException:

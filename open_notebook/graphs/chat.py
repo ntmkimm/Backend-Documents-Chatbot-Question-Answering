@@ -112,7 +112,7 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig):
         data={
             "context": state.get("context"),
             "notebook": state.get("notebook"),
-            # "chat_history": chat_history,
+            "chat_history": chat_history,
         }
     )
     message = state.get("message", HumanMessage(content=""))
