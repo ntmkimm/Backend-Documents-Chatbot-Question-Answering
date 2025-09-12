@@ -42,7 +42,7 @@ async def send_message(chat_request: ChatRequest):
         if context is None:
             error_data = {"type": "error", "message": f"No context found for notebook {chat_request.notebook_id}"}
             return
-        
+        print(context)
         current_notebook = await Notebook.get(chat_request.notebook_id)
         current_session, current_state = await get_session(current_notebook, chat_request.session_id)
         thread_id = current_session.id
@@ -179,11 +179,8 @@ async def build_context(notebook_id: str, keyword: str, limit=5, source_ids: Lis
         # note=True,
         # minimum_score=0.2
     )
-    final_context = {}
-    for item in context_data:
-        final_context[item["id"]] = item["content"]
         
-    yield final_context
+    yield context_data
 
 async def create_session_for_notebook(notebook_id: str, session_name: str = None):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
