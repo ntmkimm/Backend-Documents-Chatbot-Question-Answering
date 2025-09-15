@@ -108,10 +108,10 @@ class MilvusService:
 
     @classmethod
     def migrate(cls):
-        try:
-            cls._client.drop_collection("source_embedding")
-        except Exception:
-            pass
+        collec_name = "source_embedding"
+        if cls._client.has_collection(collec_name):
+            print(f"{collec_name} is already exist.")
+            return
 
         schema = MilvusClient.create_schema(auto_id=True, enable_dynamic_field=False)
         schema.add_field("primary_key", DataType.INT64, is_primary=True)
@@ -138,7 +138,9 @@ class MilvusService:
         index_params.add_index("notebook_id", "INVERTED")
 
         cls._client.create_collection(
-            collection_name="source_embedding",
+            collection_name=collec_name,
             schema=schema,
             index_params=index_params
         )
+
+        print("Milvus migrate sucessfull")

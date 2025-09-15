@@ -30,6 +30,15 @@ async def send_message(chat_request: ChatRequest):
     try:
         # LẤY notebook & session như cũ
         current_notebook = await Notebook.get(chat_request.notebook_id)
+
+        # Check valid of source_ids
+        list_sources_in_nb = await current_notebook.get_sources()
+        list_sources_in_nb = [source.id for source in list_sources_in_nb]
+        if chat_request.source_ids:
+            if not set(chat_request.source_ids).issubset(set(list_sources_in_nb)):
+                raise Exception(
+                    f"Invalid source_ids: {chat_request.source_ids}. They do not belong to notebook {chat_request.notebook_id}."
+                )
         current_session, current_state = await get_session(current_notebook, chat_request.session_id)
         thread_id = current_session.id
         config = RunnableConfig(configurable={"thread_id": thread_id})
@@ -93,7 +102,14 @@ async def stream_chat(chat_request: ChatRequest):
             current_notebook = await Notebook.get(chat_request.notebook_id)
             current_session, current_state = await get_session(current_notebook, chat_request.session_id)
             thread_id = current_session.id
-
+            # Check valid of source_ids
+            list_sources_in_nb = await current_notebook.get_sources()
+            list_sources_in_nb = [source.id for source in list_sources_in_nb]
+            if chat_request.source_ids:
+                if not set(chat_request.source_ids).issubset(set(list_sources_in_nb)):
+                    raise Exception(
+                        f"Invalid source_ids: {chat_request.source_ids}. They do not belong to notebook {chat_request.notebook_id}."
+                    )
             config = RunnableConfig(configurable={"thread_id": thread_id})
             graph = await get_conversation_graph(state={}, config=config)
 

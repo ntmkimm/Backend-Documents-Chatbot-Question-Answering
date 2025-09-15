@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
-
+from contextlib import asynccontextmanager
 import os
 print(os.getenv("MY_VARIABLE"))
 
@@ -41,10 +41,18 @@ except Exception as e:
 
     logger.error(f"Failed to import commands in API process: {e}")
 
+# Run migration on startup
+from open_notebook.database.async_migrate import migrate_all
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await migrate_all()
+    yield
 app = FastAPI(
     title="Open Notebook API",
     description="API for Open Notebook - Research Assistant",
     version="0.2.2",
+    lifespan=lifespan
 )
 
 # Add CORS middleware

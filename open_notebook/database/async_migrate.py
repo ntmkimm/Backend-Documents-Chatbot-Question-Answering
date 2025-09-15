@@ -135,7 +135,6 @@ class AsyncMigrationManager:
         logger.info(f"Current version before migration: {current_version}")
 
         MilvusService.migrate()
-        logger.info("Milvus migration successful")
 
         if await self.needs_migration():
             try:
@@ -189,3 +188,9 @@ async def lower_version() -> None:
         await repo_query(f"DELETE _sbl_migrations:{current_version};")
 
 
+async def migrate_all() -> None:
+    import asyncio
+    mgr = AsyncMigrationManager()
+    print("Current version before:", asyncio.run(mgr.get_current_version()))
+    asyncio.run(mgr.run_migration_up())
+    print("Done. Current version after:", asyncio.run(mgr.get_current_version()))
