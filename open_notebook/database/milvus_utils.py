@@ -7,7 +7,7 @@ MILVUS_PORT = int(os.getenv("MILVUS_PORT", "19530"))
 MILVUS_URI = os.getenv("MILVUS_URI", f"http://{MILVUS_ADDRESS}:{MILVUS_PORT}")
 from typing import List, Dict, Union
 from pymilvus import MilvusClient, DataType, AnnSearchRequest, RRFRanker, Function, FunctionType
-
+from api.models import SourceEmbeddingResponse
 
 class MilvusService:
     _client = MilvusClient(uri=MILVUS_URI, token="root:Milvus")
@@ -16,13 +16,24 @@ class MilvusService:
     async def get_source_embedding_byid(cls, collection_name: str, key: Union[str, List[str]]):
         if isinstance(key, str):
             key = [key]
-        key = [s.split(":", 1)[1] if ":" in s else s for s in key]
-
-        return cls._client.get(
+        key = [int(s.split(":", 1)[1]) if ":" in s else s for s in key]
+        print("Key:", key)
+        res = cls._client.get(
             collection_name=collection_name,
             ids=key,
-            output_fields=["primary_key", "source_id", "content"]
+            output_fields=["primary_key", "order", "source_id", "content"]
         )
+        documents = [
+            SourceEmbeddingResponse(
+                id="source_embedding:"+str(r["primary_key"]),
+                source=r.get("source_id"),
+                order=r.get("order"),
+                content=r.get("content"),
+                embedding=None  # not returned in this query
+            )
+            for r in res
+        ]
+        return documents
 
     @classmethod
     async def delete_embedding(cls, source_id: str):

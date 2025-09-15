@@ -79,10 +79,11 @@ async def repo_query(
             raise
 
 
-async def repo_create(table: str, data: Dict[str, Any]) -> Dict[str, Any]:
+async def repo_create(table: str, data: Dict[str, Any], set_id: bool = False) -> Dict[str, Any]:
     """Create a new record in the specified table"""
-    # Remove 'id' attribute if it exists in data
-    data["id"] = uuid.uuid4().hex
+    if set_id == False:
+        # Remove 'id' attribute if it exists in data
+        data.pop("id", None)
     data["created"] = datetime.now(timezone.utc)
     data["updated"] = datetime.now(timezone.utc)
     try:

@@ -15,6 +15,7 @@ class StreamEvent(str, Enum):
 
 # Notebook models
 class NotebookCreate(BaseModel):
+    notebook_id: str
     name: str = Field(..., description="Name of the notebook")
     description: str = Field(default="", description="Description of the notebook")
 

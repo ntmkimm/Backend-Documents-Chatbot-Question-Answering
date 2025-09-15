@@ -1,5 +1,5 @@
 from typing import List, Optional
-
+import uuid
 from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
 
@@ -43,12 +43,15 @@ async def get_notebooks(
 async def create_notebook(notebook: NotebookCreate):
     """Create a new notebook."""
     try:
+        nbid = uuid.UUID(notebook.notebook_id) # if not uuid, raise error
+        nbid = nbid.hex
+
         new_notebook = Notebook(
             name=notebook.name,
             description=notebook.description,
         )
-        await new_notebook.save()
-        
+
+        await new_notebook.notebook_create(nbid)
         return NotebookResponse(
             id=new_notebook.id,
             name=new_notebook.name,

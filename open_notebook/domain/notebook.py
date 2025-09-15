@@ -268,7 +268,6 @@ class Source(ObjectModel):
 
             # Insert results in order (they're already ordered by index)
             for idx, embedding, content in results:
-                print("------\n",len(content.split()), "\n----\n")
                 logger.debug(f"Inserting chunk {idx} into database")
                 data={
                         "dense_vector": embedding, 
