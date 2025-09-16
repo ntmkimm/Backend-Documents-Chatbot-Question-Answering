@@ -77,7 +77,8 @@ async def create_source(form: NotebookSourceForm = Depends()):
         source = result["source"]
 
         #delete file after processing
-        if model.file_path:
+        # if model.file_path:
+        if file_path.exists():
             try:
                 os.remove(file_path)
             except Exception as e:

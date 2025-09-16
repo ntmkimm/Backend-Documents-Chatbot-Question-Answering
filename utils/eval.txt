@@ -1,0 +1,1597 @@
+[1;33mGetting existing notebooks...[0m
+Current notebooks:
+[]
+
+[1;33mDeleting existing notebooks...[0m
+
+[1;33mCreating new notebook...[0m
+Notebook creation response:
+{
+  "id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+  "name": "yuu",
+  "description": "empty",
+  "archived": false,
+  "created": "2025-09-16 05:31:20.005783+00:00",
+  "updated": "2025-09-16 05:31:20.005802+00:00"
+}
+[0;32mCreated notebook with ID: notebook:0043e1445c464a3bbf3caaffe6d0ea1f[0m
+
+[1;33mSaving notebook ID to file...[0m
+[0;32mNotebook ID saved to file: id_notebook[0m
+Content: notebook:0043e1445c464a3bbf3caaffe6d0ea1f
+
+[1;33mGetting existing sources...[0m
+Current sources:
+[]
+
+[1;33mDeleting existing sources...[0m
+No existing sources found to delete
+
+
+
+
+
+Processing new 6 files
+ADDING FILE:  005.doc
+ADDING FILE:  002.doc
+ADDING FILE:  003.doc
+ADDING FILE:  004.doc
+ADDING FILE:  001.doc
+ADDING FILE:  014.pdf
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Sự kiện trực tuyến giải đáp thắc mắc về thuế diễn ra vào lúc 9h ngày 17/6. Đây là cuộc phỏng vấn trực tuyến với lãnh đạo Cục thuế, đại diện đơn vị cung ứng dịch vụ phần mềm, kế toán và chuyên gia thuế trên VnExpress [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Sự kiện trực tuyến giải đáp thắc mắc về thuế diễn ra vào thời gian nào?",
+    "gt": "9h ngày 17/6",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Theo Nghị định 70, các hộ kinh doanh có doanh thu trên 1 tỷ đồng mỗi năm thuộc một số ngành nghề như ăn uống, khách sạn, bán lẻ, vận tải hành khách, thẩm mỹ, vui chơi giải trí sẽ phải sử dụng hóa đơn điện tử khởi tạo từ máy tính tiền, kết nối dữ liệu với cơ quan thuế [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Nghị định 70 áp dụng cho hộ kinh doanh có doanh thu bao nhiêu?",
+    "gt": "Trên 1 tỷ đồng mỗi năm",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Mục đích chính của sự kiện trực tuyến diễn ra vào ngày 17/6 là để giải đáp thắc mắc cho các hộ kinh doanh về việc chuyển đổi từ thuế khoán sang kê khai thuế. Sự kiện này là một cuộc phỏng vấn trực tuyến với sự tham gia của lãnh đạo Cục thuế, đại diện các đơn vị cung ứng dịch vụ phần mềm, kế toán và chuyên gia thuế. Mục tiêu của sự kiện là tháo gỡ những vướng mắc cho các hộ kinh doanh, đặc biệt là những hộ có doanh thu trên 1 tỷ đồng mỗi năm thuộc một số ngành nghề nhất định [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Mục đích chính của sự kiện trực tuyến 17/6 là gì?",
+    "gt": "Tháo gỡ vướng mắc cho hộ kinh doanh chuyển đổi từ thuế khoán sang kê khai thuế",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Theo Nghị quyết 68 của Bộ Chính trị, thời hạn xóa bỏ hình thức thuế khoán với hộ kinh doanh là chậm nhất trong năm 2026 [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Theo Nghị quyết 68, thời hạn xóa bỏ thuế khoán là khi nào?",
+    "gt": "Chậm nhất trong 2026",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Nghị định 70 ảnh hưởng trực tiếp đến các lĩnh vực kinh doanh mà hộ kinh doanh có doanh thu trên 1 tỷ đồng mỗi năm đang hoạt động. Cụ thể, các ngành nghề như ăn uống, khách sạn, bán lẻ, vận tải hành khách, thẩm mỹ, vui chơi giải trí sẽ phải tuân thủ quy định sử dụng hóa đơn điện tử khởi tạo từ máy tính tiền và kết nối dữ liệu với cơ quan thuế [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Những lĩnh vực nào chịu ảnh hưởng trực tiếp từ Nghị định 70?",
+    "gt": "Ăn uống, khách sạn, bán lẻ, vận tải hành khách, thẩm mỹ, vui chơi giải trí",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Không phải tất cả hộ kinh doanh đều phải chuyển sang kê khai thuế theo Nghị định 70. Nghị định 70 chỉ áp dụng cho các hộ kinh doanh có doanh thu trên 1 tỷ đồng mỗi năm thuộc một số ngành nghề nhất định như ăn uống, khách sạn, bán lẻ, vận tải hành khách, thẩm mỹ, vui chơi giải trí. Những hộ kinh doanh này sẽ phải sử dụng hóa đơn điện tử khởi tạo từ máy tính tiền và kết nối dữ liệu với cơ quan thuế [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Có phải tất cả hộ kinh doanh đều phải chuyển sang kê khai thuế theo Nghị định 70?",
+    "gt": "Không",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Việc xuất hóa đơn điện tử có thể gây khó khăn cho các cửa hàng tạp hóa do một số lý do sau:\n\n1. **Quy trình phức tạp và chồng chéo**: Quy định hiện hành về việc kê khai và xuất hóa đơn điện tử được coi là rườm rà và phức tạp, gây khó khăn cho các hộ kinh doanh nhỏ lẻ. Điều này có thể dẫn đến sai sót hoặc bỏ sót thông tin trong quá trình thực hiện [source_embedding:460787326238286120].\n\n2. **Chi phí và lãng phí nguồn lực**: Xuất hóa đơn theo từng lần bán lẻ có thể phát sinh lãng phí lớn từ thời gian, nguồn lực vận hành đến chi phí in ấn. Ví dụ, một cửa hàng tạp hóa đông khách bán một gói mì với giá 3.000 đồng cũng cần phải xuất hóa đơn, khiến khách hàng chờ đợi và giảm hiệu quả kinh doanh [source_embedding:460787326238286120].\n\n3. **Yêu cầu kỹ thuật và hạ tầng**: Việc sử dụng hóa đơn điện tử đòi hỏi các cửa hàng phải có hạ tầng kỹ thuật phù hợp, như máy tính kết nối internet và phần mềm quản lý hóa đơn điện tử, điều này có thể là thách thức đối với những cửa hàng nhỏ chưa quen với công nghệ.\n\nNhững khó khăn này gợi ý cần có các giải pháp để đơn giản hóa quy trình và hỗ trợ các hộ kinh doanh nhỏ lẻ chuyển đổi một cách hiệu quả hơn.",
+    "reference_sources": [
+        "source_embedding:460787326238286120"
+    ],
+    "question": "Vì sao việc xuất hóa đơn điện tử gây khó khăn cho cửa hàng tạp hóa?",
+    "gt": "Vì phải xuất hóa đơn cho từng giao dịch nhỏ như bán gói mì 3.000đ, gây tốn thời gian và giảm hiệu quả kinh doanh",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Một số đề xuất cải cách được nêu trong phần bình luận của độc giả gồm:\n\n1. Độc giả Quỳnh Kool cho rằng việc yêu cầu hộ kinh doanh ghi chép thủ tục giấy tờ quá phức tạp là không khả thi. Độc giả này đề xuất cần có sự linh hoạt hơn trong quản lý hàng hóa không nhãn hiệu vì thực tế Việt Nam chủ yếu nhập khẩu và không sản xuất được nhiều sản phẩm [source_embedding:460787326238286118].\n\n2. Độc giả ngthao.hn79cần đề xuất tối ưu hóa quá trình đóng thuế và phương thức đóng thuế để mọi người dễ dàng tham gia, vì hiện tại quy định còn quá nhiều và chồng chéo [source_embedding:460787326238286118].",
+    "reference_sources": [
+        "source_embedding:460787326238286118"
+    ],
+    "question": "Những đề xuất cải cách nào được nêu trong phần bình luận của độc giả?",
+    "gt": "Đơn giản hóa kê khai theo tỷ lệ cố định, áp dụng chế độ kế toán đơn giản như sàn TMĐT, giảm yêu cầu xuất hóa đơn cho giao dịch nhỏ",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Các chuyên gia hỗ trợ về mặt kỹ thuật trong quá trình chuyển đổi bao gồm các đại diện từ các tổ chức cung ứng dịch vụ phần mềm và các chuyên gia thuế. Cụ thể, bà Đinh Thị Thuý, Phó chủ tịch HĐQT Misa và bà Nguyễn Quỳnh Dương, Tổng giám đốc Nhanh.vn, sẽ giải đáp và hỗ trợ về mặt kỹ thuật cũng như thủ tục triển khai cho hộ kinh doanh [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Chuyên gia nào sẽ hỗ trợ về mặt kỹ thuật trong quá trình chuyển đổi?",
+    "gt": "Bà Đinh Thị Thuý và Bà Nguyễn Quỳnh Dương",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Bình luận của Quỳnh Kool chỉ ra mâu thuẫn trong chính sách thuế liên quan đến việc yêu cầu các hộ kinh doanh ghi chép thủ tục giấy tờ phức tạp. Quỳnh Kool cho rằng điều này không khả thi vì ngay cả sinh viên ngành tài chính kế toán học 4 năm ra trường còn chưa làm được, chưa kể đến hộ kinh doanh. Ngoài ra, việc quản lý hàng hóa không nhãn hiệu cũng được đề cập, khi mà Việt Nam chủ yếu nhập khẩu và không sản xuất nhiều sản phẩm. Do đó, yêu cầu nghiêm ngặt về nguồn gốc xuất xứ hàng hóa có thể không phù hợp và gây khó khăn không cần thiết cho các hộ kinh doanh [source_embedding:460787326238286118].",
+    "reference_sources": [
+        "source_embedding:460787326238286118"
+    ],
+    "question": "Mâu thuẫn nào được chỉ ra trong bình luận của Quỳnh Kool về chính sách thuế?",
+    "gt": "Mâu thuẫn giữa yêu cầu quản lý hàng giả và thực tế nguồn cung hàng hóa phụ thuộc nhập khẩu của tiểu thương",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Người hướng dẫn về sổ sách chứng từ trong chương trình chuyển đổi từ thuế khoán sang kê khai thuế là bà Trần Lê Trang - Tổng giám đốc Công ty TNHH tư vấn Hà An [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Ai là người hướng dẫn về sổ sách chứng từ trong chương trình?",
+    "gt": "Bà Trần Lê Trang - Tổng giám đốc Công ty TNHH tư vấn Hà An",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Theo bình luận của PHQ, thuế nên được tính trên khoản chênh lệch giữa giá mua và giá bán, ví dụ: nếu mua với giá 100 và bán với giá 120 thì thuế các loại chỉ nên trong phạm vi khoản chênh lệch là 20 [source_embedding:460787326238286120].",
+    "reference_sources": [
+        "source_embedding:460787326238286120"
+    ],
+    "question": "Theo bình luận của PHQ, thuế nên tính trên khoản chênh lệch nào?",
+    "gt": "Trên khoản chênh lệch 20 đồng giữa giá mua vào và bán ra",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Các thách thức chính trong việc áp dụng Thông tư 88/2021 bao gồm:\n\n1. Quá trình kê khai và xuất hóa đơn hiện tại bị đánh giá là rườm rà và phức tạp, điều này gây khó khăn lớn cho những người buôn bán nhỏ lẻ và dễ dẫn đến sai sót hoặc bỏ sót thông tin. Việc xuất hóa đơn theo từng lần bán hàng cũng phát sinh lãng phí về thời gian và nguồn lực vận hành [source_embedding:460787326238286120].\n\n2. Một số người đề xuất rằng cần có một phương pháp kê khai kế toán đơn giản hơn, tương tự như cách khai thuế trên các sàn thương mại điện tử. Điều này có thể giúp tạo ra môi trường kinh doanh thuận lợi hơn và giảm bớt những khó khăn hiện tại [source_embedding:460787326238286120].",
+    "reference_sources": [
+        "source_embedding:460787326238286120"
+    ],
+    "question": "Các thách thức chính trong việc áp dụng Thông tư 88/2021 là gì theo ý kiến phản ánh?",
+    "gt": "Quy trình rườm rà, dễ sai sót, tốn thời gian và chi phí in ấn hóa đơn",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Theo Nghị định 70, các hộ kinh doanh có doanh thu trên 1 tỷ đồng mỗi năm thuộc một số ngành nghề như ăn uống, khách sạn, bán lẻ, vận tải hành khách, thẩm mỹ, vui chơi giải trí sẽ phải sử dụng hóa đơn điện tử khởi tạo từ máy tính tiền và kết nối dữ liệu với cơ quan thuế [source_embedding:460787326238286116]. Điều này có nghĩa là việc lắp đặt máy tính tiền là cần thiết đối với những hộ kinh doanh nằm trong các ngành nghề và mức doanh thu được quy định.",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Có phải Nghị định 70 yêu cầu lắp đặt máy tính tiền không?",
+    "gt": "Có",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Độc giả giathinh.xaydung đã đề xuất kê khai thuế theo tỷ lệ cố định nhằm đơn giản hóa quy trình kê khai và xuất hóa đơn, điều này có thể giúp giảm bớt sự phức tạp và lỗi sai trong quá trình này. Hiện tại, việc kê khai theo Thông tư 88/2021/TT-BTC được cho là quá rườm rà và phức tạp, đặc biệt là đối với người buôn bán nhỏ lẻ. Việc xuất hóa đơn theo từng lần bán hàng cũng gây lãng phí thời gian và nguồn lực. Giathinh.xaydung đề xuất áp dụng chế độ kê khai đơn giản hơn, tương tự như cách khai thuế trên sàn thương mại điện tử, chỉ cần kê khai doanh thu và đóng thuế theo tỷ lệ cố định [source_embedding:460787326238286120].",
+    "reference_sources": [
+        "source_embedding:460787326238286120"
+    ],
+    "question": "Tại sao độc giả giathinh.xaydung đề xuất kê khai thuế theo tỷ lệ cố định?",
+    "gt": "Để đơn giản hóa quy trình, giảm sai sót và phù hợp với quy mô kinh doanh nhỏ lẻ",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Mối liên hệ giữa Nghị định 70 và Nghị quyết 68 trong cải cách thuế là Nghị định 70 yêu cầu các hộ kinh doanh có doanh thu trên 1 tỷ đồng mỗi năm thuộc một số ngành nghề nhất định như ăn uống, khách sạn, bán lẻ, vận tải hành khách, thẩm mỹ, vui chơi giải trí phải sử dụng hóa đơn điện tử khởi tạo từ máy tính tiền và kết nối dữ liệu với cơ quan thuế. Điều này là một bước chuẩn bị để thực hiện Nghị quyết 68 của Bộ Chính trị, trong đó yêu cầu xóa bỏ hình thức thuế khoán với hộ kinh doanh chậm nhất vào năm 2026 [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Mối liên hệ giữa Nghị định 70 và Nghị quyết 68 trong cải cách thuế là gì?",
+    "gt": "Cả hai đều thúc đẩy chuyển đổi từ thuế khoán sang kê khai thực tế, với Nghị định 70 quy định tiêu chuẩn áp dụng và Nghị quyết 68 đặt lộ trình xóa bỏ thuế khoán",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Độc giả tranthibele2022 yêu cầu hướng dẫn về cách nhập hóa đơn điện tử và mẫu các chứng từ liên quan [source_embedding:460787326238286120].",
+    "reference_sources": [
+        "source_embedding:460787326238286120"
+    ],
+    "question": "Độc giả tranthibele2022 yêu cầu hỗ trợ về vấn đề gì?",
+    "gt": "Hướng dẫn cách nhập hóa đơn điện tử và mẫu chứng từ liên quan",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Xu hướng cải cách thuế được phản ánh qua toàn bộ văn bản tập trung vào việc đơn giản hóa và tối ưu hóa quy trình kê khai thuế. Cụ thể, các đề xuất cải cách bao gồm:\n\n1. Đề xuất kê khai thuế theo tỷ lệ cố định để đơn giản hóa quy trình kê khai và xuất hóa đơn, nhằm giảm bớt sự phức tạp và lỗi sai, đặc biệt là cho người buôn bán nhỏ lẻ [source_embedding:460787326238286120].\n   \n2. Nghị định 70 yêu cầu hộ kinh doanh có doanh thu trên 1 tỷ đồng mỗi năm thuộc một số ngành nghề phải sử dụng hóa đơn điện tử từ máy tính tiền và kết nối dữ liệu với cơ quan thuế, điều này nhằm chuẩn bị cho việc xóa bỏ thuế khoán theo yêu cầu của Nghị quyết 68 của Bộ Chính trị [source_embedding:460787326238286116].\n\n3. Cần có sự linh hoạt hơn trong quản lý hàng hóa không nhãn hiệu và tối ưu hóa quá trình đóng thuế để mọi người dễ dàng tham gia [source_embedding:460787326238286118].",
+    "reference_sources": [
+        "source_embedding:460787326238286118",
+        "source_embedding:460787326238286116",
+        "source_embedding:460787326238286120"
+    ],
+    "question": "Xu hướng cải cách thuế nào được phản ánh qua toàn bộ văn bản?",
+    "gt": "Số hóa quy trình thuế, xóa bỏ thuế khoán, tăng tính minh bạch thông qua kết nối dữ liệu điện tử",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Chuyến bay VN158 của hãng hàng không Vietnam Airlines từ Đà Nẵng đi Hà Nội đã phải hạ cánh khẩn cấp tại sân bay Phú Bài (Huế) vào ngày 16/6 để cấp cứu một nữ hành khách. Sau khi cất cánh khoảng 5 phút, hành khách T.T.P.D (25 tuổi, quốc tịch Việt Nam) ngồi tại ghế 11B có dấu hiệu bất thường về sức khỏe, buộc phi hành đoàn phải tiến hành sơ cứu và chuyển hướng hạ cánh để đảm bảo hành khách được hỗ trợ y tế kịp thời [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Chuyến bay nào của Vietnam Airlines phải hạ cánh khẩn cấp tại Huế ngày 16/6?",
+    "gt": "Chuyến bay VN158 từ Đà Nẵng đi Hà Nội",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Phi hành đoàn đã xử lý tình huống hành khách gặp vấn đề sức khỏe trên chuyến bay của Vietnam Airlines bằng cách phát loa kêu gọi sự hỗ trợ từ các bác sĩ và nhân viên y tế tự nguyện có mặt trên chuyến bay. Đồng thời, tiếp viên tiến hành sơ cứu và cung cấp bình oxy cho hành khách. Khi tình trạng sức khỏe của hành khách không cải thiện, cơ trưởng đã liên hệ với trung tâm điều hành khai thác của Vietnam Airlines và thông báo cho bộ phận mặt đất tại sân bay chuẩn bị sẵn sàng phương tiện và nhân lực cấp cứu. Chuyến bay đã chuyển hướng hạ cánh khẩn cấp để hành khách được hỗ trợ y tế kịp thời [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Phi hành đoàn đã xử lý thế nào khi hành khách gặp vấn đề sức khỏe?",
+    "gt": "Phát loa kêu gọi hỗ trợ y tế, sơ cứu và cung cấp bình oxy",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Việc hạ cánh khẩn cấp của chuyến bay VN158 đã ảnh hưởng đến lịch trình của chuyến bay này bằng cách khiến chuyến bay đến Hà Nội bị chậm hơn khoảng một giờ so với kế hoạch ban đầu. Chuyến bay đã phải chuyển hướng hạ cánh xuống sân bay Phú Bài (Huế) để cấp cứu một nữ hành khách có vấn đề sức khỏe, sau đó hoàn tất các thủ tục cần thiết và tiếp tục hành trình đến Hà Nội lúc 9h10 cùng ngày [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Việc hạ cánh khẩn cấp ảnh hưởng thế nào đến lịch trình chuyến bay VN158?",
+    "gt": "Chuyến bay đến Hà Nội lúc 9h10, chậm hơn một giờ so với kế hoạch",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Hành khách được đưa đến bệnh viện địa phương để điều trị sau khi hạ cánh khẩn cấp tại sân bay Phú Bài (Huế). Người thân và đại diện của Vietnam Airlines đã đi cùng hành khách này đến bệnh viện [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Hành khách được đưa đến bệnh viện bằng phương tiện gì?",
+    "gt": "Không đề cập phương tiện cụ thể trong văn bản",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Vietnam Airlines đã có nhiều trường hợp phải hạ cánh khẩn cấp trước đây để hỗ trợ hành khách cần trợ giúp y tế. Gần đây nhất, vào ngày 5/5, chuyến bay VN35 từ Hà Nội đi Frankfurt (Đức) đã hạ cánh khẩn cấp tại sân bay Erzurum (Thổ Nhĩ Kỳ) để cấp cứu một hành khách. Tháng 1 cùng năm, chuyến bay VN1602 từ Buôn Ma Thuột đi Hà Nội cũng đã chuyển hướng hạ cánh xuống sân bay Đà Nẵng với lý do tương tự [source_embedding:460787326238286074].",
+    "reference_sources": [
+        "source_embedding:460787326238286074"
+    ],
+    "question": "Vietnam Airlines đã có bao nhiêu trường hợp hạ cánh khẩn cấp tương tự trước đây?",
+    "gt": "Ít nhất 3 trường hợp (bao gồm cả sự kiện ngày 16/6)",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Chính sách ưu tiên của Vietnam Airlines được thể hiện qua các sự kiện hạ cánh khẩn cấp là sự an toàn và sức khỏe của hành khách luôn được đặt lên hàng đầu trong mọi tình huống. Mặc dù việc điều chỉnh hành trình có thể phát sinh thêm chi phí liên quan đến nhiên liệu, phục vụ mặt đất và điều phối lịch bay, nhưng Vietnam Airlines vẫn khẳng định sự ưu tiên này [source_embedding:460787326238286074].",
+    "reference_sources": [
+        "source_embedding:460787326238286074"
+    ],
+    "question": "Chính sách ưu tiên nào của Vietnam Airlines được thể hiện qua các sự kiện hạ cánh khẩn cấp?",
+    "gt": "Ưu tiên hàng đầu cho an toàn và sức khỏe hành khách",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Chuyến bay VN158 hạ cánh ở sân bay Phú Bài (Huế) để cấp cứu một nữ hành khách có vấn đề sức khỏe. Sau đó, chuyến bay tiếp tục hành trình đến Hà Nội [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Chuyến bay VN158 hạ cánh ở sân bay nào?",
+    "gt": "Sân bay Phú Bài (Huế)",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Những chi phí phát sinh do hạ cánh khẩn cấp bao gồm chi phí liên quan đến nhiên liệu, phục vụ mặt đất và điều phối lịch bay. Dù việc điều chỉnh hành trình có thể làm tăng thêm chi phí, Vietnam Airlines vẫn khẳng định rằng sự an toàn và sức khỏe của hành khách luôn là ưu tiên hàng đầu trong mọi tình huống [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Những chi phí nào phát sinh do hạ cánh khẩn cấp?",
+    "gt": "Chi phí nhiên liệu, phục vụ mặt đất và điều phối lịch bay",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Mối quan hệ giữa các sự kiện hạ cánh khẩn cấp của Vietnam Airlines thể hiện rằng chính sách của hãng luôn ưu tiên sự an toàn và sức khỏe của hành khách lên hàng đầu. Dù các sự kiện này có thể phát sinh thêm chi phí liên quan đến nhiên liệu, phục vụ mặt đất và điều phối lịch bay, Vietnam Airlines vẫn duy trì chính sách linh hoạt thay đổi hành trình để hỗ trợ hành khách cần trợ giúp y tế kịp thời [source_embedding:460787326238286072][source_embedding:460787326238286074].",
+    "reference_sources": [
+        "source_embedding:460787326238286074",
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Mối quan hệ giữa các sự kiện hạ cánh khẩn cấp thể hiện điều gì về chính sách của hãng?",
+    "gt": "Thể hiện sự nhất quán trong việc ưu tiên sức khỏe hành khách hơn chi phí vận hành",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Không, đây không phải là lần đầu tiên Vietnam Airlines phải hạ cánh khẩn cấp vì lý do y tế. Trước đó, Vietnam Airlines đã có nhiều trường hợp phải linh hoạt thay đổi hành trình để hỗ trợ hành khách cần trợ giúp y tế. Ví dụ, vào ngày 5/5, chuyến bay VN35 từ Hà Nội đi Frankfurt (Đức) đã hạ cánh khẩn cấp tại sân bay Erzurum (Thổ Nhĩ Kỳ) để cấp cứu một hành khách. Tháng 1 cùng năm, chuyến bay VN1602 từ Buôn Ma Thuột đi Hà Nội cũng đã chuyển hướng hạ cánh xuống sân bay Đà Nẵng với lý do tương tự [source_embedding:460787326238286074].",
+    "reference_sources": [
+        "source_embedding:460787326238286074"
+    ],
+    "question": "Có phải đây là lần đầu tiên Vietnam Airlines hạ cánh khẩn cấp vì lý do y tế?",
+    "gt": "Không",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Sau khi hạ cánh khẩn cấp, các thủ tục cần hoàn tất bao gồm việc đưa hành khách cần cấp cứu đến bệnh viện địa phương để điều trị. Người thân của hành khách và đại diện của Vietnam Airlines thường đi cùng để hỗ trợ. Ngoài ra, chuyến bay phải hoàn tất các thủ tục cần thiết khác trước khi có thể tiếp tục hành trình ban đầu. Việc điều chỉnh hành trình này có thể phát sinh thêm chi phí liên quan đến nhiên liệu, phục vụ mặt đất và điều phối lịch bay [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Thủ tục nào được hoàn tất sau khi hạ cánh khẩn cấp?",
+    "gt": "Các thủ tục cần thiết để tiếp tục hành trình đến Hà Nội",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Quy trình xử lý tình huống khẩn cấp của Vietnam Airlines thể hiện sự ưu tiên tuyệt đối cho sự an toàn và sức khỏe của hành khách. Khi gặp tình huống khẩn cấp, như trường hợp hành khách có dấu hiệu bất thường về sức khỏe trên chuyến bay, phi hành đoàn nhanh chóng phát loa kêu gọi sự hỗ trợ từ các bác sĩ hoặc nhân viên y tế có mặt trên chuyến bay và tiến hành sơ cứu, cung cấp oxy cho hành khách. Đồng thời, cơ trưởng liên hệ với trung tâm điều hành và thông báo cho bộ phận mặt đất chuẩn bị sẵn sàng phương tiện và nhân lực cấp cứu tại sân bay gần nhất để đảm bảo hành khách được hỗ trợ y tế kịp thời [source_embedding:460787326238286072].\n\nSau khi hạ cánh khẩn cấp, hành khách cần cấp cứu được đưa đến bệnh viện địa phương để điều trị, cùng với sự hỗ trợ từ người thân và đại diện của Vietnam Airlines. Chuyến bay sau đó phải hoàn tất các thủ tục cần thiết trước khi có thể tiếp tục hành trình. Quy trình này mặc dù có thể phát sinh thêm chi phí liên quan đến nhiên liệu, phục vụ mặt đất và điều phối lịch bay, nhưng Vietnam Airlines luôn đặt sự an toàn của hành khách lên hàng đầu [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Phân tích quy trình xử lý tình huống khẩn cấp của Vietnam Airlines qua sự kiện này",
+    "gt": "Bao gồm: (1) Phát hiện sự cố, (2) Kêu gọi hỗ trợ y tế, (3) Liên hệ điều phối mặt đất, (4) Hạ cánh khẩn cấp, (5) Bàn giao hành khách cho y tế",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Hành khách gặp sự cố sức khỏe ngồi ở ghế số 11B trên chuyến bay VN158 của Vietnam Airlines [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Hành khách gặp sự cố sức khỏe ngồi ở ghế số bao nhiêu?",
+    "gt": "Ghế 11B",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Việc hạ cánh khẩn cấp tại Huế được coi là cần thiết vì sức khỏe của hành khách là ưu tiên hàng đầu của Vietnam Airlines. Trong trường hợp cụ thể này, một nữ hành khách trên chuyến bay VN158 từ Đà Nẵng đi Hà Nội đã xuất hiện dấu hiệu bất thường về sức khỏe chỉ sau 5 phút cất cánh. Phi hành đoàn đã thực hiện sơ cứu và cung cấp oxy nhưng tình trạng sức khỏe của hành khách không cải thiện. Do đó, cơ trưởng đã quyết định chuyển hướng hạ cánh xuống sân bay Phú Bài (Huế) để đảm bảo hành khách được hỗ trợ y tế kịp thời. Đây là quyết định đúng đắn nhằm bảo vệ sức khỏe và an toàn cho hành khách [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Tại sao việc hạ cánh khẩn cấp tại Huế được coi là cần thiết?",
+    "gt": "Vì tình trạng sức khỏe hành khách không cải thiện sau sơ cứu",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Các vụ hạ cánh khẩn cấp được đề cập trong văn bản có một số điểm giống nhau, bao gồm:\n\n1. **Ưu tiên sức khỏe hành khách**: Trong cả hai trường hợp hạ cánh khẩn cấp được ghi nhận, lý do chính là để cấp cứu hành khách gặp vấn đề về sức khỏe. Vietnam Airlines luôn đặt sức khỏe và an toàn của hành khách lên hàng đầu [source_embedding:460787326238286072].\n\n2. **Quy trình xử lý**: Khi phát hiện tình huống khẩn cấp, phi hành đoàn của Vietnam Airlines nhanh chóng kêu gọi sự hỗ trợ từ các bác sĩ và nhân viên y tế trên chuyến bay. Đồng thời, cơ trưởng liên hệ với trung tâm điều hành và sân bay gần nhất để chuẩn bị sẵn sàng phương tiện và nhân lực cấp cứu [source_embedding:460787326238286072].\n\n3. **Chi phí phát sinh**: Cả hai vụ hạ cánh khẩn cấp đều dẫn đến phát sinh thêm chi phí liên quan đến nhiên liệu, phục vụ mặt đất và điều phối lịch bay. Tuy nhiên, hãng hàng không này khẳng định sự an toàn của hành khách là ưu tiên hàng đầu trong mọi tình huống [source_embedding:460787326238286074].\n\n4. **Quy trình tiếp theo sau khi hạ cánh**: Sau khi hạ cánh khẩn cấp, hành khách cần cấp cứu được đưa đến bệnh viện địa phương để điều trị, và chuyến bay phải hoàn tất các thủ tục cần thiết trước khi tiếp tục hành trình [source_embedding:460787326238286072].\n\nNhững điểm tương đồng này cho thấy một quy trình xử lý tình huống khẩn cấp được chuẩn hóa và đồng nhất của Vietnam Airlines nhằm đảm bảo an toàn và hỗ trợ y tế kịp thời cho hành khách.",
+    "reference_sources": [
+        "source_embedding:460787326238286074",
+        "source_embedding:460787326238286072"
+    ],
+    "question": "So sánh điểm giống nhau giữa các vụ hạ cánh khẩn cấp được đề cập trong văn bản",
+    "gt": "Tất cả đều vì lý do y tế, được thực hiện linh hoạt bất chấp phát sinh chi phí",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Chuyến bay VN35 đã hạ cánh khẩn cấp tại sân bay Erzurum, Thổ Nhĩ Kỳ [source_embedding:460787326238286074].",
+    "reference_sources": [
+        "source_embedding:460787326238286074"
+    ],
+    "question": "Chuyến bay VN35 hạ cánh khẩn cấp ở quốc gia nào?",
+    "gt": "Thổ Nhĩ Kỳ",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Sau khi hạ cánh, các bên tham gia hỗ trợ hành khách bao gồm phi hành đoàn và các tiếp viên trên chuyến bay, nhân viên y tế và bác sĩ nếu có mặt trên chuyến bay, cơ trưởng và trung tâm điều hành của hãng hàng không, cùng với bộ phận mặt đất tại sân bay nơi máy bay hạ cánh. Sau khi hạ cánh, hành khách cần cấp cứu sẽ được đưa đến bệnh viện địa phương để điều trị, thường đi cùng với người thân và đại diện của Vietnam Airlines để hỗ trợ thêm [source_embedding:460787326238286072].",
+    "reference_sources": [
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Những bên nào tham gia hỗ trợ hành khách sau khi hạ cánh?",
+    "gt": "Bệnh viện địa phương, người thân hành khách và đại diện Vietnam Airlines",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Việc hạ cánh khẩn cấp có thể ảnh hưởng đến uy tín của Vietnam Airlines theo nhiều cách. Trước hết, sự an toàn và sức khỏe của hành khách được Vietnam Airlines đặt lên hàng đầu, thể hiện qua quyết định linh hoạt thay đổi hành trình để đảm bảo hành khách được hỗ trợ y tế kịp thời. Điều này có thể tạo ra ấn tượng tích cực về trách nhiệm và cam kết của hãng đối với sự an toàn của hành khách [source_embedding:460787326238286072].\n\nTuy nhiên, việc hạ cánh khẩn cấp cũng có thể phát sinh chi phí và gây chậm trễ cho các hành khách khác, dẫn đến sự không hài lòng. Mặc dù vậy, nếu xử lý tình huống tốt, việc này có thể củng cố uy tín của Vietnam Airlines như một hãng hàng không có quy trình an toàn nghiêm ngặt và chăm sóc khách hàng chu đáo [source_embedding:460787326238286074].\n\nTóm lại, việc hạ cánh khẩn cấp, nếu được xử lý đúng cách, có thể tăng cường uy tín của Vietnam Airlines bằng cách chứng minh cam kết của hãng đối với sự an toàn và sức khỏe của hành khách, mặc dù có thể đi kèm với một số tác động ngắn hạn về chi phí và thời gian bay.",
+    "reference_sources": [
+        "source_embedding:460787326238286074",
+        "source_embedding:460787326238286072"
+    ],
+    "question": "Đánh giá mức độ ảnh hưởng của các vụ hạ cánh khẩn cấp đến uy tín Vietnam Airlines",
+    "gt": "Thể hiện trách nhiệm xã hội và nâng cao uy tín khi ưu tiên sức khỏe khách hàng",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Iran đã đưa ra điều kiện tiên quyết để đàm phán về chương trình hạt nhân của mình là Israel phải chấm dứt tấn công Iran. Các nhà ngoại giao cho biết Iran tuyên bố sẽ không đàm phán về chương trình hạt nhân khi còn đang bị tấn công. Nếu Israel ngừng ném bom, Iran sẵn sàng thảo luận chấm dứt xung đột và nối lại đàm phán [source_embedding:460787326238286076].",
+    "reference_sources": [
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Điều kiện tiên quyết nào Iran đưa ra để đàm phán về chương trình hạt nhân?",
+    "gt": "Israel phải chấm dứt tấn công Iran.",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Oman và Qatar, như nhiều quốc gia vùng Vịnh khác, tham gia vào các cuộc trao đổi với Iran và Mỹ để giúp hạ nhiệt căng thẳng trong khu vực và thúc đẩy nối lại các nỗ lực ngoại giao. Điều này đặc biệt quan trọng trong bối cảnh Iran đã đưa ra điều kiện tiên quyết để đàm phán về chương trình hạt nhân của mình, yêu cầu Israel phải chấm dứt tấn công Iran. Các quốc gia vùng Vịnh đang tìm cách thúc đẩy các cuộc đàm phán này để duy trì ổn định trong khu vực [source_embedding:460787326238286076].",
+    "reference_sources": [
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Tại sao các nước vùng Vịnh như Oman và Qatar tham gia trao đổi với Iran và Mỹ?",
+    "gt": "Để hạ nhiệt căng thẳng và nối lại các nỗ lực ngoại giao giữa Iran và Israel.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Tuyên bố của Tổng thống Trump tại hội nghị G7 phản ánh một thái độ phức tạp của Mỹ đối với xung đột Iran-Israel. Tại hội nghị, ông Trump cảnh báo rằng cuộc chiến giữa Iran và Israel sẽ \"gây đau đớn cho cả hai bên\" và cho rằng Iran không đang thắng thế, do đó họ nên đàm phán ngay lập tức trước khi quá muộn [source_embedding:460787326238286078]. Điều này cho thấy Mỹ có mong muốn ngăn chặn xung đột leo thang thông qua đàm phán, mặc dù ông Trump không loại trừ khả năng sẽ có hành động quân sự nếu các nỗ lực ngoại giao thất bại [source_embedding:460787326238286078]. \n\nNgoài ra, Tổng thống Trump được khuyến khích thực hiện các bước cụ thể để thúc đẩy ngoại giao, chẳng hạn như gây sức ép buộc Thủ tướng Israel Netanyahu chấm dứt cuộc chiến. Điều này cho thấy một khả năng tác động của Mỹ tới Israel, qua đó có thể tạo điều kiện cho các nỗ lực đàm phán và hạ nhiệt xung đột [source_embedding:460787326238286078].",
+    "reference_sources": [
+        "source_embedding:460787326238286078"
+    ],
+    "question": "Làm thế nào tuyên bố của Tổng thống Trump tại hội nghị G7 phản ánh thái độ của Mỹ đối với xung đột Iran-Israel?",
+    "gt": "Trump kêu gọi Iran đàm phán ngay lập tức và cảnh báo hậu quả nếu không, đồng thời ám chỉ khả năng hành động quân sự.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Iran có sẵn sàng đàm phán với Mỹ, nhưng điều kiện tiên quyết mà Iran đặt ra là Israel phải chấm dứt tấn công Iran. Iran nhấn mạnh rằng họ sẽ không đàm phán về chương trình hạt nhân khi còn đang bị tấn công. Nếu Israel ngừng ném bom, Iran sẵn sàng thảo luận chấm dứt xung đột và nối lại đàm phán [source_embedding:460787326238286076].",
+    "reference_sources": [
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Iran có sẵn sàng đàm phán với Mỹ không theo thông tin trong văn bản?",
+    "gt": "Có, nếu đạt được thỏa thuận công bằng và đáng tin cậy.",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Cuộc đàm phán giữa Iran và Mỹ đã đổ vỡ sau khi Israel mở chiến dịch tấn công vào các cơ sở hạt nhân và quân sự ở Iran vào ngày 13 tháng 6. Những cuộc tấn công này đã gây ra sự căng thẳng leo thang giữa hai bên, dẫn đến việc các cuộc đàm phán gián tiếp giữa Iran và Mỹ về chương trình hạt nhân của Iran bị gián đoạn [source_embedding:460787326238286078].",
+    "reference_sources": [
+        "source_embedding:460787326238286078"
+    ],
+    "question": "Sự kiện nào dẫn đến đổ vỡ các cuộc đàm phán giữa Iran và Mỹ?",
+    "gt": "Israel mở chiến dịch tấn công vào các cơ sở hạt nhân và quân sự ở Iran ngày 13-6.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Mối quan hệ giữa hành động của Israel và phản ứng ngoại giao của Iran có thể được phân tích thông qua một số khía cạnh. Trước hết, Iran đã đưa ra điều kiện tiên quyết cho các cuộc đàm phán về chương trình hạt nhân của mình là Israel phải chấm dứt tấn công vào nước này. Iran khẳng định rằng họ sẽ không tham gia vào các cuộc đàm phán nếu còn đang bị tấn công [source_embedding:460787326238286076].\n\nNgoài ra, các cuộc đàm phán gián tiếp giữa Iran và Mỹ đã bị gián đoạn sau khi Israel tiến hành các cuộc tấn công vào các cơ sở hạt nhân và quân sự ở Iran, điều này đã làm leo thang căng thẳng giữa hai bên [source_embedding:460787326238286078]. Từ đó, có thể thấy rằng hành động quân sự của Israel có ảnh hưởng trực tiếp đến quyết định ngoại giao của Iran, và ngược lại, điều kiện mà Iran đặt ra đối với Israel cũng tác động đến khả năng tiếp tục đàm phán và các nỗ lực hòa bình trong khu vực.",
+    "reference_sources": [
+        "source_embedding:460787326238286078",
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Phân tích mối quan hệ giữa hành động của Israel và phản ứng ngoại giao của Iran.",
+    "gt": "Iran chỉ sẵn sàng đàm phán khi Israel ngừng tấn công, thể hiện quan hệ nhân quả trực tiếp giữa hai bên.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Ngoại trưởng Iran được nhắc đến trong văn bản là Abbas Araghchi [source_embedding:460787326238286076].",
+    "reference_sources": [
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Ai là Ngoại trưởng Iran được nhắc đến trong văn bản?",
+    "gt": "Abbas Araghchi.",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Thái độ của Iran đối với thỏa thuận hạt nhân được thể hiện qua điều kiện tiên quyết mà nước này đưa ra: Iran sẵn sàng đàm phán và đạt được một thỏa thuận hạt nhân với Mỹ nếu Israel ngừng tấn công Iran. Iran nhấn mạnh rằng họ sẽ không đàm phán khi còn đang bị tấn công, và việc Israel chấm dứt các cuộc tấn công là điều kiện cần thiết để nối lại đàm phán. Iran cũng bày tỏ rằng họ mong muốn một thỏa thuận công bằng và đáng tin cậy [source_embedding:460787326238286076].",
+    "reference_sources": [
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Thái độ của Iran đối với thỏa thuận hạt nhân được thể hiện như thế nào?",
+    "gt": "Iran sẵn sàng đàm phán nếu thỏa thuận đảm bảo tính công bằng và đáng tin cậy.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Chính sách 'ngoại giao áp lực' của Mỹ, đặc biệt dưới thời Tổng thống Trump, được thể hiện qua nhiều hành động cụ thể. Ví dụ, trong bối cảnh căng thẳng giữa Iran và Israel, Tổng thống Trump đã sử dụng cả lời cảnh báo và sự khuyến khích đàm phán để cố gắng ngăn chặn xung đột leo thang. Ông Trump đã cảnh báo rằng cuộc chiến giữa Iran và Israel sẽ gây tổn thất lớn cho cả hai bên và khuyến khích Iran nên đàm phán trước khi tình hình trở nên tồi tệ hơn [source_embedding:460787326238286078]. Đồng thời, ông cũng không loại trừ khả năng sẽ sử dụng hành động quân sự nếu các nỗ lực ngoại giao thất bại, cho thấy một chính sách ngoại giao áp lực, kết hợp giữa đàm phán và đe dọa [source_embedding:460787326238286078].",
+    "reference_sources": [
+        "source_embedding:460787326238286078"
+    ],
+    "question": "Chính sách 'ngoại giao áp lực' của Mỹ được thể hiện qua những hành động cụ thể nào?",
+    "gt": "Cảnh báo quân sự nếu đàm phán thất bại và kêu gọi Israel ngừng tấn công thông qua áp lực ngoại giao.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Hội nghị thượng đỉnh G7 diễn ra ở Canada [source_embedding:460787326238286078].",
+    "reference_sources": [
+        "source_embedding:460787326238286078"
+    ],
+    "question": "Hội nghị thượng đỉnh G7 diễn ra ở đâu theo văn bản?",
+    "gt": "Canada.",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Iran đã sử dụng truyền thông xã hội, cụ thể là nền tảng X (trước đây là Twitter), như một phần quan trọng trong chiến lược ngoại giao của mình. Truyền thông này cho phép Iran gửi đi những thông điệp rõ ràng và trực tiếp đến các quốc gia khác và cộng đồng quốc tế. Chẳng hạn, Ngoại trưởng Iran Abbas Araghchi đã sử dụng nền tảng này để truyền đạt rằng nếu Tổng thống Mỹ nghiêm túc về ngoại giao và muốn ngăn chặn cuộc chiến giữa Iran và Israel, ông nên gây áp lực buộc Thủ tướng Israel Benjamin Netanyahu chấm dứt các cuộc tấn công. Việc sử dụng X cho thấy Iran đang tìm cách tận dụng truyền thông xã hội để tạo áp lực ngoại giao và điều phối thông điệp của mình một cách rộng rãi và nhanh chóng [source_embedding:460787326238286076] [source_embedding:460787326238286078].",
+    "reference_sources": [
+        "source_embedding:460787326238286078",
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Vai trò của truyền thông X (Twitter) trong chiến lược ngoại giao của Iran?",
+    "gt": "Là kênh truyền thông để Ngoại trưởng Iran công khai đề xuất ngoại giao với Mỹ và Israel.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Lý do sâu xa khiến Iran kiên quyết không đàm phán dưới áp lực quân sự là do nước này muốn bảo vệ chủ quyền và chương trình hạt nhân của mình trước các mối đe dọa từ bên ngoài. Iran đã tuyên bố rõ ràng rằng họ sẽ không đàm phán về chương trình hạt nhân của mình khi còn đang bị tấn công, đặc biệt là từ phía Israel. Điều kiện tiên quyết mà Iran đặt ra là Israel phải chấm dứt các cuộc tấn công thì Iran mới sẵn sàng thảo luận về việc chấm dứt xung đột và nối lại đàm phán [source_embedding:460787326238286076].",
+    "reference_sources": [
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Lý do sâu xa nào khiến Iran kiên quyết không đàm phán dưới áp lực quân sự?",
+    "gt": "Nhằm bảo vệ thể diện quốc gia và nguyên tắc đàm phán trên thế mạnh, tránh tạo tiền lệ bị ép buộc.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Số người thiệt mạng ở Israel theo thống kê trong văn bản là 20 người [source_embedding:460787326238286078].",
+    "reference_sources": [
+        "source_embedding:460787326238286078"
+    ],
+    "question": "Số người thiệt mạng ở Israel theo thống kê trong văn bản là bao nhiêu?",
+    "gt": "20 người.",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Mục tiêu chính của các cuộc tấn công vào cơ sở hạt nhân Iran thường là để làm gián đoạn hoặc ngăn chặn tiến trình phát triển chương trình hạt nhân của Iran, đặc biệt khi có những lo ngại rằng chương trình này có thể dẫn đến việc Iran phát triển vũ khí hạt nhân. Các cuộc tấn công này thường nhằm làm suy yếu khả năng kỹ thuật và cơ sở hạ tầng hạt nhân của Iran, từ đó giảm bớt nguy cơ mà cộng đồng quốc tế và các quốc gia khác, như Israel, có thể phải đối mặt. Ngoài ra, các cuộc tấn công cũng nhằm gây áp lực lên Iran trong các cuộc đàm phán quốc tế liên quan đến chương trình hạt nhân của nước này [source_embedding:460787326238286078].",
+    "reference_sources": [
+        "source_embedding:460787326238286078"
+    ],
+    "question": "Mục tiêu chính của các cuộc tấn công vào cơ sở hạt nhân Iran là gì?",
+    "gt": "Làm gián đoạn chương trình hạt nhân và gây sức ép buộc Iran đàm phán.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Việc xác định \"thỏa thuận công bằng\" là một trở ngại trong đàm phán Iran-Mỹ vì cả hai bên có những điều kiện tiên quyết và lợi ích riêng biệt cần phải được đảm bảo. Iran yêu cầu Israel phải chấm dứt tấn công trước khi sẵn sàng đàm phán về chương trình hạt nhân của mình. Họ chỉ chấp nhận thỏa thuận nếu thấy nó công bằng và đáng tin cậy [source_embedding:460787326238286076]. Điều này tạo ra một vòng luẩn quẩn trong đàm phán, vì sự an toàn và các điều kiện chính trị trong khu vực đều ảnh hưởng đến quyết định của cả hai bên. Ngoài ra, còn có yếu tố áp lực quân sự và các mối đe dọa bên ngoài mà Iran không chấp nhận khi chưa có sự nhượng bộ từ phía Israel [source_embedding:460787326238286076].",
+    "reference_sources": [
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Tại sao việc xác định 'thỏa thuận công bằng' lại là trở ngại trong đàm phán Iran-Mỹ?",
+    "gt": "Do bất đồng trong việc định nghĩa các điều khoản cụ thể và thiếu niềm tin giữa hai bên.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Thủ tướng Israel được nhắc đến trong văn bản là Benjamin Netanyahu [source_embedding:460787326238286076].",
+    "reference_sources": [
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Thủ tướng Israel được nhắc đến trong văn bản tên là gì?",
+    "gt": "Benjamin Netanyahu.",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Thông điệp chung của các nhà ngoại giao phương Tây trong bối cảnh đàm phán giữa Iran và các nước khác là việc nhấn mạnh điều kiện tiên quyết rằng Israel phải chấm dứt các cuộc tấn công vào Iran trước khi Iran sẵn sàng tham gia vào đàm phán về chương trình hạt nhân của mình. Họ cũng cho rằng nếu Tổng thống Mỹ thực sự nghiêm túc về việc thúc đẩy ngoại giao, thì nên gây sức ép để Thủ tướng Israel Benjamin Netanyahu ngừng cuộc chiến, mở đường cho ngoại giao. Đây là thông điệp được xác nhận bởi nhiều nhà ngoại giao và cả ngoại trưởng Iran [source_embedding:460787326238286076].",
+    "reference_sources": [
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Đâu là điểm chung trong thông điệp của các nhà ngoại giao phương Tây được đề cập?",
+    "gt": "Xác nhận Iran chỉ đàm phán khi Israel ngừng tấn công.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Nếu Mỹ không gây áp lực buộc Israel ngừng tấn công theo đề xuất của Iran, có thể có một số hệ quả tiềm tàng như sau:\n\n1. **Leo thang xung đột**: Không có sự can thiệp từ Mỹ để giảm bớt căng thẳng, xung đột giữa Israel và Iran có thể leo thang, dẫn đến những hậu quả nghiêm trọng về nhân mạng và sự ổn định trong khu vực. Trong bối cảnh này, các cuộc tấn công lẫn nhau giữa Israel và Iran có thể tiếp tục và thậm chí gia tăng về cường độ.\n\n2. **Nguy cơ đàm phán bị đình trệ**: Iran đã bày tỏ rằng họ chỉ sẵn sàng đàm phán về chương trình hạt nhân nếu Israel ngừng các cuộc tấn công. Do đó, nếu Israel tiếp tục tấn công và Mỹ không can thiệp, điều này có thể làm đình trệ các nỗ lực đàm phán hạt nhân giữa Iran và các quốc gia khác, bao gồm Mỹ [source_embedding:460787326238286076].\n\n3. **Tăng cường sự bất ổn khu vực**: Sự leo thang xung đột có thể ảnh hưởng đến các quốc gia láng giềng trong khu vực và gia tăng bất ổn tại Trung Đông. Các nước vùng Vịnh như Oman, Qatar và Saudi Arabia đã nỗ lực trao đổi với lãnh đạo Tehran và Washington nhằm hạ nhiệt căng thẳng [source_embedding:460787326238286076].\n\n4. **Tác động tiêu cực đến quan hệ quốc tế**: Nếu Mỹ không hành động để giảm bớt căng thẳng, điều này có thể làm phức tạp thêm mối quan hệ giữa Mỹ và các đồng minh trong khu vực, cũng như các đối tác quốc tế khác đang tìm kiếm một giải pháp hòa bình cho xung đột này.\n\nTóm lại, việc không gây áp lực buộc Israel ngừng tấn công có thể dẫn đến tình trạng căng thẳng kéo dài và ảnh hưởng xấu đến cả khu vực và các nỗ lực ngoại giao quốc tế [source_embedding:460787326238286078].",
+    "reference_sources": [
+        "source_embedding:460787326238286078",
+        "source_embedding:460787326238286076"
+    ],
+    "question": "Dự đoán hệ quả nếu Mỹ không gây áp lực buộc Israel ngừng tấn công theo đề xuất của Iran.",
+    "gt": "Xung đột tiếp tục leo thang, đàm phán bế tắc và nguy cơ can thiệp quân sự từ Mỹ.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Mục tiêu tối thượng của Hiến pháp Việt Nam về hạnh phúc là \"hạnh phúc của nhân dân\". Khẩu hiệu \"Độc lập - Tự do - Hạnh phúc\" nhấn mạnh rằng mọi thành quả phát triển đều phải hướng tới nâng cao đời sống vật chất, tinh thần và sự hài lòng của người dân. Đại hội XIII của Đảng cũng đã khẳng định khát vọng phát triển đất nước phồn vinh và hạnh phúc, đồng thời thúc đẩy đổi mới sáng tạo và ứng dụng khoa học công nghệ để tạo động lực mạnh mẽ cho phát triển nhanh và bền vững [source_embedding:460787326238286080][source_embedding:460787326238286082].",
+    "reference_sources": [
+        "source_embedding:460787326238286082",
+        "source_embedding:460787326238286080"
+    ],
+    "question": "Mục tiêu tối thượng của Hiến pháp Việt Nam về hạnh phúc là gì?",
+    "gt": "Hạnh phúc của nhân dân là mục tiêu tối thượng được khẳng định trong Hiến pháp.",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Khoa học và công nghệ (KH&CN) đóng vai trò quan trọng trong việc hiện thực hóa mục tiêu dân giàu, nước mạnh thông qua nhiều khía cạnh. KH&CN là động lực chính yếu giúp nền kinh tế phát triển nhanh và bền vững, qua đó cải thiện đời sống vật chất cho người dân. Các ứng dụng KH&CN đã nâng cao năng suất lao động, tạo nhiều việc làm có thu nhập tốt, và thúc đẩy các ngành công nghiệp chế tạo và dịch vụ công nghệ cao phát triển mạnh mẽ, góp phần gia tăng tỷ trọng của chúng trong GDP [source_embedding:460787326238286084].\n\nĐồng thời, KH&CN cũng tạo điều kiện thuận lợi để Việt Nam phát triển kinh tế tri thức, tăng cường đổi mới sáng tạo, giúp nâng cao sức cạnh tranh quốc gia. Chính phủ Việt Nam đã xác định KH&CN là quốc sách hàng đầu, đóng vai trò then chốt trong công cuộc phát triển đất nước, hướng tới mục tiêu dân giàu, nước mạnh, xã hội công bằng, dân chủ, văn minh [source_embedding:460787326238286082].\n\nNgoài ra, KH&CN còn góp phần cải thiện các vấn đề xã hội như y tế, giáo dục và an sinh xã hội, tạo điều kiện cho người dân tiếp cận các dịch vụ công tiện ích, nâng cao chất lượng cuộc sống và hạnh phúc của người dân [source_embedding:460787326238286080].",
+    "reference_sources": [
+        "source_embedding:460787326238286084",
+        "source_embedding:460787326238286082",
+        "source_embedding:460787326238286080"
+    ],
+    "question": "KH&CN đóng vai trò gì trong việc hiện thực hóa mục tiêu dân giàu, nước mạnh?",
+    "gt": "KH&CN được xem như chìa khóa để hiện thực hóa mục tiêu dân giàu, nước mạnh, xã hội công bằng, dân chủ, văn minh.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Khoa học và công nghệ (KH&CN) đóng góp quan trọng trong việc thu hẹp khoảng cách giàu - nghèo bằng cách tạo ra cơ hội sinh kế và nâng cao đời sống cho các nhóm yếu thế. Các nền tảng số và thương mại điện tử mở rộng thị trường cho nông dân, người khuyết tật, và phụ nữ nông thôn, cho phép họ bán sản phẩm và dịch vụ trực tiếp mà không cần qua trung gian. Các ứng dụng công nghệ như gọi xe và giao hàng cũng tạo việc làm linh hoạt cho nhiều lao động phổ thông ở đô thị. Ngoài ra, các chính sách an sinh xã hội ứng dụng công nghệ đảm bảo sự hỗ trợ đến đúng đối tượng một cách minh bạch và thuận tiện, giúp các nhóm yếu thế tiếp cận trợ giúp dễ dàng hơn [source_embedding:460787326238286104][source_embedding:460787326238286106].",
+    "reference_sources": [
+        "source_embedding:460787326238286106",
+        "source_embedding:460787326238286104"
+    ],
+    "question": "Làm thế nào KH&CN góp phần thu hẹp khoảng cách giàu - nghèo theo phân tích của văn bản?",
+    "gt": "Thông qua thương mại điện tử và nền tảng số giúp nhóm yếu thế tiếp cận thị trường trực tiếp, cùng chính sách an sinh xã hội ứng dụng công nghệ.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Tỷ lệ hộ nghèo đa chiều ở Việt Nam năm 2023 đã giảm xuống còn khoảng 3,2%. Đây là một thành tựu nổi bật trong việc thực hiện Mục tiêu phát triển bền vững SDG số 1 (xóa nghèo) [source_embedding:460787326238286086].",
+    "reference_sources": [
+        "source_embedding:460787326238286086"
+    ],
+    "question": "Tỷ lệ hộ nghèo đa chiều năm 2023 là bao nhiêu?",
+    "gt": "3,2%",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Chuyển đổi số được coi là 'cú hích' cho khoa học và công nghệ (KH&CN) vì nó tạo điều kiện thuận lợi cho việc thẩm thấu KH&CN vào mọi ngành và mọi lĩnh vực. Chuyển đổi số giúp xây dựng hạ tầng số và dữ liệu hiện đại, từ đó thúc đẩy phát triển kinh tế số, nâng cao năng suất lao động và năng lực cạnh tranh quốc gia. Điều này không chỉ giúp cải thiện hiệu quả quản trị quốc gia mà còn tạo ra nhiều cơ hội việc làm và tăng thu nhập cho người dân [source_embedding:460787326238286108].",
+    "reference_sources": [
+        "source_embedding:460787326238286108"
+    ],
+    "question": "Vì sao chuyển đổi số được coi là 'cú hích' cho KH&CN?",
+    "gt": "Vì nó giúp KH&CN thẩm thấu vào mọi ngành, tạo nền tảng cho kinh tế số phát triển.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Mối quan hệ giữa năng suất lao động và ứng dụng khoa học và công nghệ (KH&CN) trong các doanh nghiệp Việt Nam là một chủ đề quan trọng và được nhấn mạnh trong các tài liệu gần đây. KH&CN được xem như động lực chính yếu giúp nâng cao năng suất lao động và cải thiện hiệu quả kinh doanh của các doanh nghiệp.\n\n1. **Nâng cao năng suất lao động**: Các ứng dụng của KH&CN như tự động hóa, máy móc hiện đại, và chuyển đổi số đã giúp các doanh nghiệp Việt Nam cải thiện đáng kể năng suất lao động. Điều này đồng nghĩa với việc các doanh nghiệp có thể sản xuất ra nhiều sản phẩm hơn trong cùng một khoảng thời gian và với chi phí thấp hơn, nhờ vào hiệu quả từ việc áp dụng công nghệ tiên tiến [source_embedding:460787326238286084].\n\n2. **Thúc đẩy đổi mới sáng tạo**: Đổi mới sáng tạo là yếu tố quan trọng quyết định việc nâng cao năng suất, chất lượng và sức cạnh tranh của nền kinh tế. Việc ứng dụng KH&CN giúp các doanh nghiệp đổi mới quy trình sản xuất, phát triển sản phẩm mới và gia tăng hiệu quả quản lý [source_embedding:460787326238286084].\n\n3. **Phát triển kinh tế bền vững**: KH&CN không chỉ giúp tăng năng suất mà còn hỗ trợ các doanh nghiệp Việt Nam trong việc phát triển bền vững. Điều này bao gồm việc giảm thiểu tác động tiêu cực đến môi trường thông qua việc sử dụng năng lượng sạch và hiệu quả hơn [source_embedding:460787326238286096].\n\n4. **Tăng cường khả năng cạnh tranh**: Chính phủ Việt Nam đã xác định KH&CN là quốc sách hàng đầu, thúc đẩy các doanh nghiệp đầu tư vào R&D (nghiên cứu và phát triển) để tăng cường năng lực cạnh tranh quốc gia [source_embedding:460787326238286082].\n\nNhìn chung, sự ứng dụng mạnh mẽ của KH&CN là yếu tố then chốt để các doanh nghiệp Việt Nam nâng cao năng suất lao động, góp phần vào phát triển kinh tế nhanh và bền vững [source_embedding:460787326238286084].",
+    "reference_sources": [
+        "source_embedding:460787326238286084",
+        "source_embedding:460787326238286082",
+        "source_embedding:460787326238286096"
+    ],
+    "question": "Phân tích mối quan hệ giữa năng suất lao động và ứng dụng KH&CN trong các doanh nghiệp Việt Nam.",
+    "gt": "Ứng dụng máy móc, tự động hóa và chuyển đổi số đã cải thiện năng suất lao động, góp phần tăng trưởng GDP.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Việt Nam đặt mục tiêu tỷ trọng giá trị sản phẩm công nghiệp công nghệ cao đạt ít nhất 45% trong các ngành chế biến chế tạo vào năm 2030 [source_embedding:460787326238286086].",
+    "reference_sources": [
+        "source_embedding:460787326238286086"
+    ],
+    "question": "Việt Nam đặt mục tiêu tỷ trọng giá trị sản phẩm công nghiệp công nghệ cao đạt bao nhiêu % vào năm 2030?",
+    "gt": "45%",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Khoa học và công nghệ (KH&CN) đã có tác động sâu rộng đến giáo dục đại học ở Việt Nam. Sự ứng dụng của công nghệ thông tin (CNTT) và chuyển đổi số đã mở ra phương thức dạy và học mới, giúp nâng cao chất lượng giáo dục và đào tạo nhân lực. Nhiều trường học đã triển khai mô hình lớp học thông minh, sử dụng bảng tương tác, bài giảng điện tử và kho học liệu số, giúp học sinh tiếp thu kiến thức một cách sinh động hơn. Công nghệ cũng giúp đổi mới nội dung và phương pháp dạy học theo hướng hiện đại, khuyến khích tư duy phản biện và sáng tạo [source_embedding:460787326238286090].\n\nHơn nữa, KH&CN cũng hỗ trợ mở rộng tiếp cận giáo dục công bằng và hòa nhập hơn. Các nền tảng học trực tuyến và tài nguyên mở giúp trẻ em ở vùng sâu vùng xa có cơ hội học các bài giảng chất lượng như học sinh ở khu vực thành thị. Công nghệ trợ giúp như phần mềm đọc màn hình và thiết bị hỗ trợ học tập đã thúc đẩy sự hòa nhập xã hội cho trẻ khuyết tật [source_embedding:460787326238286092].\n\nNgoài ra, việc phát triển nguồn nhân lực chất lượng cao về KH&CN được coi là yếu tố quan trọng để đáp ứng nhu cầu của kinh tế số và công nghiệp công nghệ cao. Điều này đòi hỏi giáo dục đại học và nghề nghiệp cần gắn kết chặt chẽ với doanh nghiệp, cập nhật công nghệ mới để đào tạo lực lượng lao động có kỹ năng [source_embedding:460787326238286108].",
+    "reference_sources": [
+        "source_embedding:460787326238286108",
+        "source_embedding:460787326238286090",
+        "source_embedding:460787326238286092"
+    ],
+    "question": "KH&CN đã tác động thế nào đến giáo dục đại học theo văn bản?",
+    "gt": "Gắn kết chặt chẽ với doanh nghiệp, cập nhật công nghệ mới để đào tạo lao động kỹ năng cao.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Khoa học và công nghệ (KH&CN) đóng vai trò quan trọng trong việc giải quyết mâu thuẫn giữa phát triển kinh tế và bảo vệ môi trường ở Việt Nam. \n\nTrước hết, KH&CN giúp giám sát và kiểm soát ô nhiễm môi trường hiệu quả hơn thông qua các trạm quan trắc môi trường tự động và các hệ thống xử lý nước thải, khí thải công nghiệp hiện đại. Những công nghệ này không chỉ giúp giảm thiểu ô nhiễm mà còn bảo tồn tài nguyên và ứng phó với biến đổi khí hậu [source_embedding:460787326238286094]. \n\nĐặc biệt, KH&CN đóng vai trò quyết định trong việc chuyển đổi sang năng lượng sạch và giảm phát thải khí nhà kính. Việt Nam đã cam kết đạt phát thải ròng bằng “0” vào năm 2050 và đã phát triển mạnh mẽ trong lĩnh vực năng lượng tái tạo, nhờ vào cơ chế khuyến khích và tiến bộ công nghệ, đặc biệt là trong lĩnh vực điện mặt trời [source_embedding:460787326238286096].\n\nNgoài ra, KH&CN hỗ trợ việc thích ứng với biến đổi khí hậu và quản lý thiên tai bằng các hệ thống cảnh báo sớm và mô hình dự báo thời tiết tiên tiến, giúp giảm thiểu thiệt hại và bảo vệ môi trường sống an toàn cho người dân [source_embedding:460787326238286096]. \n\nTóm lại, KH&CN không chỉ thúc đẩy phát triển kinh tế bền vững mà còn đóng góp tích cực vào việc bảo vệ môi trường, giải quyết mâu thuẫn giữa hai mục tiêu này một cách hiệu quả.",
+    "reference_sources": [
+        "source_embedding:460787326238286094",
+        "source_embedding:460787326238286096"
+    ],
+    "question": "Làm rõ vai trò của KH&CN trong việc giải quyết mâu thuẫn giữa phát triển kinh tế và bảo vệ môi trường ở Việt Nam.",
+    "gt": "Phát triển năng lượng tái tạo, hệ thống giám sát ô nhiễm tự động, và công nghệ xử lý chất thải giúp cân bằng giữa tăng trưởng và bền vững.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Chỉ số Phát triển Con người (HDI) của Việt Nam năm 2022 là 0,726 [source_embedding:460787326238286088].",
+    "reference_sources": [
+        "source_embedding:460787326238286088"
+    ],
+    "question": "Chỉ số HDI của Việt Nam năm 2022 là bao nhiêu?",
+    "gt": "0,726",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Việc số hóa di sản văn hóa đóng vai trò quan trọng đối với hạnh phúc quốc gia vì nó góp phần nâng cao đời sống văn hóa, tinh thần của người dân trong kỷ nguyên số. Qua công nghệ kỹ thuật số và internet, người dân có thể tiếp cận dễ dàng các kho tàng tri thức và văn hóa, từ đó làm giàu đời sống tinh thần của mình [source_embedding:460787326238286102]. Ngoài ra, số hóa di sản văn hóa còn giúp giới thiệu và bảo tồn các giá trị văn hóa truyền thống cho thế hệ trẻ, khơi dậy niềm tự hào và ý thức bảo tồn di sản dân tộc [source_embedding:460787326238286112]. Công nghệ cũng tạo ra những hình thức giải trí và nghệ thuật mới, đáp ứng thị hiếu đa dạng của người dân, đặc biệt là giới trẻ [source_embedding:460787326238286102].",
+    "reference_sources": [
+        "source_embedding:460787326238286112",
+        "source_embedding:460787326238286102"
+    ],
+    "question": "Tại sao việc số hóa di sản văn hóa lại quan trọng đối với hạnh phúc quốc gia?",
+    "gt": "Giúp bảo tồn truyền thống, tăng cường hiểu biết và niềm tự hào dân tộc cho thế hệ trẻ.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Khoa học và công nghệ (KH&CN) đóng vai trò quan trọng trong việc thúc đẩy công bằng xã hội thông qua nhiều cách thức khác nhau. Dưới đây là một số cơ chế mà KH&CN thực hiện điều này, cùng với các ví dụ cụ thể:\n\n1. **Thu hẹp khoảng cách giàu - nghèo**: KH&CN mở ra nhiều cơ hội kinh tế cho các nhóm yếu thế thông qua các nền tảng số và thương mại điện tử. Ví dụ, nông dân, người khuyết tật và phụ nữ nông thôn có thể trực tiếp bán sản phẩm của mình mà không cần qua trung gian, nhờ đó tăng thu nhập và cải thiện đời sống [source_embedding:460787326238286104].\n\n2. **Tăng cường tiếp cận dịch vụ công**: Các ứng dụng công nghệ giúp các chính sách an sinh xã hội trở nên hiệu quả hơn, đảm bảo hỗ trợ đến đúng đối tượng và thuận tiện. Ví dụ, việc chi trả bảo trợ xã hội qua thẻ điện tử giúp đảm bảo minh bạch và tiếp cận dễ dàng hơn cho những người thuộc nhóm yếu thế [source_embedding:460787326238286106].\n\n3. **Giáo dục và hòa nhập**: KH&CN hỗ trợ mở rộng tiếp cận giáo dục cho trẻ em ở vùng sâu vùng xa và người khuyết tật thông qua các nền tảng học trực tuyến và tài nguyên mở. Công nghệ trợ giúp như phần mềm đọc màn hình cũng giúp cải thiện sự hòa nhập xã hội cho người khuyết tật [source_embedding:460787326238286092].\n\n4. **Cải thiện điều kiện sống và sức khỏe**: Các ứng dụng di động và thiết bị y tế giá rẻ giúp người dân dễ dàng theo dõi sức khỏe cá nhân, trong khi các giải pháp công nghệ xử lý ô nhiễm không khí và cấp nước sạch góp phần nâng cao chất lượng cuộc sống [source_embedding:460787326238286110].\n\nNhững cơ chế này cho thấy rằng KH&CN không chỉ là công cụ phát triển kinh tế mà còn là phương tiện thúc đẩy công bằng và hòa nhập xã hội.",
+    "reference_sources": [
+        "source_embedding:460787326238286106",
+        "source_embedding:460787326238286104",
+        "source_embedding:460787326238286110",
+        "source_embedding:460787326238286092"
+    ],
+    "question": "Phân tích cơ chế mà KH&CN thúc đẩy công bằng xã hội thông qua các ví dụ cụ thể trong văn bản.",
+    "gt": "Thương mại điện tử giúp nông dân tiếp cận thị trường trực tiếp; hệ thống telemedicine thu hẹp khoảng cách y tế vùng miền; chính sách an sinh ứng dụng công nghệ đảm bảo minh bạch.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Việt Nam đã cam kết đạt mục tiêu phát thải ròng bằng \"0\" vào năm 2050 [source_embedding:460787326238286096].",
+    "reference_sources": [
+        "source_embedding:460787326238286096"
+    ],
+    "question": "Việt Nam đặt mục tiêu phát thải ròng bằng 0 vào năm nào?",
+    "gt": "2050",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Công nghệ thực tế ảo (VR) đã có những ứng dụng quan trọng trong lĩnh vực văn hóa, đặc biệt là trong việc nâng cao trải nghiệm văn hóa của công chúng. Một ví dụ điển hình là Bảo tàng Lịch sử Quân sự Việt Nam đã sử dụng công nghệ 3D và thực tế ảo để tạo ra những trải nghiệm sống động cho người xem. Điều này không chỉ giúp người dân có thể tiếp cận và tương tác với di sản văn hóa một cách chân thực hơn, mà còn giúp bảo tồn và giới thiệu văn hóa một cách hiệu quả hơn [source_embedding:460787326238286102].",
+    "reference_sources": [
+        "source_embedding:460787326238286102"
+    ],
+    "question": "Công nghệ thực tế ảo (VR) đã được ứng dụng như thế nào trong lĩnh vực văn hóa?",
+    "gt": "Sử dụng trong bảo tàng để tạo trải nghiệm sống động, trình diễn nghệ thuật tương tác.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Việc tăng chi cho nghiên cứu và phát triển (R&D) có tác động tích cực đến năng lực cạnh tranh quốc gia. Theo định hướng phát triển kinh tế - xã hội của Việt Nam, đầu tư vào khoa học và công nghệ (KH&CN) là một yếu tố then chốt để thúc đẩy tăng trưởng kinh tế bền vững và nâng cao năng suất lao động. Giai đoạn 2011-2020, sự đóng góp của năng suất các nhân tố tổng hợp (TFP), một thước đo tiến bộ công nghệ, vào tăng trưởng GDP đã tăng lên khoảng 45%. Để tiếp tục đẩy mạnh sự phát triển này, Việt Nam đặt mục tiêu tăng tỷ lệ chi cho R&D lên 1-1,2% GDP đến năm 2030, so với mức hiện tại là khoảng 0,5% GDP [source_embedding:460787326238286086].\n\nViệc đầu tư vào R&D không chỉ cải thiện năng lực công nghệ mà còn giúp tăng tỷ trọng của các ngành công nghiệp công nghệ cao trong GDP, tạo ra nhiều việc làm và cải thiện đời sống của người dân. Đổi mới sáng tạo là yếu tố quyết định trong việc nâng cao năng suất và khả năng cạnh tranh của nền kinh tế [source_embedding:460787326238286084]. Việc đầu tư mạnh mẽ vào R&D còn giúp Việt Nam phát triển nguồn nhân lực chất lượng cao, điều này rất quan trọng trong bối cảnh chuyển đổi số và phát triển kinh tế số [source_embedding:460787326238286108].",
+    "reference_sources": [
+        "source_embedding:460787326238286084",
+        "source_embedding:460787326238286108",
+        "source_embedding:460787326238286086"
+    ],
+    "question": "Đánh giá tác động của việc tăng chi cho R&D lên năng lực cạnh tranh quốc gia dựa trên dữ liệu văn bản.",
+    "gt": "Tăng chi R&D lên 1-1,2% GDP giúp nâng cao đổi mới sáng tạo, đóng góp trên 50% vào tăng trưởng TFP - yếu tố then chốt cho cạnh tranh kinh tế.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Có, khoa học và công nghệ (KH&CN) được xem là quốc sách hàng đầu của Việt Nam. Điều này được thể hiện qua quan điểm nhất quán của Đảng và Nhà nước, xác định KH&CN là động lực then chốt cho công cuộc phát triển đất nước. KH&CN được xem như chìa khóa để hiện thực hóa mục tiêu dân giàu, nước mạnh, xã hội công bằng, dân chủ, văn minh, và là nền tảng của một quốc gia hạnh phúc [source_embedding:460787326238286080].",
+    "reference_sources": [
+        "source_embedding:460787326238286080"
+    ],
+    "question": "KH&CN có phải là quốc sách hàng đầu của Việt Nam không?",
+    "gt": "Có",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Theo báo cáo xếp hạng Chính phủ điện tử của Liên hợp quốc năm 2022, Việt Nam đã được xếp vào nhóm quốc gia có chỉ số phát triển Chính phủ điện tử ở mức cao, với điểm EGDI đạt khoảng 0,77. Đến năm 2024, Việt Nam đã thăng hạng lên nhóm rất cao, xếp thứ 71 trên 193 quốc gia, và đứng thứ 5 trong ASEAN [source_embedding:460787326238286100].",
+    "reference_sources": [
+        "source_embedding:460787326238286100"
+    ],
+    "question": "Việt Nam có thuộc nhóm quốc gia có chỉ số Chính phủ điện tử (EGDI) rất cao không?",
+    "gt": "Có, xếp thứ 71/193 quốc gia năm 2024.",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Có tồn tại mâu thuẫn giữa mục tiêu tăng trưởng kinh tế và bảo vệ môi trường trong ứng dụng khoa học và công nghệ (KH&CN) ở Việt Nam. Tuy nhiên, KH&CN đóng vai trò quan trọng trong việc giải quyết mâu thuẫn này. KH&CN không chỉ thúc đẩy phát triển kinh tế bền vững mà còn đóng góp tích cực vào việc bảo vệ môi trường, giải quyết mâu thuẫn giữa hai mục tiêu này một cách hiệu quả. Các ứng dụng của KH&CN như công nghệ giám sát môi trường, hệ thống xử lý nước thải, và chuyển đổi sang năng lượng sạch giúp giảm thiểu ô nhiễm, bảo tồn tài nguyên và ứng phó với biến đổi khí hậu. Việt Nam cũng đã cam kết đạt phát thải ròng bằng \"0\" vào năm 2050 và phát triển mạnh mẽ trong lĩnh vực năng lượng tái tạo, đặc biệt là điện mặt trời [source_embedding:460787326238286094][source_embedding:460787326238286096].",
+    "reference_sources": [
+        "source_embedding:460787326238286094",
+        "source_embedding:460787326238286096"
+    ],
+    "question": "Có tồn tại mâu thuẫn giữa mục tiêu tăng trưởng kinh tế và bảo vệ môi trường trong ứng dụng KH&CN ở Việt Nam không?",
+    "gt": "Không, vì KH&CN được sử dụng để phát triển năng lượng sạch và công nghệ giám sát ô nhiễm, cân bằng cả hai mục tiêu.",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Nguyên nhân chính giúp kinh tế Việt Nam phục hồi mạnh năm 2022 là nhờ vào các yếu tố nền tảng kinh tế mạnh mẽ và quản lý y tế công thận trọng trong đại dịch. Tăng trưởng GDP của Việt Nam đạt mức cao kỷ lục là 8%, cao nhất kể từ những năm 1990, nhờ vào cầu trong nước và nước ngoài mạnh mẽ. Lạm phát trung bình được giữ ở mức 3,2%, thấp hơn nhiều so với mức lạm phát mục tiêu 4% [source_embedding:460787326238286054].",
+    "reference_sources": [
+        "source_embedding:460787326238286054"
+    ],
+    "question": "Nguyên nhân chính giúp kinh tế Việt Nam phục hồi mạnh năm 2022 là gì?",
+    "gt": "Các yếu tố nền tảng kinh tế mạnh mẽ và quản lý y tế công thận trọng trong đại dịch.",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Nền kinh tế đã giảm tốc từ cuối năm 2022 đến đầu năm 2023 do nhiều yếu tố. Trước hết, căng thẳng tài chính tại các doanh nghiệp phát triển bất động sản gia tăng do các điều kiện cho vay thắt chặt hơn, các rào cản pháp lý, và doanh số bán hàng chậm lại. Thị trường trái phiếu doanh nghiệp cũng bị đóng băng khi các nhà đầu tư mất lòng tin. Thêm vào đó, sức ép tỷ giá gia tăng do lãi suất toàn cầu tăng mạnh. Một ngân hàng lớn trong nước đã gặp vấn đề rút tiền gửi hàng loạt vào tháng 10 năm 2022 và bị đặt dưới sự kiểm soát của Ngân hàng Nhà nước Việt Nam [source_embedding:460787326238286056].\n\nNgoài ra, cầu nước ngoài giảm từ cuối năm 2022 cũng tác động tiêu cực đến nền kinh tế, với xuất khẩu giảm 12% trong nửa đầu năm 2023. Mặc dù sức ép thanh khoản, ngoại hối và lạm phát đã dịu bớt, nhưng tăng trưởng kinh tế vẫn giảm tốc đáng kể và dự kiến sẽ chậm lại, xuống mức 4,7% trong năm 2023 [source_embedding:460787326238286056].",
+    "reference_sources": [
+        "source_embedding:460787326238286056"
+    ],
+    "question": "Những yếu tố nào khiến nền kinh tế giảm tốc từ cuối 2022 đến đầu 2023?",
+    "gt": "Căng thẳng tài chính bất động sản, thị trường trái phiếu đóng băng, sức ép tỷ giá và sụt giảm cầu nước ngoài",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "IMF khuyến nghị chính sách tài khóa đóng vai trò chủ đạo do nhiều lý do. Trong bối cảnh mà dư địa để nới lỏng chính sách tiền tệ bị hạn chế, chính sách tài khóa có thể hỗ trợ hoạt động kinh tế nếu cần thiết. IMF đặc biệt nhấn mạnh tầm quan trọng của việc thúc đẩy thực hiện đầu tư công và mở rộng các mạng lưới an sinh xã hội nhằm hỗ trợ những đối tượng dễ bị tổn thương nhất. Ngoài ra, cần củng cố khuôn khổ tài khoá và quy trình lập ngân sách, cũng như tăng cường huy động thu ngân sách trong trung hạn để hỗ trợ kế hoạch phát triển kinh tế xã hội đầy tham vọng [source_embedding:460787326238286058].",
+    "reference_sources": [
+        "source_embedding:460787326238286058"
+    ],
+    "question": "Tại sao IMF khuyến nghị chính sách tài khóa đóng vai trò chủ đạo?",
+    "gt": "Do không gian tài khóa còn dư địa trong khi dư địa chính sách tiền tệ bị hạn chế",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Mức tăng trưởng GDP của Việt Nam năm 2022 là 8%, đây là mức cao nhất kể từ những năm 1990 [source_embedding:460787326238286054].",
+    "reference_sources": [
+        "source_embedding:460787326238286054"
+    ],
+    "question": "Mức tăng trưởng GDP năm 2022 của Việt Nam là bao nhiêu?",
+    "gt": "8%",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Để tăng cường hệ thống tài chính, một số biện pháp được đề xuất bao gồm:\n\n1. Củng cố các đệm vốn và xóa bỏ dần các quy định cho phép gia hạn nợ nhưng vẫn giữ nguyên nhóm nợ để xử lý nợ xấu đang gia tăng.\n2. Cải tiến bộ công cụ của các cơ quan chức năng nhằm ngăn chặn và quản lý khủng hoảng ngân hàng thông qua tăng cường các khuôn khổ xử lý ngân hàng và cấp thanh khoản khẩn cấp.\n3. Sửa đổi Luật Các Tổ Chức Tín Dụng và tiếp tục nỗ lực củng cố những quy định điều tiết pháp lý và giám sát ngân hàng.\n4. Thực hiện các hành động kiên quyết nhằm giải quyết các rủi ro khác như củng cố khuôn khổ xử lý mất khả năng thanh toán, củng cố thể chế và tăng tính minh bạch trên thị trường trái phiếu doanh nghiệp [source_embedding:460787326238286060].",
+    "reference_sources": [
+        "source_embedding:460787326238286060"
+    ],
+    "question": "Các biện pháp nào được đề xuất để tăng cường hệ thống tài chính?",
+    "gt": "Củng cố đệm vốn, xóa bỏ quy định gia hạn nợ giữ nguyên nhóm nợ, xử lý nợ xấu",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Quy hoạch Điện 8 của Việt Nam đã được hoan nghênh vì những đóng góp của nó trong việc đạt được các mục tiêu khí hậu và củng cố an ninh năng lượng. Kế hoạch này nhằm thúc đẩy đầu tư vào năng lượng tái tạo và hỗ trợ quá trình chuyển đổi xanh, điều này rất quan trọng để đạt được các mục tiêu khí hậu của quốc gia [source_embedding:460787326238286062]. \n\nNgoài ra, khoa học và công nghệ (KH&CN) cũng đóng vai trò quyết định trong việc chuyển đổi sang năng lượng sạch và giảm phát thải khí nhà kính. Việt Nam đã cam kết đạt phát thải ròng bằng \"0\" vào năm 2050, và trong vài năm trở lại đây, đã nổi lên như một điểm sáng về phát triển năng lượng tái tạo ở Đông Nam Á [source_embedding:460787326238286096]. \n\nNhững nỗ lực này không chỉ hỗ trợ các mục tiêu khí hậu mà còn thúc đẩy phát triển kinh tế bền vững và đảm bảo an ninh năng lượng cho quốc gia.",
+    "reference_sources": [
+        "source_embedding:460787326238286062",
+        "source_embedding:460787326238286096"
+    ],
+    "question": "Mối quan hệ giữa Quy hoạch Điện 8 và mục tiêu khí hậu được thể hiện thế nào?",
+    "gt": "Giúp đạt mục tiêu khí hậu và củng cố an ninh năng lượng thông qua hệ thống mua bán phát thải",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Lạm phát trung bình năm 2022 ở Việt Nam được giữ ở mức 3,2%, thấp hơn so với mức lạm phát mục tiêu là 4% [source_embedding:460787326238286054].",
+    "reference_sources": [
+        "source_embedding:460787326238286054"
+    ],
+    "question": "Lạm phát trung bình năm 2022 có thấp hơn mục tiêu không?",
+    "gt": "Có (3.2% so với mục tiêu 4%)",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Để Việt Nam trở thành nước thu nhập trung bình, cần thực hiện một số cải cách quan trọng trong các lĩnh vực sau:\n\n1. **Cải thiện môi trường kinh doanh**: Tăng cường cải cách cơ cấu và tạo điều kiện thuận lợi cho doanh nghiệp hoạt động, bao gồm đơn giản hóa quy định thuế và tối ưu hóa quá trình đóng thuế [source_embedding:460787326238286120].\n\n2. **Đầu tư vào nguồn vốn con người**: Phát triển giáo dục và đào tạo, nâng cao chất lượng nguồn nhân lực, đặc biệt trong lĩnh vực khoa học và công nghệ (KH&CN) để đáp ứng yêu cầu của thời đại kinh tế tri thức và Cách mạng công nghiệp lần thứ tư [source_embedding:460787326238286088].\n\n3. **Phát triển cơ sở hạ tầng và công nghệ thông tin**: Tiếp tục đầu tư mạnh mẽ vào cơ sở hạ tầng số, dữ liệu và viễn thông thế hệ mới để hỗ trợ cho kinh tế số phát triển [source_embedding:460787326238286108].\n\n4. **Chuyển đổi xanh và phát triển bền vững**: Thúc đẩy đầu tư vào năng lượng tái tạo, thực hiện các chiến lược và khuôn khổ pháp lý phù hợp để hỗ trợ chuyển đổi xanh và đạt được các mục tiêu khí hậu [source_embedding:460787326238286062].\n\n5. **Tăng cường quản lý tài chính và chống tham nhũng**: Củng cố hệ thống tài chính và thực hiện các nỗ lực phòng chống tham nhũng, cải thiện quản trị và khung pháp lý [source_embedding:460787326238286060].\n\nNhững cải cách này nhằm mục tiêu thúc đẩy tăng trưởng kinh tế xanh, bao trùm và bền vững, tạo ra nền tảng vững chắc để Việt Nam tiến tới trở thành quốc gia có thu nhập trung bình cao.",
+    "reference_sources": [
+        "source_embedding:460787326238286108",
+        "source_embedding:460787326238286062",
+        "source_embedding:460787326238286060",
+        "source_embedding:460787326238286088",
+        "source_embedding:460787326238286120"
+    ],
+    "question": "Những lĩnh vực nào cần cải cách để Việt Nam trở thành nước thu nhập trung bình?",
+    "gt": "Môi trường kinh doanh, cơ sở hạ tầng trọng yếu, đầu tư nguồn vốn con người",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Sự kiện ngân hàng lớn bị rút tiền ồ ạt có thể ảnh hưởng đến chính sách tiền tệ theo nhiều cách. Khi một ngân hàng đối mặt với việc rút tiền hàng loạt, điều này có thể gây ra sự mất ổn định tài chính và làm tăng nguy cơ khủng hoảng ngân hàng. Để đối phó, ngân hàng trung ương có thể phải can thiệp bằng cách cung cấp thanh khoản khẩn cấp để hỗ trợ ngân hàng bị ảnh hưởng và duy trì ổn định hệ thống tài chính [source_embedding:460787326238286060].\n\nNgoài ra, sự kiện này có thể tạo áp lực lên tỷ giá và lãi suất. Trong trường hợp này, ngân hàng trung ương có thể phải thực hiện các chính sách tiền tệ linh hoạt hơn để duy trì ổn định kinh tế và đảm bảo rằng lạm phát vẫn nằm trong tầm kiểm soát [source_embedding:460787326238286056].\n\nTóm lại, sự kiện rút tiền ồ ạt tại một ngân hàng lớn có thể buộc chính sách tiền tệ phải linh hoạt hơn để đối phó với các rủi ro tài chính, bảo vệ sự ổn định hệ thống và duy trì các mục tiêu kinh tế vĩ mô.",
+    "reference_sources": [
+        "source_embedding:460787326238286060",
+        "source_embedding:460787326238286056"
+    ],
+    "question": "Làm thế nào sự kiện ngân hàng lớn bị rút tiền ồ ạt ảnh hưởng đến chính sách tiền tệ?",
+    "gt": "Thúc đẩy tăng cường giám sát ngân hàng và khuôn khổ xử lý khủng hoảng",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Dự báo tăng trưởng GDP của Việt Nam năm 2024 là 5,8% [source_embedding:460787326238286062].",
+    "reference_sources": [
+        "source_embedding:460787326238286062"
+    ],
+    "question": "Dự báo tăng trưởng GDP năm 2024 là bao nhiêu?",
+    "gt": "5.8%",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Các biện pháp đề xuất cho thị trường bất động sản bao gồm việc củng cố các đệm vốn và xử lý nợ xấu đang gia tăng, cải tiến bộ công cụ của các cơ quan chức năng để ngăn chặn và quản lý khủng hoảng ngân hàng, cũng như cần hành động kiên quyết nhằm giải quyết các rủi ro như củng cố khuôn khổ xử lý mất khả năng thanh toán và tăng tính minh bạch trên thị trường trái phiếu doanh nghiệp [source_embedding:460787326238286060].",
+    "reference_sources": [
+        "source_embedding:460787326238286060"
+    ],
+    "question": "Các biện pháp nào được đề xuất cho thị trường bất động sản?",
+    "gt": "Hành động kiên quyết giải quyết rủi ro, củng cố khuôn khổ xử lý mất khả năng thanh toán",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Chính sách tỷ giá linh hoạt có thể hỗ trợ ổn định kinh tế vĩ mô qua một số cách. Một tỷ giá linh hoạt cho phép thị trường tự điều chỉnh theo các điều kiện kinh tế thay đổi, giúp hấp thụ các cú sốc ngoại lai và duy trì cân bằng thương mại. Điều này giúp hạn chế sự biến động mạnh mẽ của đồng nội tệ, từ đó ổn định lạm phát và tạo điều kiện thuận lợi cho việc thực hiện chính sách tiền tệ hiệu quả hơn. \n\nNgoài ra, tỷ giá linh hoạt có thể tăng cường khả năng cạnh tranh của hàng hóa xuất khẩu khi điều kiện thị trường toàn cầu thay đổi, giúp duy trì tăng trưởng kinh tế. Đặc biệt, trong bối cảnh sức ép từ tỷ giá gia tăng và lãi suất toàn cầu tăng mạnh, việc điều chỉnh tỷ giá linh hoạt có thể giúp duy trì ổn định kinh tế vĩ mô và hạn chế tác động tiêu cực đến nền kinh tế trong nước [source_embedding:460787326238286056].",
+    "reference_sources": [
+        "source_embedding:460787326238286056"
+    ],
+    "question": "Làm thế nào chính sách tỷ giá linh hoạt hỗ trợ ổn định kinh tế vĩ mô?",
+    "gt": "Giúp điều chỉnh cân bằng ngoại hối và ứng phó với biến động lãi suất toàn cầu",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Dự trữ ngoại hối của Việt Nam trong năm 2023 được dự kiến ở mức 3,1 tháng nhập khẩu. [source_embedding:460787326238286066]",
+    "reference_sources": [
+        "source_embedding:460787326238286066"
+    ],
+    "question": "Số tháng dự trữ ngoại hối năm 2023 dự kiến là bao nhiêu?",
+    "gt": "3.1 tháng nhập khẩu",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Mở rộng mạng lưới an sinh xã hội là cần thiết vì nhiều lý do quan trọng. Trước tiên, nó giúp hỗ trợ những đối tượng dễ bị tổn thương nhất trong xã hội, đảm bảo rằng họ nhận được sự hỗ trợ cần thiết để đối phó với các thách thức kinh tế và xã hội. Việc này góp phần giảm thiểu bất bình đẳng thu nhập và cải thiện đời sống của các nhóm yếu thế, như người nghèo, người khuyết tật và phụ nữ nông thôn, bằng cách tạo ra nhiều cơ hội kinh tế hơn cho họ [source_embedding:460787326238286104].\n\nNgoài ra, mở rộng mạng lưới an sinh xã hội còn đảm bảo rằng thành quả phát triển kinh tế được chia sẻ công bằng, không ai bị bỏ lại phía sau. Các chính sách an sinh xã hội ứng dụng công nghệ hiện đại giúp chi trả bảo trợ xã hội một cách minh bạch và thuận tiện hơn, giúp những người cần trợ giúp có thể tiếp cận dễ dàng hơn [source_embedding:460787326238286104].\n\nCuối cùng, trong bối cảnh kinh tế đang đối mặt với nhiều thách thức, các chuyên gia nhấn mạnh tầm quan trọng của việc mở rộng mạng lưới an sinh xã hội để đảm bảo ổn định tài chính và kinh tế vĩ mô trong trung hạn [source_embedding:460787326238286058].",
+    "reference_sources": [
+        "source_embedding:460787326238286104",
+        "source_embedding:460787326238286058"
+    ],
+    "question": "Tại sao cần mở rộng mạng lưới an sinh xã hội?",
+    "gt": "Hỗ trợ đối tượng dễ bị tổn thương nhất trong bối cảnh kinh tế khó khăn",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "IMF khuyến nghị về huy động vốn cho chuyển đổi xanh thông qua việc tiến tới thực hiện chiến lược và xây dựng khuôn khổ pháp lý phù hợp nhằm thúc đẩy đầu tư vào năng lượng tái tạo. Điều này bao gồm việc phát triển các công cụ tài chính và chính sách để hỗ trợ các dự án xanh, cải cách cơ cấu và cải thiện môi trường kinh doanh để thu hút vốn đầu tư tư nhân và quốc tế [source_embedding:460787326238286062]. Việc thực hiện Đánh giá Quản Lý Đầu tư Công-Khí hậu cũng được coi là hữu ích trong việc hỗ trợ các nỗ lực này [source_embedding:460787326238286062].",
+    "reference_sources": [
+        "source_embedding:460787326238286062"
+    ],
+    "question": "Cơ chế nào giúp huy động vốn cho chuyển đổi xanh theo khuyến nghị của IMF?",
+    "gt": "Xây dựng khuôn khổ pháp lý phù hợp và thực hiện Đánh giá Quản Lý Đầu tư Công-Khí hậu",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "IMF đã hoan nghênh nỗ lực phòng chống tham nhũng của các cơ quan chức năng tại Việt Nam. Bên cạnh đó, IMF cũng nhấn mạnh tầm quan trọng của việc tiếp tục tăng cường quản trị, cải thiện khuôn khổ Phòng Chống Rửa tiền và Tài trợ Khủng bố (AML/CFT), cũng như đơn giản hoá khuôn khổ quy định pháp lý để nâng cao hiệu quả quản lý [source_embedding:460787326238286062].",
+    "reference_sources": [
+        "source_embedding:460787326238286062"
+    ],
+    "question": "IMF có đánh giá cao nỗ lực chống tham nhũng của Việt Nam không?",
+    "gt": "Có",
+    "difficulty": "easy",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "IMF khuyến nghị cải thiện các lĩnh vực quản trị bao gồm:\n\n1. **Tăng cường quản trị và khả năng chống chịu của hệ thống tài chính**: Củng cố các đệm vốn và cải tiến công cụ ngăn chặn và quản lý khủng hoảng ngân hàng [source_embedding:460787326238286060].\n\n2. **Nâng cao khuôn khổ tài khóa và quy trình lập ngân sách**: Tăng cường huy động thu ngân sách trong trung hạn để hỗ trợ kế hoạch phát triển kinh tế xã hội [source_embedding:460787326238286058].\n\n3. **Hiện đại hóa khuôn khổ chính sách tiền tệ**: Tiến tới tỷ giá linh hoạt hơn và cải thiện chính sách tiền tệ trong bối cảnh phức tạp [source_embedding:460787326238286058].\n\n4. **Củng cố quản lý rủi ro trên thị trường**: Bao gồm bất động sản và trái phiếu doanh nghiệp, thông qua cải tiến các khung pháp lý và giám sát [source_embedding:460787326238286060].",
+    "reference_sources": [
+        "source_embedding:460787326238286060",
+        "source_embedding:460787326238286058"
+    ],
+    "question": "Những lĩnh vực nào cần cải thiện về quản trị theo IMF?",
+    "gt": "Quản trị doanh nghiệp, AML/CFT, đơn giản hóa quy định pháp lý",
+    "difficulty": "medium",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Chênh lệch sản lượng (% GDP) là một thước đo quan trọng phản ánh sự khác biệt giữa sản lượng thực tế của nền kinh tế và sản lượng tiềm năng của nó. Khi sản lượng thực tế vượt quá sản lượng tiềm năng, chênh lệch sản lượng dương, điều này có thể chỉ ra rằng nền kinh tế đang hoạt động trên khả năng của nó, dẫn đến nguy cơ lạm phát gia tăng. Ngược lại, khi sản lượng thực tế thấp hơn sản lượng tiềm năng, chênh lệch sản lượng âm, điều này có thể cho thấy nền kinh tế đang hoạt động dưới mức tối ưu, dẫn đến thất nghiệp gia tăng và giảm phát.\n\nChênh lệch sản lượng có thể được sử dụng để đánh giá hiệu quả của các chính sách kinh tế. Nếu chính sách kinh tế, chẳng hạn như chính sách tài khóa hoặc tiền tệ, được thiết kế và thực hiện hiệu quả, nó sẽ giúp thu hẹp chênh lệch sản lượng bằng cách thúc đẩy tăng trưởng kinh tế và ổn định lạm phát. Ví dụ, trong giai đoạn suy thoái kinh tế, chính phủ có thể tăng chi tiêu công để kích thích tổng cầu, từ đó giúp tăng sản lượng thực tế và giảm chênh lệch sản lượng âm.\n\nMột tài liệu cụ thể cho thấy rằng chênh lệch sản lượng của Việt Nam đã biến động từ 0.4% (dương) năm 2019 đến -1.1% (âm) năm 2024, phản ánh các điều chỉnh kinh tế trước những thách thức khác nhau [source_embedding:460787326238286062].",
+    "reference_sources": [
+        "source_embedding:460787326238286062"
+    ],
+    "question": "Làm thế nào chênh lệch sản lượng (%GDP) phản ánh hiệu quả chính sách kinh tế?",
+    "gt": "Chênh lệch âm (-1.1% 2023-2024) cho thấy nền kinh tế vận hành dưới tiềm năng, cần kích thích chính sách",
+    "difficulty": "hard",
+    "note": "Câu hỏi của document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Nghị định 70 quy định rằng các hộ kinh doanh có doanh thu trên 1 tỷ đồng mỗi năm thuộc một số ngành nghề nhất định như ăn uống, khách sạn, bán lẻ, vận tải hành khách, thẩm mỹ, vui chơi giải trí phải sử dụng hóa đơn điện tử khởi tạo từ máy tính tiền và kết nối dữ liệu với cơ quan thuế [source_embedding:460787326238286116].",
+    "reference_sources": [
+        "source_embedding:460787326238286116"
+    ],
+    "question": "Nghị định này quy định về vấn đề gì?",
+    "gt": "Gia hạn thời hạn nộp thuế giá trị gia tăng, thuế thu nhập doanh nghiệp, thuế thu nhập cá nhân và tiền thuê đất trong năm 2025.",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, tôi không tìm thấy thông tin cụ thể nào về \"Điều 3\" liên quan đến việc ưu tiên gia hạn thuế trong các tài liệu hiện có. Bạn có thể cung cấp thêm chi tiết hoặc ngữ cảnh để tôi có thể hỗ trợ bạn tốt hơn?",
+    "reference_sources": [],
+    "question": "Những ngành kinh tế nào được ưu tiên gia hạn thuế theo Điều 3?",
+    "gt": "Nông nghiệp, lâm nghiệp, thủy sản; sản xuất thực phẩm; xây dựng; xuất bản; khai thác dầu thô (trừ một số trường hợp); và các ngành công nghiệp hỗ trợ ưu tiên.",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, tôi không tìm thấy thông tin cụ thể về cách xác định phạm vi ngành kinh tế được gia hạn theo Quyết định 27/2018/QĐ-TTg trong các tài liệu mà tôi đã truy cập. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể cần giải thích, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Làm thế nào để xác định phạm vi ngành kinh tế được gia hạn theo Quyết định 27/2018/QĐ-TTg?",
+    "gt": "Ngành kinh tế được xác định theo nguyên tắc phân cấp: nếu thuộc cấp 1 thì bao gồm tất cả các cấp con; tương tự cho cấp 2, 3, 4.",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, tôi không tìm thấy thông tin cụ thể về thời hạn gia hạn nộp thuế GTGT tháng 2/2025 trong các tài liệu hiện có. Vui lòng cung cấp thêm thông tin hoặc tài liệu khác để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Thời hạn nộp thuế GTGT tháng 2/2025 được gia hạn đến ngày nào?",
+    "gt": "20/09/2025",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, tôi không tìm thấy thông tin cụ thể về việc doanh nghiệp lớn có thuộc đối tượng được gia hạn theo Nghị định trong các tài liệu mà tôi đã truy cập. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể cần giải thích, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Doanh nghiệp lớn có thuộc đối tượng được gia hạn theo Nghị định không?",
+    "gt": "Không, chỉ áp dụng cho doanh nghiệp nhỏ và siêu nhỏ theo Điều 3.4.",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu mà tôi có sẵn, không có thông tin cụ thể về mối quan hệ giữa việc xác định ngành kinh tế và thời hạn gia hạn. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể cần giải thích, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Mối quan hệ giữa việc xác định ngành kinh tế và thời hạn gia hạn được quy định như thế nào?",
+    "gt": "Ngành kinh tế càng ở cấp cao (ví dụ cấp 1) thì phạm vi gia hạn càng rộng, bao gồm tất cả các cấp con bên dưới.",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, tôi không tìm thấy thông tin cụ thể về ngày nghị định có hiệu lực trong các tài liệu hiện có. Nếu bạn có thêm thông tin hoặc tài liệu khác, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Nghị định có hiệu lực đến ngày nào?",
+    "gt": "31/12/2025",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể nào liên quan đến các trường hợp chi nhánh không được gia hạn thuế GTGT. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Trường hợp nào chi nhánh không được gia hạn thuế GTGT?",
+    "gt": "Khi chi nhánh không có hoạt động sản xuất thuộc ngành được gia hạn.",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu mà tôi đã truy cập, không có thông tin cụ thể về quy trình xử lý khi cơ quan thuế phát hiện đối tượng không đủ điều kiện gia hạn. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể hơn, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Quy trình xử lý khi cơ quan thuế phát hiện đối tượng không đủ điều kiện gia hạn?",
+    "gt": "Cơ quan thuế thông báo không gia hạn, người nộp thuế phải nộp đủ tiền thuế + tiền chậm nộp.",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu mà tôi đã truy cập, không có thông tin cụ thể về việc có phải nộp tiền chậm nộp trong thời gian gia hạn hay không. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể hơn, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Có phải nộp tiền chậm nộp trong thời gian gia hạn không?",
+    "gt": "Không",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, tôi không tìm thấy thông tin cụ thể về các bước thực hiện thủ tục gia hạn thuế trong các tài liệu hiện có. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể hơn, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Các bước thực hiện thủ tục gia hạn thuế được quy định thế nào?",
+    "gt": "1. Nộp Giấy đề nghị gia hạn; 2. Tự xác định đối tượng; 3. Cơ quan thuế xử lý; 4. Không tính phạt chậm nộp.",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể nào liên quan đến tiêu chí xác định sản phẩm công nghiệp hỗ trợ ưu tiên. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Làm thế nào để xác định sản phẩm công nghiệp hỗ trợ ưu tiên?",
+    "gt": "Theo Nghị định 111/2015/NĐ-CP về phát triển công nghiệp hỗ trợ.",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu mà tôi đã truy cập, không có thông tin cụ thể về ai chịu trách nhiệm thi hành Nghị định này. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể hơn, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Ai chịu trách nhiệm thi hành Nghị định này?",
+    "gt": "Bộ Tài chính, các Bộ ngành liên quan, UBND tỉnh và người nộp thuế.",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, tôi không tìm thấy thông tin cụ thể về cách xử lý gia hạn thuế cho doanh nghiệp hoạt động đa ngành trong các tài liệu hiện có. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể hơn, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Trường hợp doanh nghiệp hoạt động đa ngành thì xử lý gia hạn thế nào?",
+    "gt": "Được gia hạn toàn bộ số thuế nếu có ít nhất một ngành thuộc diện được gia hạn.",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về thời hạn nộp giấy đề nghị gia hạn để được chấp nhận. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Giấy đề nghị gia hạn phải nộp trước thời hạn nào để được chấp nhận?",
+    "gt": "Trước ngày 30/05/2025",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu mà tôi có quyền truy cập, không có thông tin cụ thể về việc có cần nộp Tờ khai thuế GTGT trong thời gian gia hạn hay không. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể hơn, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Có cần nộp Tờ khai thuế GTGT trong thời gian gia hạn không?",
+    "gt": "Có, nhưng chưa phải nộp tiền thuế.",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về thời gian gia hạn cho thuế TNDN tạm nộp quý I/2025. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Thời gian gia hạn cho thuế TNDN tạm nộp quý I/2025 là bao lâu?",
+    "gt": "05 tháng kể từ ngày hết hạn nộp thuế.",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu mà tôi đã truy cập, không có thông tin cụ thể về cách xử lý khai bổ sung sau thời hạn gia hạn. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể hơn, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Làm thế nào để xử lý khai bổ sung sau thời hạn gia hạn?",
+    "gt": "Số thuế tăng thêm do khai bổ sung sau thời hạn không được gia hạn.",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về mục tiêu chính của Luật Đất đai năm 2024. Nếu bạn có thêm tài liệu hoặc thông tin cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Mục tiêu chính của Luật Đất đai năm 2024 là gì?",
+    "gt": "Quản lý, sử dụng tiết kiệm, bền vững, hiệu quả tài nguyên đất đai; đáp ứng yêu cầu công nghiệp hóa, hiện đại hóa; ổn định xã hội; bảo đảm quốc phòng, an ninh; bảo vệ môi trường; thích ứng biến đổi khí hậu.",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về nhiệm vụ chính mà Bộ Tài nguyên và Môi trường được giao trong việc triển khai Luật. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Nhiệm vụ chính nào được giao cho Bộ Tài nguyên và Môi trường trong triển khai Luật?",
+    "gt": "Xây dựng các Nghị định hướng dẫn thi hành, phối hợp xây dựng hệ thống thông tin quốc gia về đất đai, kiện toàn tổ chức bộ máy quản lý đất đai.",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về mối quan hệ giữa Luật Đất đai năm 2024 và các văn kiện chính trị quan trọng. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Mối quan hệ giữa Luật Đất đai 2024 và các văn kiện chính trị quan trọng được thể hiện như thế nào?",
+    "gt": "Luật thể chế hóa Hiến pháp 2013, Nghị quyết Đại hội XIII của Đảng và Nghị quyết 18-NQ/TW của Ban Chấp hành Trung ương.",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về các Bộ nào tham dự cuộc họp về triển khai Luật. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Những Bộ nào tham dự cuộc họp về triển khai Luật?",
+    "gt": "Bộ Tài nguyên và Môi trường, Tài chính, Tư pháp, Nông nghiệp và PTNT, Kế hoạch và Đầu tư, Công Thương, Văn phòng Chính phủ.",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về thời hạn nào được yêu cầu cho việc trình Nghị định về lấn biển. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Thời hạn nào được yêu cầu cho việc trình Nghị định về lấn biển?",
+    "gt": "Trước ngày 03 tháng 02 năm 2024",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về cơ chế phối hợp giữa các Bộ trong việc xây dựng văn bản hướng dẫn. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Cơ chế phối hợp giữa các Bộ trong xây dựng văn bản hướng dẫn được tổ chức như thế nào?",
+    "gt": "Bộ chủ trì phối hợp với các Bộ liên quan theo nguyên tắc phân công rõ trách nhiệm, đảm bảo không có khoảng trống pháp lý.",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về việc Bộ Tài chính chịu trách nhiệm về thu tiền sử dụng đất. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Có phải Bộ Tài chính chịu trách nhiệm về thu tiền sử dụng đất?",
+    "gt": "Có",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về cách thức triển khai công tác truyền thông về Luật. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Công tác truyền thông về Luật được triển khai thế nào?",
+    "gt": "Xây dựng đề án tuyên truyền gồm tập huấn cho cán bộ và truyền thông chính sách cho dân, doanh nghiệp về quy định mới.",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về cách thức xử lý các đề án thí điểm trong quy trình lập pháp. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Các đề án thí điểm được xử lý như thế nào trong quy trình lập pháp?",
+    "gt": "Phải trình Quốc hội phê duyệt và đưa vào Chương trình làm việc của Kỳ họp thứ 7 Quốc hội khóa XV.",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về thời hạn cuối cùng để trình Kế hoạch triển khai Luật. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Thời hạn cuối cùng để trình Kế hoạch triển khai Luật là khi nào?",
+    "gt": "Trước 07 tháng 02 năm 2024",
+    "difficulty": "easy",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, tôi không tìm thấy thông tin cụ thể về nghị định liên quan đến xử phạt vi phạm hành chính trong lĩnh vực đất đai. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Nghị định nào liên quan đến xử phạt vi phạm hành chính trong lĩnh vực đất đai?",
+    "gt": "Nghị định về xử phạt vi phạm hành chính trong lĩnh vực đất đai do Bộ TN&MT chủ trì xây dựng",
+    "difficulty": "medium",
+    "note": "Câu hỏi không nằm trong document."
+}
+{
+    "notebook_id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "session_id": "chat_session:9zyzk72ne4eq32v9dd46",
+    "ai_message": "Rất tiếc, trong các tài liệu và kết quả tìm kiếm hiện có, không có thông tin cụ thể về cơ chế pháp lý tạm thời được áp dụng trước khi Luật có hiệu lực. Nếu bạn có thêm thông tin hoặc tài liệu cụ thể hơn cần tìm hiểu, vui lòng cung cấp để tôi có thể hỗ trợ bạn tốt hơn.",
+    "reference_sources": [],
+    "question": "Cơ chế pháp lý tạm thời nào được áp dụng trước khi Luật có hiệu lực?",
+    "gt": "Hoàn thiện dự thảo Nghị định sửa đổi Nghị định 44/2014/NĐ-CP và Nghị định 10/2023/NĐ-CP để giải quyết vấn đề thực tiễn",
+    "difficulty": "hard",
+    "note": "Câu hỏi không nằm trong document."
+}
+[1;33mGetting existing sources...[0m
+Current sources:
+[
+  {
+    "id": "source:w2usimkhv30azmtrstia",
+    "title": "014.pdf",
+    "topics": [],
+    "asset": {
+      "file_path": "/mlcv2/WorkingSpace/Personal/quannh/Project/Project/TRNS-AI/ntmkim/Work/DocsQA/data/test-data/014.pdf",
+      "url": ""
+    },
+    "embedded_chunks": 0,
+    "insights_count": 0,
+    "created": "2025-09-16 05:31:36.732385+00:00",
+    "updated": "2025-09-16 05:31:36.732644+00:00"
+  },
+  {
+    "id": "source:bspcknkgdr1m9o5kslgh",
+    "title": "001.doc",
+    "topics": [],
+    "asset": {
+      "file_path": "/mlcv2/WorkingSpace/Personal/quannh/Project/Project/TRNS-AI/ntmkim/Work/DocsQA/data/test-data/001.doc",
+      "url": ""
+    },
+    "embedded_chunks": 0,
+    "insights_count": 0,
+    "created": "2025-09-16 05:31:27.959660+00:00",
+    "updated": "2025-09-16 05:31:27.959690+00:00"
+  },
+  {
+    "id": "source:xhmcn8236zwd0pk8iju3",
+    "title": "004.doc",
+    "topics": [],
+    "asset": {
+      "file_path": "/mlcv2/WorkingSpace/Personal/quannh/Project/Project/TRNS-AI/ntmkim/Work/DocsQA/data/test-data/004.doc",
+      "url": ""
+    },
+    "embedded_chunks": 0,
+    "insights_count": 0,
+    "created": "2025-09-16 05:31:25.054517+00:00",
+    "updated": "2025-09-16 05:31:25.054559+00:00"
+  },
+  {
+    "id": "source:140j19im5ds8w9171jup",
+    "title": "003.doc",
+    "topics": [],
+    "asset": {
+      "file_path": "/mlcv2/WorkingSpace/Personal/quannh/Project/Project/TRNS-AI/ntmkim/Work/DocsQA/data/test-data/003.doc",
+      "url": ""
+    },
+    "embedded_chunks": 0,
+    "insights_count": 0,
+    "created": "2025-09-16 05:31:23.378138+00:00",
+    "updated": "2025-09-16 05:31:23.378183+00:00"
+  },
+  {
+    "id": "source:ubuslnas716fn0or7aic",
+    "title": "002.doc",
+    "topics": [],
+    "asset": {
+      "file_path": "/mlcv2/WorkingSpace/Personal/quannh/Project/Project/TRNS-AI/ntmkim/Work/DocsQA/data/test-data/002.doc",
+      "url": ""
+    },
+    "embedded_chunks": 0,
+    "insights_count": 0,
+    "created": "2025-09-16 05:31:22.226660+00:00",
+    "updated": "2025-09-16 05:31:22.226678+00:00"
+  },
+  {
+    "id": "source:7s7x6484fznbjic2sg54",
+    "title": "005.doc",
+    "topics": [],
+    "asset": {
+      "file_path": "/mlcv2/WorkingSpace/Personal/quannh/Project/Project/TRNS-AI/ntmkim/Work/DocsQA/data/test-data/005.doc",
+      "url": ""
+    },
+    "embedded_chunks": 0,
+    "insights_count": 0,
+    "created": "2025-09-16 05:31:20.200884+00:00",
+    "updated": "2025-09-16 05:31:20.200908+00:00"
+  }
+]
+
+[1;33mDeleting existing sources...[0m
+Deleting existing source: source:w2usimkhv30azmtrstia
+Deleted source: source:w2usimkhv30azmtrstia
+Deleting existing source: source:bspcknkgdr1m9o5kslgh
+Deleted source: source:bspcknkgdr1m9o5kslgh
+Deleting existing source: source:xhmcn8236zwd0pk8iju3
+Deleted source: source:xhmcn8236zwd0pk8iju3
+Deleting existing source: source:140j19im5ds8w9171jup
+Deleted source: source:140j19im5ds8w9171jup
+Deleting existing source: source:ubuslnas716fn0or7aic
+Deleted source: source:ubuslnas716fn0or7aic
+Deleting existing source: source:7s7x6484fznbjic2sg54
+Deleted source: source:7s7x6484fznbjic2sg54
+
+[1;33mGetting existing notebooks...[0m
+Current notebooks:
+[
+  {
+    "id": "notebook:0043e1445c464a3bbf3caaffe6d0ea1f",
+    "name": "yuu",
+    "description": "empty",
+    "archived": false,
+    "created": "2025-09-16 05:31:20.005783+00:00",
+    "updated": "2025-09-16 05:31:20.005802+00:00"
+  }
+]
+
+[1;33mDeleting existing notebooks...[0m
+Deleting existing notebook: notebook:0043e1445c464a3bbf3caaffe6d0ea1f
+Deleted notebook: notebook:0043e1445c464a3bbf3caaffe6d0ea1f
+
+[1;33mCreating new notebook...[0m
+Notebook creation response:
+{
+  "id": "notebook:15436e2182d749f19d4014a3ab163b7f",
+  "name": "yuu",
+  "description": "empty",
+  "archived": false,
+  "created": "2025-09-16 07:43:45.270427+00:00",
+  "updated": "2025-09-16 07:43:45.270442+00:00"
+}
+[0;32mCreated notebook with ID: notebook:15436e2182d749f19d4014a3ab163b7f[0m
+
+[1;33mSaving notebook ID to file...[0m
+[0;32mNotebook ID saved to file: id_notebook[0m
+Content: notebook:15436e2182d749f19d4014a3ab163b7f
+
+[1;33mGetting existing sources...[0m
+Current sources:
+[]
+
+[1;33mDeleting existing sources...[0m
+No existing sources found to delete
+
+
+
+
+
+Processing new 6 files
+ADDING FILE:  005.doc
