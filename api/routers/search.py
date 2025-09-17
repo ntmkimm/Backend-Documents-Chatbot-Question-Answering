@@ -18,22 +18,23 @@ router = APIRouter()
 async def search_knowledge_base(search_request: SearchRequest):
     """Search the knowledge base using text or vector search."""
     try:
-        if search_request.type == "vector":
-            # Check if embedding model is available for vector search
-            if not await model_manager.get_embedding_model():
-                raise HTTPException(
-                    status_code=400,
-                    detail="Vector search requires an embedding model. Please configure one in the Models section.",
-                )
+        # if search_request.type == "vector":
+        #     # Check if embedding model is available for vector search
+        #     if not await model_manager.get_embedding_model():
+        #         raise HTTPException(
+        #             status_code=400,
+        #             detail="Vector search requires an embedding model. Please configure one in the Models section.",
+        #         )
 
-            results = await vector_search(
-                keyword=search_request.query,
-                results=search_request.limit,
-                source=search_request.search_sources,
-                note=search_request.search_notes,
-                minimum_score=search_request.minimum_score,
-            )
-        elif search_request.type == "text":
+        #     results = await vector_search(
+        #         keyword=search_request.query,
+        #         results=search_request.limit,
+        #         source=search_request.search_sources,
+        #         note=search_request.search_notes,
+        #         minimum_score=search_request.minimum_score,
+        #     )
+        
+        if search_request.type == "text":
             # Text search
             results = await text_search(
                 keyword=search_request.query,
@@ -41,15 +42,18 @@ async def search_knowledge_base(search_request: SearchRequest):
                 source=search_request.search_sources,
                 note=search_request.search_notes,
             )
+            
         elif search_request.type == "notebook_vector":
             results = await vector_search_in_notebook(
                 keyword=search_request.query,
                 results=search_request.limit,
-                source=search_request.search_sources,
-                note=search_request.search_notes,
-                minimum_score=search_request.minimum_score,
+                source_ids=[],
                 notebook_id=search_request.notebook_id,
             )
+            tmp = []
+            for k, v in results.items():
+                tmp.append({"id": k, "content": v})
+            results = tmp
         else:
             results = await text_search_in_notebook(
                 keyword=search_request.query,

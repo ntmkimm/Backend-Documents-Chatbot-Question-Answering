@@ -138,7 +138,7 @@ class TransformationExecuteRequest(BaseModel):
     
     transformation_id: str = Field(..., description="ID of the transformation to execute")
     input_text: str = Field(..., description="Text to transform")
-    model_id: str = Field(..., description="Model ID to use for the transformation")
+    # model_id: str = Field(..., description="Model ID to use for the transformation")
 
 
 class TransformationExecuteResponse(BaseModel):
@@ -146,7 +146,7 @@ class TransformationExecuteResponse(BaseModel):
     
     output: str = Field(..., description="Transformed text")
     transformation_id: str = Field(..., description="ID of the transformation used")
-    model_id: str = Field(..., description="Model ID used")
+    # model_id: str = Field(..., description="Model ID used")
 
 
 # Notes API models
