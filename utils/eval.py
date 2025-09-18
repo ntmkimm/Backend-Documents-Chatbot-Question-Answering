@@ -199,7 +199,7 @@ def main():
     delete_existing_sources(sources=sources, notebook_id=notebook_id)
     
     _qas = []
-    batch_size = 6
+    batch_size = 1
     file_paths = []
     for ext in ["*.doc", "*.pdf"]:
         file_paths.extend(DATA.glob(ext))
@@ -212,6 +212,7 @@ def main():
             print("ADDING FILE: ", file_path.name)
             payload = {
                 "notebook_id": notebook_id,
+                "source_id": str(uuid.uuid4()),
                 "type": 'upload',
                 "file_path": str(file_path),
                 "content": None,
@@ -235,7 +236,7 @@ def main():
             "source_ids": [],
         }
         
-        response = make_request('POST', '/notebooks/chat', payload)
+        response = make_request('POST', '/notebooks/ask_chat', payload)
         session_id = response["session_id"]
         
         count_in_source = 0

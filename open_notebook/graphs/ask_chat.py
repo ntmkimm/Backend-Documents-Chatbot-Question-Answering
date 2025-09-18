@@ -17,10 +17,8 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, AIMe
 from langchain.chains import ConversationalRetrievalChain
 from open_notebook.graphs.utils import (
     provision_langchain_model, 
-    combine_results,
-    upsert_long_term_memory,
+    _memory_agent_milvus,
     get_postgres_short_memory,
-    vectorstore
 )
 
 from open_notebook.domain.notebook import (
@@ -127,22 +125,14 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     Node sinh câu trả lời và STREAM từng token ra ngoài.
     - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
     """
-    # print("state: ", state)
     thread_id = config.get("configurable", {}).get("thread_id")
-    retriever = vectorstore.as_retriever(
-        search_kwargs={
-            "k": 4,
-            "expr": f"thread_id == '{thread_id}'"  # đảm bảo chỉ lấy memory của đúng user
-        }
-    )
     
     short_memory = get_postgres_short_memory(
         thread_id=thread_id,
         k=4,
     )
     
-    # search using retriever to get relevant documents
-    search_results = retriever.get_relevant_documents(query=state.get("message", HumanMessage(content="")).content)
+    search_results = await _memory_agent_milvus.search_long_term_memory(query=state.get("message", HumanMessage(content="")).content, top_k=4, thread_id=thread_id)
     chat_history = search_results + short_memory.buffer
     print("chat history:", chat_history)
     
@@ -178,7 +168,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     raw = "".join(parts)
     print("last: ", raw)
     cleaned = clean_thinking_content(raw)
-    upsert_long_term_memory(user_text=state.get("message", HumanMessage(content="")).content, ai_text=cleaned, thread_id=thread_id)
+    await _memory_agent_milvus.upsert_long_term_memory(user_text=state.get("message", HumanMessage(content="")).content, ai_text=cleaned, thread_id=thread_id)
     short_memory.chat_memory.add_user_message(message=state.get("message"))
     short_memory.chat_memory.add_ai_message(message=AIMessage(content=cleaned))
     
