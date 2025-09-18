@@ -76,7 +76,7 @@ def load_notebook_id() -> str:
         sys.exit(1)
 
 payload = {
-  "query": "thái lan",
+  "query": "Thailand",
   "type": "notebook_text",
   "notebook_id": load_notebook_id(),
   "minimum_score": 0,

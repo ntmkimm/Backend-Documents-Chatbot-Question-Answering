@@ -49,19 +49,11 @@ class SearchResponse(BaseModel):
     total_count: int = Field(..., description="Total number of results")
     search_type: str = Field(..., description="Type of search performed")
 
-
-class AskRequest(BaseModel):
-    question: str = Field(..., description="Question to ask the knowledge base")
-    # strategy_model: str = Field(..., description="Model ID for query strategy")
-    # answer_model: str = Field(..., description="Model ID for individual answers")
-    # final_answer_model: str = Field(..., description="Model ID for final answer")
-
 class ChatRequest(BaseModel):
     notebook_id: str = Field(..., description="ID of the notebook")
     session_id: Optional[str] = Field(None, description="ID of the chat session")
     source_ids: Optional[List[str]] = Field(None, description="List of source IDs to include in the chat context")
     chat_message: str = Field(..., description="Message content")
-    # mode: Literal['stream', 'complete'] = Field(..., description="Mode of response generation: 'stream' for streaming responses, 'complete' for full response at once")
 
 class ChatResponse(BaseModel):
     notebook_id: str = Field(..., description="ID of the notebook")
@@ -74,35 +66,6 @@ class NotebookSourceCreateRequest(BaseModel):
     title: Optional[str] = Field(None, description="Source title")
     transformations: Optional[List[str]] = Field(default_factory=list, description="Transformation IDs to apply")
     embed: bool = Field(False, description="Whether to embed content for vector search")
-
-class AskResponse(BaseModel):
-    answer: str = Field(..., description="Final answer from the knowledge base")
-    question: str = Field(..., description="Original question")
-
-
-# Models API models
-class ModelCreate(BaseModel):
-    name: str = Field(..., description="Model name (e.g., gpt-4o-mini, claude, gemini)")
-    provider: str = Field(..., description="Provider name (e.g., openai, anthropic, gemini)")
-    type: str = Field(..., description="Model type (language, embedding, text_to_speech, speech_to_text)")
-
-
-class ModelResponse(BaseModel):
-    id: Optional[str] = ''
-    name: str
-    provider: str
-    type: str
-    created: str
-    updated: str
-
-class DefaultModelsResponse(BaseModel):
-    default_chat_model: Optional[str] 
-    default_transformation_model: Optional[str] 
-    large_context_model: Optional[str] 
-    default_text_to_speech_model: Optional[str] 
-    default_speech_to_text_model: Optional[str] 
-    default_embedding_model: Optional[str] 
-    default_tools_model: Optional[str] 
 
 
 # Transformations API models
@@ -188,23 +151,6 @@ class EmbedResponse(BaseModel):
     message: str = Field(..., description="Result message")
     item_id: str = Field(..., description="ID of the item that was embedded")
     item_type: str = Field(..., description="Type of item that was embedded")
-
-
-# Settings API models
-class SettingsResponse(BaseModel):
-    default_content_processing_engine_doc: Optional[str] = None
-    default_content_processing_engine_url: Optional[str] = None
-    default_embedding_option: Optional[str] = None
-    auto_delete_files: Optional[str] = None
-    youtube_preferred_languages: Optional[List[str]] = None
-
-
-class SettingsUpdate(BaseModel):
-    default_content_processing_engine_doc: Optional[str] = None
-    default_content_processing_engine_url: Optional[str] = None
-    default_embedding_option: Optional[str] = None
-    auto_delete_files: Optional[str] = None
-    youtube_preferred_languages: Optional[List[str]] = None
 
 
 # Sources API models

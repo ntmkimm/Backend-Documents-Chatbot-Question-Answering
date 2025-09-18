@@ -102,54 +102,6 @@ class APIClient:
         }
         return self._make_request("POST", "/api/search", json=data)
 
-    def ask_simple(
-        self,
-        question: str,
-        strategy_model: str,
-        answer_model: str,
-        final_answer_model: str,
-    ) -> Dict:
-        """Ask the knowledge base a question (simple, non-streaming)."""
-        data = {
-            "question": question,
-            "strategy_model": strategy_model,
-            "answer_model": answer_model,
-            "final_answer_model": final_answer_model,
-        }
-        # Use 5 minute timeout for long-running ask operations
-        return self._make_request(
-            "POST", "/api/search/ask/simple", json=data, timeout=300.0
-        )
-
-    # Models API methods
-    def get_models(self, model_type: Optional[str] = None) -> List[Dict]:
-        """Get all models with optional type filtering."""
-        params = {}
-        if model_type:
-            params["type"] = model_type
-        return self._make_request("GET", "/api/models", params=params)
-
-    def create_model(self, name: str, provider: str, model_type: str) -> Dict:
-        """Create a new model."""
-        data = {
-            "name": name,
-            "provider": provider,
-            "type": model_type,
-        }
-        return self._make_request("POST", "/api/models", json=data)
-
-    def delete_model(self, model_id: str) -> Dict:
-        """Delete a model."""
-        return self._make_request("DELETE", f"/api/models/{model_id}")
-
-    def get_default_models(self) -> Dict:
-        """Get default model assignments."""
-        return self._make_request("GET", "/api/models/defaults")
-
-    def update_default_models(self, **defaults) -> Dict:
-        """Update default model assignments."""
-        return self._make_request("PUT", "/api/models/defaults", json=defaults)
-
     # Transformations API methods
     def get_transformations(self) -> List[Dict]:
         """Get all transformations."""
@@ -248,15 +200,6 @@ class APIClient:
         }
         # Use extended timeout for embedding operations
         return self._make_request("POST", "/api/embed", json=data, timeout=120.0)
-
-    # Settings API methods
-    def get_settings(self) -> Dict:
-        """Get all application settings."""
-        return self._make_request("GET", "/api/settings")
-
-    def update_settings(self, **settings) -> Dict:
-        """Update application settings."""
-        return self._make_request("PUT", "/api/settings", json=settings)
 
     # Context API methods
     def get_notebook_context(
@@ -357,50 +300,6 @@ class APIClient:
         return self._make_request(
             "POST", f"/api/sources/{source_id}/insights", json=data
         )
-
-    # Episode Profiles API methods
-    def get_episode_profiles(self) -> List[Dict]:
-        """Get all episode profiles."""
-        return self._make_request("GET", "/api/episode-profiles")
-
-    def get_episode_profile(self, profile_name: str) -> Dict:
-        """Get a specific episode profile by name."""
-        return self._make_request("GET", f"/api/episode-profiles/{profile_name}")
-
-    def create_episode_profile(
-        self,
-        name: str,
-        description: str = "",
-        speaker_config: str = "",
-        outline_provider: str = "",
-        outline_model: str = "",
-        transcript_provider: str = "",
-        transcript_model: str = "",
-        default_briefing: str = "",
-        num_segments: int = 5,
-    ) -> Dict:
-        """Create a new episode profile."""
-        data = {
-            "name": name,
-            "description": description,
-            "speaker_config": speaker_config,
-            "outline_provider": outline_provider,
-            "outline_model": outline_model,
-            "transcript_provider": transcript_provider,
-            "transcript_model": transcript_model,
-            "default_briefing": default_briefing,
-            "num_segments": num_segments,
-        }
-        return self._make_request("POST", "/api/episode-profiles", json=data)
-
-    def update_episode_profile(self, profile_id: str, **updates) -> Dict:
-        """Update an episode profile."""
-        return self._make_request("PUT", f"/api/episode-profiles/{profile_id}", json=updates)
-
-    def delete_episode_profile(self, profile_id: str) -> Dict:
-        """Delete an episode profile."""
-        return self._make_request("DELETE", f"/api/episode-profiles/{profile_id}")
-
 
 # Global client instance
 api_client = APIClient()

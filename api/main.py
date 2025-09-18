@@ -8,23 +8,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.auth import PasswordAuthMiddleware
-from api.routers import commands as commands_router, notebook_sources
 from api.routers import (
     context,
     embedding,
-    episode_profiles,
     insights,
-    models,
     notebooks,
     notes,
-    podcasts,
     search,
-    settings,
     sources,
     # sources_tabular,
-    speaker_profiles,
     transformations,
-    notebook_chats,
     notebook_sources,
     notebook_ask_chat,
 )
@@ -70,20 +63,13 @@ app.add_middleware(PasswordAuthMiddleware)
 # Include routers
 app.include_router(notebooks.router, prefix="/api", tags=["notebooks"])
 app.include_router(search.router, prefix="/api", tags=["search"])
-app.include_router(models.router, prefix="/api", tags=["models"])
 app.include_router(transformations.router, prefix="/api", tags=["transformations"])
 app.include_router(notes.router, prefix="/api", tags=["notes"])
 app.include_router(embedding.router, prefix="/api", tags=["embedding"])
-app.include_router(settings.router, prefix="/api", tags=["settings"])
 app.include_router(context.router, prefix="/api", tags=["context"])
 app.include_router(sources.router, prefix="/api", tags=["sources"])
 # app.include_router(sources_tabular.router, prefix="/api", tags=["sources_tabular"])
 app.include_router(insights.router, prefix="/api", tags=["insights"])
-app.include_router(commands_router.router, prefix="/api", tags=["commands"])
-app.include_router(podcasts.router, prefix="/api", tags=["podcasts"])
-app.include_router(episode_profiles.router, prefix="/api", tags=["episode-profiles"])
-app.include_router(speaker_profiles.router, prefix="/api", tags=["speaker-profiles"])
-app.include_router(notebook_chats.router, prefix="/api", tags=["notebook-chats"])
 app.include_router(notebook_sources.router, prefix="/api", tags=["notebook-source"])
 app.include_router(notebook_ask_chat.router, prefix="/api", tags=["notebook-ask-chat"])
 import asyncio

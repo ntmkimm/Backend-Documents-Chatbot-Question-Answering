@@ -474,30 +474,3 @@ async def text_search_in_notebook(
         logger.error(f"Error performing full text search: {str(e)}")
         logger.exception(e)
         raise DatabaseOperationError(e)
-# async def text_search_in_notebook(
-#     notebook_id: str, keyword: str, results: int, source: bool = True, note: bool = True
-# ):
-#     if not keyword:
-#         raise InvalidInputError("Search keyword cannot be empty")
-#     if not ensure_record_id(notebook_id):
-#         raise InvalidInputError("Search notebook_id may be wrong")
-#     try:
-#         params = {
-#             "keyword": keyword, 
-#             "results": results, 
-#             "source": source, 
-#             "note": note, 
-#             "notebook_id": ensure_record_id(notebook_id),
-#         }
-#         results = await repo_query(
-#             """
-#             select *
-#             from fn::text_search_in_notebook($keyword, $results, $source, $note, $notebook_id)
-#             """,
-#             params
-#         )
-#         return results
-#     except Exception as e:
-#         logger.error(f"Error performing text search: {str(e)}")
-#         logger.exception(e)
-#         raise DatabaseOperationError(e)

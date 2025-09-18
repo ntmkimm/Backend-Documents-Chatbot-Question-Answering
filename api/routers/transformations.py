@@ -181,12 +181,6 @@ async def execute_transformation(execute_request: TransformationExecuteRequest):
         if not transformation:
             raise HTTPException(status_code=404, detail="Transformation not found")
 
-        # # Validate model exists
-        # model = await Model.get(execute_request.model_id)
-        # if not model:
-        #     raise HTTPException(status_code=404, detail="Model not found")
-
-        # Execute the transformation
         result = await transformation_graph.ainvoke(
             dict(
                 input_text=execute_request.input_text,
