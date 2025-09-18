@@ -192,15 +192,17 @@ class Source(ObjectModel):
 
     async def get_embedded_chunks(self) -> int:
         try:
-            result = await repo_query(
-                """
-                select count() as chunks from source_embedding where source=$id GROUP ALL
-                """,
-                {"id": ensure_record_id(self.id)},
-            )
-            if len(result) == 0:
-                return 0
-            return result[0]["chunks"]
+            result = await MilvusService.get_number_embeddings_ofsource(collection_name="source_embedding", source_id=self.id)
+            # result = await repo_query(
+            #     """
+            #     select count() as chunks from source_embedding where source=$id GROUP ALL
+            #     """,
+            #     {"id": ensure_record_id(self.id)},
+            # )
+            # if len(result) == 0:
+            #     return 0
+            # return result[0]["chunks"]
+            return result
         except Exception as e:
             logger.error(f"Error fetching chunks count for source {self.id}: {str(e)}")
             logger.exception(e)
@@ -446,31 +448,56 @@ async def vector_search_in_notebook(
         logger.error(f"Error performing hybrid search: {str(e)}")
         logger.exception(e)
         raise DatabaseOperationError(e)
-
+    
 async def text_search_in_notebook(
-    notebook_id: str, keyword: str, results: int, source: bool = True, note: bool = True
+    keyword: str, 
+    results: int,
+    notebook_id: str, 
+    source_ids: List[str] = [],
 ):
     if not keyword:
         raise InvalidInputError("Search keyword cannot be empty")
     if not ensure_record_id(notebook_id):
         raise InvalidInputError("Search notebook_id may be wrong")
     try:
+
         params = {
-            "keyword": keyword, 
-            "results": results, 
-            "source": source, 
-            "note": note, 
-            "notebook_id": ensure_record_id(notebook_id),
+            "collection_name": "source_embedding",
+            "query_keyword": [keyword],
+            "notebook_id": notebook_id,
+            "limit": results,
+            "source_ids": source_ids,
         }
-        results = await repo_query(
-            """
-            select *
-            from fn::text_search_in_notebook($keyword, $results, $source, $note, $notebook_id)
-            """,
-            params
-        )
+        results = await MilvusService.full_text_search(**params)
         return results
     except Exception as e:
-        logger.error(f"Error performing text search: {str(e)}")
+        logger.error(f"Error performing full text search: {str(e)}")
         logger.exception(e)
         raise DatabaseOperationError(e)
+# async def text_search_in_notebook(
+#     notebook_id: str, keyword: str, results: int, source: bool = True, note: bool = True
+# ):
+#     if not keyword:
+#         raise InvalidInputError("Search keyword cannot be empty")
+#     if not ensure_record_id(notebook_id):
+#         raise InvalidInputError("Search notebook_id may be wrong")
+#     try:
+#         params = {
+#             "keyword": keyword, 
+#             "results": results, 
+#             "source": source, 
+#             "note": note, 
+#             "notebook_id": ensure_record_id(notebook_id),
+#         }
+#         results = await repo_query(
+#             """
+#             select *
+#             from fn::text_search_in_notebook($keyword, $results, $source, $note, $notebook_id)
+#             """,
+#             params
+#         )
+#         return results
+#     except Exception as e:
+#         logger.error(f"Error performing text search: {str(e)}")
+#         logger.exception(e)
+#         raise DatabaseOperationError(e)

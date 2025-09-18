@@ -12,6 +12,7 @@ import json
 import sys
 from typing import Dict, List, Optional
 import uuid
+
 # Configuration
 API_BASE = "http://localhost:4427/api"
 AUTH_TOKEN = "1234567890"
@@ -67,7 +68,6 @@ def get_existing_notebooks() -> List[Dict]:
     
     # Note: The GET request also includes data payload as per your example
     data = {
-        "notebook_id": str(uuid.uuid4()),
         "name": NOTEBOOK_NAME,
         "description": NOTEBOOK_DESCRIPTION
     }
@@ -111,6 +111,7 @@ def create_notebook() -> str:
     print_colored("Step 3: Creating new notebook...", Colors.YELLOW)
     
     data = {
+        "notebook_id": str(uuid.uuid4()),
         "name": NOTEBOOK_NAME,
         "description": NOTEBOOK_DESCRIPTION
     }

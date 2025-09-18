@@ -22,6 +22,8 @@ class SourceState(TypedDict):
     source: Source
     transformation: Annotated[list, operator.add]
     embed: bool
+    source_id: str
+    title: Optional[str]
 
 
 class TransformationState(TypedDict):
@@ -51,9 +53,10 @@ async def save_source(state: SourceState) -> dict:
     source = Source(
         asset=Asset(url=content_state.url, file_path=content_state.file_path),
         full_text=content_state.content,
-        title=content_state.title,
+        title=state["title"],
+        id=state["source_id"],
     )
-    await source.save()
+    await source.save(provided_id=True)
 
     if state["notebook_id"]:
         logger.debug(f"Adding source to notebook {state['notebook_id']}")
@@ -117,6 +120,7 @@ workflow.add_node("transform_content", transform_content)
 # Define the graph edges
 workflow.add_edge(START, "content_process")
 workflow.add_edge("content_process", "save_source")
+workflow.add_edge("save_source", END)
 workflow.add_conditional_edges(
     "save_source", trigger_transformations, ["transform_content"]
 )

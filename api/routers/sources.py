@@ -1,8 +1,7 @@
 from typing import List, Optional
-import uuid
 from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
-
+import uuid
 from api.models import (
     AssetModel,
     CreateSourceInsightRequest,
@@ -72,6 +71,8 @@ async def create_source(source_data: SourceCreate):
     """Create a new source."""
     try:
         # Verify notebook exists
+        sourceid = uuid.UUID(source_data.source_id) # if not uuid, raise error
+        sourceid = sourceid.hex
         notebook = await Notebook.get(source_data.notebook_id)
         if not notebook:
             raise HTTPException(status_code=404, detail="Notebook not found")
@@ -120,8 +121,10 @@ async def create_source(source_data: SourceCreate):
             {
                 "content_state": content_state,
                 "notebook_id": source_data.notebook_id,
+                "source_id": sourceid,
                 "apply_transformations": transformations,
                 "embed": source_data.embed,
+                "title": source_data.title
             }
         )
 

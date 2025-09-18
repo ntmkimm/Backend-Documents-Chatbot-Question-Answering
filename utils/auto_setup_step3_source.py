@@ -6,7 +6,7 @@ Script to setup sources via API:
 3. Create new text source with content from file
 4. Get random transformation from API
 """
-
+import uuid
 import requests
 import json
 import sys
@@ -168,7 +168,9 @@ def delete_existing_sources(sources: List[Dict], notebook_id: str):
     sources_to_delete = []
     
     for source in sources:
-        sources_to_delete.append(source.get('id'))
+        # Check if source belongs to our notebook
+        if source.get('notebook_id') == notebook_id:
+            sources_to_delete.append(source.get('id'))
     
     # Delete sources
     if sources_to_delete:
@@ -191,6 +193,7 @@ def create_text_source(notebook_id: str, content: str, transformation_id: str) -
     
     data = {
         "notebook_id": notebook_id,
+        "source_id": str(uuid.uuid4()),
         "type": "text",
         "content": content,
         "transformations": [transformation_id],

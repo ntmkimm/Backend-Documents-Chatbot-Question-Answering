@@ -132,7 +132,7 @@ class ObjectModel(BaseModel):
             logger.error(f"Error saving record: {e}")
             raise DatabaseOperationError(e)
         
-    async def save(self) -> None:
+    async def save(self, provided_id: bool = False) -> None:
         from open_notebook.domain.models import model_manager
 
         try:
@@ -157,6 +157,9 @@ class ObjectModel(BaseModel):
             if self.id is None:
                 data["created"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 repo_result = await repo_create(self.__class__.table_name, data)
+            elif provided_id:
+                data["created"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                repo_result = await repo_create(self.__class__.table_name, data,set_id=True)
             else:
                 data["created"] = (
                     self.created.strftime("%Y-%m-%d %H:%M:%S")

@@ -1,9 +1,9 @@
 from typing import List, Optional
-
+import uuid
 from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
-
-from api.models import NoteCreate, NoteResponse, NoteUpdate
+from .sources import create_source
+from api.models import NoteCreate, NoteResponse, NoteUpdate, NoteConvert, SourceCreate, SourceResponse
 from open_notebook.domain.notebook import Note
 from open_notebook.exceptions import InvalidInputError
 
@@ -166,3 +166,25 @@ async def delete_note(note_id: str):
     except Exception as e:
         logger.error(f"Error deleting note {note_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error deleting note: {str(e)}")
+
+@router.post("/note_convert", response_model=SourceResponse)
+async def convert_to_source(noteconvert: NoteConvert):
+    '''Convert a note to source'''
+    try:
+        source_id = str(uuid.uuid4().hex)
+        note = await Note.get(noteconvert.note_id)
+        sourcecreate = SourceCreate(
+            source_id= source_id,
+            notebook_id = noteconvert.notebook_id,
+            type = "text",
+            content = note.content,
+            title = note.title,
+            embed = noteconvert.embed
+            )
+        source_response = await create_source(source_data = sourcecreate)
+        return source_response
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error converting notes: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching notes: {str(e)}")

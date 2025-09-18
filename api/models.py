@@ -171,6 +171,11 @@ class NoteResponse(BaseModel):
     created: str
     updated: str
 
+class NoteConvert(BaseModel):
+    note_id: str
+    notebook_id: str
+    embed: bool = True
+
 
 # Embedding API models
 class EmbedRequest(BaseModel):
@@ -209,6 +214,7 @@ class AssetModel(BaseModel):
 
 
 class SourceCreate(BaseModel):
+    source_id: str
     notebook_id: str = Field(..., description="Notebook ID to add the source to")
     type: str = Field(..., description="Source type: link, upload, or text")
     url: Optional[str] = Field(None, description="URL for link type")
