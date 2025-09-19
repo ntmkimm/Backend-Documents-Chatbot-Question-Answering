@@ -15,19 +15,16 @@ async def provision_langchain_model(
     assert isinstance(model, LanguageModel), f"Model is not a LanguageModel: {model}"
     return model.to_langchain()
 
-import os
+import os, logging
 from dotenv import load_dotenv
 load_dotenv()
-
-MILVUS_ADDRESS = os.getenv("MILVUS_ADDRESS", "localhost")
-MILVUS_PORT = int(os.getenv("MILVUS_PORT", "19530"))
-MILVUS_URI = os.getenv("MILVUS_URI", f"http://{MILVUS_ADDRESS}:{MILVUS_PORT}")
-MILVUS_COLLECTION = os.getenv("MILVUS_COLLECTION", "agent_memory1")
 
 from datetime import datetime
 from langchain.memory import ConversationBufferWindowMemory
 from langchain_community.chat_message_histories import PostgresChatMessageHistory
-from langchain.schema import Document
+from pymilvus import (
+    connections, FieldSchema, CollectionSchema, DataType, Collection, utility
+)
 
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "notebook")
@@ -48,12 +45,6 @@ def get_postgres_short_memory(thread_id: str, k: int = 4) -> ConversationBufferW
             table_name="lc_message_history"
         )
     )
-    
-from datetime import datetime
-from pymilvus import (
-    connections, FieldSchema, CollectionSchema, DataType, Collection, utility
-)
-import os, logging
 
 logger = logging.getLogger(__name__)
 MILVUS_ADDRESS = os.getenv("MILVUS_ADDRESS", "192.168.20.156")

@@ -21,7 +21,7 @@ DEFINE FIELD IF NOT EXISTS embedding ON TABLE source_insight TYPE array<float>;
 
 
 DEFINE EVENT IF NOT EXISTS source_delete ON TABLE source WHEN ($after == NONE) THEN {
-    delete source_embedding where source == $before.id;
+    -- delete source_embedding where source == $before.id;
     delete source_insight where source == $before.id;
 };
 
@@ -53,14 +53,11 @@ DEFINE TABLE IF NOT EXISTS artifact
 TYPE RELATION 
 FROM note TO notebook;
 
-DEFINE TABLE IF NOT EXISTS podcast_config SCHEMALESS;
-
 -- entender o analyzer
 DEFINE ANALYZER IF NOT EXISTS my_analyzer TOKENIZERS blank,class,camel,punct FILTERS snowball(english), lowercase;
 
 DEFINE INDEX IF NOT EXISTS idx_source_title ON TABLE source COLUMNS title SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
 DEFINE INDEX IF NOT EXISTS idx_source_full_text ON TABLE source COLUMNS full_text SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
-DEFINE INDEX IF NOT EXISTS idx_source_embed_chunk ON TABLE source_embedding COLUMNS content SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
 DEFINE INDEX IF NOT EXISTS idx_source_insight ON TABLE source_insight COLUMNS content SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
 DEFINE INDEX IF NOT EXISTS idx_note ON TABLE note COLUMNS content SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
 DEFINE INDEX IF NOT EXISTS idx_note_title ON TABLE note COLUMNS title SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
@@ -245,7 +242,3 @@ UPSERT open_notebook:default_prompts
         - Output ONLY the requested content, without acknowledgements of the task and additional chatting. Don't start with \"Sure, I can help you with that.\" or \"Here is the information you requested:\". Just provide the content.
         - Do not stop in the middle of the generation to ask me questions. Execute my request completely. 
         "};
-
-
--- 6
-update model set provider='vertex' where provider='vertexai';
