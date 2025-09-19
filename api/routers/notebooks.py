@@ -51,7 +51,7 @@ async def create_notebook(notebook: NotebookCreate):
             description=notebook.description,
         )
 
-        await new_notebook.notebook_create(nbid)
+        await new_notebook.save(provided_id=True)
         return NotebookResponse(
             id=new_notebook.id,
             name=new_notebook.name,

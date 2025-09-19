@@ -36,12 +36,11 @@ class NotebookResponse(BaseModel):
 # Search models
 class SearchRequest(BaseModel):
     query: str = Field(..., description="Search query")
-    type: Literal["text", "vector", "notebook_vector", "notebook_text"] = Field("text", description="Search type")
+    notebook_id: str = Field(..., description="Notebook id")
+    source_ids: List[str] = Field([], description="Source ids will be searched in, if [] then search all")
+    type: Literal["semantic", "text", "hybrid"] = Field("text", description="Search type")
     limit: int = Field(100, description="Maximum number of results", le=1000)
-    search_sources: bool = Field(True, description="Include sources in search")
-    search_notes: bool = Field(True, description="Include notes in search")
-    minimum_score: float = Field(0.2, description="Minimum score for vector search", ge=0, le=1)
-    notebook_id: str = ""
+
 
 
 class SearchResponse(BaseModel):
@@ -63,6 +62,7 @@ class ChatResponse(BaseModel):
 
 class NotebookSourceCreateRequest(BaseModel):
     notebook_id: str = Field(..., description="ID of the notebook to create a session for")
+    source_id: str = Field(..., description="ID for creating new source")
     title: Optional[str] = Field(None, description="Source title")
     transformations: Optional[List[str]] = Field(default_factory=list, description="Transformation IDs to apply")
     embed: bool = Field(False, description="Whether to embed content for vector search")

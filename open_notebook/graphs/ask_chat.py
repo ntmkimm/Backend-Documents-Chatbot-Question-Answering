@@ -22,7 +22,7 @@ from open_notebook.graphs.utils import (
 )
 
 from open_notebook.domain.notebook import (
-    vector_search_in_notebook,
+    hybrid_search_in_notebook,
     text_search_in_notebook,
     Notebook,
 )
@@ -111,7 +111,7 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
             "source_ids": source_ids,
             "notebook_id":nb_id,
         }
-        res = await vector_search_in_notebook(
+        res = await hybrid_search_in_notebook(
             **param
         )
         context_dict.update(res)

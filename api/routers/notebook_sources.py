@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from typing import List
+import uuid
 
 import os
 from pathlib import Path
@@ -23,12 +24,14 @@ class NotebookSourceForm:
     def __init__(
         self,
         notebook_id: str = Form(...),
+        source_id: str = Form(...),
         embed: bool = Form(False),
         transformations: List[str] = Form([]),
         file: UploadFile = File(...)
     ):
         self.model = NotebookSourceCreateRequest(
             notebook_id=notebook_id,
+            source_id=source_id,
             transformations=transformations,
             embed=embed
         )
@@ -45,6 +48,8 @@ async def create_source(form: NotebookSourceForm = Depends()):
             f.write(await file.read())
 
         notebook = await Notebook.get(model.notebook_id)
+        sourceid = uuid.UUID(model.source_id) # if not uuid, raise error
+        sourceid = sourceid.hex
         if not notebook:
             raise HTTPException(status_code=404, detail="Notebook not found")
 
@@ -63,7 +68,8 @@ async def create_source(form: NotebookSourceForm = Depends()):
                         status_code=404, detail=f"Transformation {trans_id} not found"
                     )
                 transformations.append(transformation)
-
+        print("File name", os.path.basename(file.filename))
+        print("File name", str(os.path.basename(file.filename)))
         # Process source using the source_graph
         result = await source_graph.ainvoke(
             {
@@ -71,6 +77,8 @@ async def create_source(form: NotebookSourceForm = Depends()):
                 "notebook_id": model.notebook_id,
                 "apply_transformations": transformations,
                 "embed": model.embed,
+                "title": str(os.path.basename(file.filename)),
+                "source_id": sourceid,
             }
         )
 

@@ -369,58 +369,8 @@ class ChatSession(ObjectModel):
         return await self.relate("refers_to", notebook_id)
 
 
-async def text_search(
-    keyword: str, results: int, source: bool = True, note: bool = True
-):
-    if not keyword:
-        raise InvalidInputError("Search keyword cannot be empty")
-    try:
-        results = await repo_query(
-            """
-            select *
-            from fn::text_search($keyword, $results, $source, $note)
-            """,
-            {"keyword": keyword, "results": results, "source": source, "note": note},
-        )
-        return results
-    except Exception as e:
-        logger.error(f"Error performing text search: {str(e)}")
-        logger.exception(e)
-        raise DatabaseOperationError(e)
 
-
-async def vector_search(
-    keyword: str,
-    results: int,
-    source: bool = True,
-    note: bool = True,
-    minimum_score=0.2,
-):
-    if not keyword:
-        raise InvalidInputError("Search keyword cannot be empty")
-    try:
-        EMBEDDING_MODEL = await model_manager.get_embedding_model()
-        embed = (await EMBEDDING_MODEL.aembed([keyword]))[0]
-        results = await repo_query(
-            """
-            SELECT * FROM fn::vector_search($embed, $results, $source, $note, $minimum_score);
-            """,
-            {
-                "embed": embed,
-                "results": results,
-                "source": source,
-                "note": note,
-                "minimum_score": minimum_score,
-            },
-        )
-        return results
-    except Exception as e:
-        logger.error(f"Error performing vector search: {str(e)}")
-        logger.exception(e)
-        raise DatabaseOperationError(e)
-
-
-async def vector_search_in_notebook(
+async def hybrid_search_in_notebook(
     keyword: str, 
     results: int,
     notebook_id: str, 
@@ -433,7 +383,6 @@ async def vector_search_in_notebook(
     try:
         EMBEDDING_MODEL = await model_manager.get_embedding_model()
         embed = (await EMBEDDING_MODEL.aembed([keyword]))[0]
-        print(f"\n\n embed {source_ids} \n\n")
         params = {
             "collection_name": "source_embedding",
             "query_keyword": [keyword],
@@ -469,6 +418,34 @@ async def text_search_in_notebook(
             "source_ids": source_ids,
         }
         results = await MilvusService.full_text_search(**params)
+        return results
+    except Exception as e:
+        logger.error(f"Error performing full text search: {str(e)}")
+        logger.exception(e)
+        raise DatabaseOperationError(e)
+    
+async def semantic_search_in_notebook(
+    keyword: str, 
+    results: int,
+    notebook_id: str, 
+    source_ids: List[str] = [],
+):
+    if not keyword:
+        raise InvalidInputError("Search keyword cannot be empty")
+    if not ensure_record_id(notebook_id):
+        raise InvalidInputError("Search notebook_id may be wrong")
+    try:
+
+        EMBEDDING_MODEL = await model_manager.get_embedding_model()
+        embed = (await EMBEDDING_MODEL.aembed([keyword]))[0]
+        params = {
+            "collection_name": "source_embedding",
+            "query_vector": [embed],
+            "notebook_id": notebook_id,
+            "limit": results,
+            "source_ids": source_ids,
+        }
+        results = await MilvusService.semantic_vector_search(**params)
         return results
     except Exception as e:
         logger.error(f"Error performing full text search: {str(e)}")
