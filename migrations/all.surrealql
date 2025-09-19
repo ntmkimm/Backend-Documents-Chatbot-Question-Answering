@@ -1,3 +1,82 @@
+-- 1
+DEFINE TABLE IF NOT EXISTS source SCHEMAFULL;
+
+DEFINE FIELD IF NOT EXISTS
+    asset
+    ON TABLE source
+    FLEXIBLE TYPE option<object>;
+
+DEFINE FIELD IF NOT EXISTS title ON TABLE source TYPE option<string>;
+DEFINE FIELD IF NOT EXISTS topics ON TABLE source TYPE option<array<string>>;
+DEFINE FIELD IF NOT EXISTS full_text ON TABLE source TYPE option<string>;
+
+DEFINE FIELD IF NOT EXISTS created ON source DEFAULT time::now() VALUE $before OR time::now();
+DEFINE FIELD IF NOT EXISTS updated ON source DEFAULT time::now() VALUE time::now();
+
+DEFINE TABLE IF NOT EXISTS source_insight SCHEMAFULL;
+DEFINE FIELD IF NOT EXISTS source ON TABLE source_insight TYPE record<source>;
+DEFINE FIELD IF NOT EXISTS insight_type ON TABLE source_insight TYPE string;
+DEFINE FIELD IF NOT EXISTS content ON TABLE source_insight TYPE string;
+DEFINE FIELD IF NOT EXISTS embedding ON TABLE source_insight TYPE array<float>;
+
+
+DEFINE EVENT IF NOT EXISTS source_delete ON TABLE source WHEN ($after == NONE) THEN {
+    delete source_embedding where source == $before.id;
+    delete source_insight where source == $before.id;
+};
+
+DEFINE TABLE IF NOT EXISTS note SCHEMAFULL;
+
+DEFINE FIELD IF NOT EXISTS title ON TABLE note TYPE option<string>;
+DEFINE FIELD IF NOT EXISTS summary ON TABLE note TYPE option<string>;
+DEFINE FIELD IF NOT EXISTS content ON TABLE note TYPE option<string>;
+DEFINE FIELD IF NOT EXISTS embedding ON TABLE note TYPE array<float>;
+
+DEFINE FIELD IF NOT EXISTS created ON note DEFAULT time::now() VALUE $before OR time::now();
+DEFINE FIELD IF NOT EXISTS updated ON note DEFAULT time::now() VALUE time::now();
+
+DEFINE TABLE IF NOT EXISTS notebook SCHEMAFULL;
+
+DEFINE FIELD IF NOT EXISTS name ON TABLE notebook TYPE option<string>;
+DEFINE FIELD IF NOT EXISTS description ON TABLE notebook TYPE option<string>;
+DEFINE FIELD IF NOT EXISTS archived ON TABLE notebook TYPE option<bool> DEFAULT False;
+
+
+DEFINE FIELD IF NOT EXISTS created ON notebook DEFAULT time::now() VALUE $before OR time::now();
+DEFINE FIELD IF NOT EXISTS updated ON notebook DEFAULT time::now() VALUE time::now();
+
+DEFINE TABLE IF NOT EXISTS reference
+TYPE RELATION 
+FROM source TO notebook;
+
+DEFINE TABLE IF NOT EXISTS artifact
+TYPE RELATION 
+FROM note TO notebook;
+
+DEFINE TABLE IF NOT EXISTS podcast_config SCHEMALESS;
+
+-- entender o analyzer
+DEFINE ANALYZER IF NOT EXISTS my_analyzer TOKENIZERS blank,class,camel,punct FILTERS snowball(english), lowercase;
+
+DEFINE INDEX IF NOT EXISTS idx_source_title ON TABLE source COLUMNS title SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
+DEFINE INDEX IF NOT EXISTS idx_source_full_text ON TABLE source COLUMNS full_text SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
+DEFINE INDEX IF NOT EXISTS idx_source_embed_chunk ON TABLE source_embedding COLUMNS content SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
+DEFINE INDEX IF NOT EXISTS idx_source_insight ON TABLE source_insight COLUMNS content SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
+DEFINE INDEX IF NOT EXISTS idx_note ON TABLE note COLUMNS content SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
+DEFINE INDEX IF NOT EXISTS idx_note_title ON TABLE note COLUMNS title SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
+
+
+-- 2
+DEFINE FIELD IF NOT EXISTS note_type ON TABLE note TYPE option<string>;
+
+-- 3
+DEFINE TABLE IF NOT EXISTS chat_session SCHEMALESS;
+
+DEFINE TABLE IF NOT EXISTS refers_to
+TYPE RELATION 
+FROM chat_session TO notebook;
+
+-- 5
 
 -- remove old transformation defaults
 
@@ -167,3 +246,6 @@ UPSERT open_notebook:default_prompts
         - Do not stop in the middle of the generation to ask me questions. Execute my request completely. 
         "};
 
+
+-- 6
+update model set provider='vertex' where provider='vertexai';

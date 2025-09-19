@@ -22,17 +22,7 @@ from api.routers import (
     notebook_ask_chat,
 )
 
-# Import commands to register them in the API process
-try:
-    from loguru import logger
-
-    import commands.podcast_commands
-
-    logger.info("Commands imported in API process")
-except Exception as e:
-    from loguru import logger
-
-    logger.error(f"Failed to import commands in API process: {e}")
+from loguru import logger
 
 # Run migration on startup
 from open_notebook.database.async_migrate import migrate_all

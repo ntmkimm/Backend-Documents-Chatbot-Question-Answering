@@ -97,24 +97,9 @@ class AsyncMigrationManager:
     def __init__(self):
         """Initialize migration manager."""
         self.up_migrations = [
-            AsyncMigration.from_file("migrations/1.surrealql"),
-            AsyncMigration.from_file("migrations/2.surrealql"),
-            AsyncMigration.from_file("migrations/3.surrealql"),
-            # AsyncMigration.from_file("migrations/4.surrealql"),
-            AsyncMigration.from_file("migrations/5.surrealql"),
-            AsyncMigration.from_file("migrations/6.surrealql"),
-            # AsyncMigration.from_file("migrations/7.surrealql"),
-            AsyncMigration.from_file("migrations/8.surrealql"),
+            AsyncMigration.from_file("migrations/all.surrealql"),
         ]
-        self.down_migrations = [
-            AsyncMigration.from_file("migrations/1_down.surrealql"),
-            AsyncMigration.from_file("migrations/2_down.surrealql"),
-            AsyncMigration.from_file("migrations/3_down.surrealql"),
-            # AsyncMigration.from_file("migrations/4_down.surrealql"),
-            AsyncMigration.from_file("migrations/5_down.surrealql"),
-            AsyncMigration.from_file("migrations/6_down.surrealql"),
-            # AsyncMigration.from_file("migrations/7_down.surrealql"),
-        ]
+        self.down_migrations = []
         self.runner = AsyncMigrationRunner(
             up_migrations=self.up_migrations,
             down_migrations=self.down_migrations,

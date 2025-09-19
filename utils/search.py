@@ -77,7 +77,7 @@ def load_notebook_id() -> str:
 
 payload = {
   "query": "Thailand",
-  "type": "notebook_text",
+  "type": "text",
   "notebook_id": load_notebook_id(),
   "minimum_score": 0,
 }
@@ -92,15 +92,3 @@ with requests.post(API_BASE + "/search",
             continue
         print(line)
         
-# payload = {
-#   "question": "where is thailand on earth",
-# }
-
-# events = []
-# with requests.post(API_BASE + "/search/ask",
-#                    headers=headers, json=payload, stream=True) as r:
-#     r.raise_for_status()
-#     for line in r.iter_lines(decode_unicode=True):
-#         if not line:
-#             continue
-#         print(line)
