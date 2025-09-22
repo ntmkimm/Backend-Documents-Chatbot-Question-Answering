@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any, ClassVar, Dict, List, Optional, Type, TypeVar, cast
-
+import uuid
 from loguru import logger
 from pydantic import BaseModel, ValidationError, field_validator, model_validator
 
@@ -23,7 +23,7 @@ T = TypeVar("T", bound="ObjectModel")
 
 
 class ObjectModel(BaseModel):
-    id: Optional[str] = None
+    id: Optional[uuid.UUID] = None
     table_name: ClassVar[str] = ""
     created: Optional[datetime] = None
     updated: Optional[datetime] = None

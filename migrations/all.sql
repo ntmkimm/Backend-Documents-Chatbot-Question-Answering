@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- 1. SOURCE
 CREATE TABLE IF NOT EXISTS source (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    asset JSONB,
+    asset TEXT,
     title TEXT,
     topics TEXT[],                -- array<string>
     full_text TEXT,

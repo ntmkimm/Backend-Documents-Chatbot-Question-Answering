@@ -2,6 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
 import uuid
+import json
 from api.models import (
     AssetModel,
     CreateSourceInsightRequest,
@@ -40,16 +41,17 @@ async def get_sources(
         response_list = []
         for source in sources:
             insights = await source.get_insights()
+            asset =  AssetModel(**json.loads(source.asset))
             response_list.append(
                 SourceListResponse(
                     id=source.id,
                     title=source.title,
                     topics=source.topics or [],
                     asset=AssetModel(
-                        file_path=source.asset.file_path if source.asset else None,
-                        url=source.asset.url if source.asset else None,
+                        file_path=asset.file_path if asset.file_path else None,
+                        url=asset.url if asset.url else None,
                     )
-                    if source.asset
+                    if asset.file_path or asset.url
                     else None,
                     embedded_chunks=await source.get_embedded_chunks(),
                     insights_count=len(insights),
@@ -72,7 +74,7 @@ async def create_source(source_data: SourceCreate):
     try:
         # Verify notebook exists
         sourceid = uuid.UUID(source_data.source_id) # if not uuid, raise error
-        sourceid = sourceid.hex
+        # sourceid = sourceid.hex
         notebook = await Notebook.get(source_data.notebook_id)
         if not notebook:
             raise HTTPException(status_code=404, detail="Notebook not found")
@@ -130,15 +132,18 @@ async def create_source(source_data: SourceCreate):
 
         source = result["source"]
 
+        # print(json.loads(source.asset))
+        # asset = AssetModel(**json.loads(source.asset))
+        asset =  AssetModel(**json.loads(source.asset))
         return SourceResponse(
             id=source.id,
             title=source.title,
             topics=source.topics or [],
             asset=AssetModel(
-                file_path=source.asset.file_path if source.asset else None,
-                url=source.asset.url if source.asset else None,
+                file_path=asset.file_path if asset.url else None,
+                url=asset.url if asset.url else None,
             )
-            if source.asset
+            if asset.file_path or asset.url
             else None,
             full_text=source.full_text,
             embedded_chunks=await source.get_embedded_chunks(),
@@ -162,15 +167,18 @@ async def get_source(source_id: str):
         if not source:
             raise HTTPException(status_code=404, detail="Source not found")
 
+        # print(json.loads(source.asset))
+        # asset = AssetModel(**json.loads(source.asset))
+        asset =  AssetModel(**json.loads(source.asset))
         return SourceResponse(
             id=source.id,
             title=source.title,
             topics=source.topics or [],
             asset=AssetModel(
-                file_path=source.asset.file_path if source.asset else None,
-                url=source.asset.url if source.asset else None,
+                file_path=asset.file_path if asset.url else None,
+                url=asset.url if asset.url else None,
             )
-            if source.asset
+            if asset.file_path or asset.url
             else None,
             full_text=source.full_text,
             embedded_chunks=await source.get_embedded_chunks(),

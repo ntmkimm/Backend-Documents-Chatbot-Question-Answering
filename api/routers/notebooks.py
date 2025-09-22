@@ -44,7 +44,6 @@ async def create_notebook(notebook: NotebookCreate):
     """Create a new notebook."""
     try:
         nbid = uuid.UUID(notebook.notebook_id) # if not uuid, raise error
-        nbid = nbid.hex
 
         new_notebook = Notebook(
             id=nbid,

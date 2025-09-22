@@ -215,7 +215,7 @@ async def repo_relate(
     # Parse IDs like "source:1"  ("source", 1)
     def parse_record_id(rid: str):
         tbl, pk = rid.split(":")
-        return tbl, int(pk)
+        return tbl, pk
 
     src_table, src_id = parse_record_id(source)
     tgt_table, tgt_id = parse_record_id(target)
@@ -244,3 +244,4 @@ async def pg_execute(sql: str, params: Optional[Dict[str, Any]] = None) -> int:
         r = await s.execute(text(sql), params or {}) 
         await s.commit() 
         return r.rowcount or 0
+

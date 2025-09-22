@@ -1,5 +1,6 @@
 import operator
 from typing import Any, Dict, List, Optional
+import json
 
 from content_core import extract_content
 from content_core.common import ProcessSourceState
@@ -49,9 +50,11 @@ async def content_process(state: SourceState) -> dict:
 
 async def save_source(state: SourceState) -> dict:
     content_state = state["content_state"]
+    # Serialize the Asset object to a JSON string
+    asset_json = json.dumps(Asset(url=content_state.url, file_path=content_state.file_path).model_dump())
 
     source = Source(
-        asset=Asset(url=content_state.url, file_path=content_state.file_path),
+        asset=asset_json,  # Pass the serialized JSON string
         full_text=content_state.content,
         title=state["title"],
         id=state["source_id"],
@@ -121,10 +124,10 @@ workflow.add_node("transform_content", transform_content)
 workflow.add_edge(START, "content_process")
 workflow.add_edge("content_process", "save_source")
 workflow.add_edge("save_source", END)
-workflow.add_conditional_edges(
-    "save_source", trigger_transformations, ["transform_content"]
-)
-workflow.add_edge("transform_content", END)
+# workflow.add_conditional_edges(
+#     "save_source", trigger_transformations, ["transform_content"]
+# )
+# workflow.add_edge("transform_content", END)
 
 # Compile the graph
 source_graph = workflow.compile()

@@ -140,7 +140,7 @@ class ModelManager:
             model_type: The type of model to retrieve (e.g., 'chat', 'embedding', etc.)
             **kwargs: Additional arguments to pass to the model constructor
         """
-        defaults = await self.get_defaults()
+        # defaults = await self.get_defaults()
         model_id = None
 
         if model_type == "chat":

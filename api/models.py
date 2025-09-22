@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field, ConfigDict
 import os
+import uuid
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -26,7 +27,7 @@ class NotebookUpdate(BaseModel):
     archived: Optional[bool] = Field(None, description="Whether the notebook is archived")
 
 class NotebookResponse(BaseModel):
-    id: str
+    id: uuid.UUID
     name: str
     description: str
     archived: bool
@@ -49,9 +50,9 @@ class SearchResponse(BaseModel):
     search_type: str = Field(..., description="Type of search performed")
 
 class ChatRequest(BaseModel):
-    notebook_id: str = Field(..., description="ID of the notebook")
+    notebook_id: uuid.UUID = Field(..., description="ID of the notebook")
     session_id: Optional[str] = Field(None, description="ID of the chat session")
-    source_ids: Optional[List[str]] = Field(None, description="List of source IDs to include in the chat context")
+    source_ids: Optional[List[uuid.UUID]] = Field(None, description="List of source IDs to include in the chat context")
     chat_message: str = Field(..., description="Message content")
 
 class ChatResponse(BaseModel):
@@ -86,7 +87,7 @@ class TransformationUpdate(BaseModel):
 
 
 class TransformationResponse(BaseModel):
-    id: str
+    id: uuid.UUID
     name: str
     title: str
     description: str
@@ -157,7 +158,7 @@ class SourceEmbeddingResponse(BaseModel):
     embedding: Optional[List[float]] = None
 
 class SourceResponse(BaseModel):
-    id: str
+    id: uuid.UUID
     title: Optional[str]
     topics: Optional[List[str]]
     asset: Optional[AssetModel]
@@ -168,7 +169,7 @@ class SourceResponse(BaseModel):
 
 
 class SourceListResponse(BaseModel):
-    id: str
+    id: uuid.UUID
     title: Optional[str]
     topics: Optional[List[str]]
     asset: Optional[AssetModel]
@@ -198,7 +199,7 @@ class ContextResponse(BaseModel):
 
 # Insights API models
 class SourceInsightResponse(BaseModel):
-    id: str
+    id: uuid.UUID
     source_id: str
     insight_type: str
     content: str

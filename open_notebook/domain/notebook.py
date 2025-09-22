@@ -117,7 +117,7 @@ class SourceInsight(ObjectModel):
 
 class Source(ObjectModel):
     table_name: ClassVar[str] = "source"
-    asset: Optional[Asset] = None
+    asset: Optional[Any] = None
     title: Optional[str] = None
     topics: Optional[List[str]] = Field(default_factory=list)
     full_text: Optional[str] = None
@@ -177,6 +177,7 @@ class Source(ObjectModel):
             raise DatabaseOperationError(e)
 
     async def vectorize(self, notebook_id: str) -> None:
+        print("func vectorize")
         logger.info(f"Starting vectorization for source {self.id}")
         EMBEDDING_MODEL = await model_manager.get_embedding_model()
 
