@@ -58,12 +58,13 @@ async def save_source(state: SourceState) -> dict:
         full_text=content_state.content,
         title=state["title"],
         id=state["source_id"],
+        notebook_id=state["notebook_id"]
     )
     await source.save(provided_id=True)
 
     if state["notebook_id"]:
         logger.debug(f"Adding source to notebook {state['notebook_id']}")
-        await source.add_to_notebook(state["notebook_id"])
+        # await source.add_to_notebook(state["notebook_id"])
 
     if state["embed"]:
         logger.debug("Embedding content for vector search")
@@ -124,10 +125,10 @@ workflow.add_node("transform_content", transform_content)
 workflow.add_edge(START, "content_process")
 workflow.add_edge("content_process", "save_source")
 workflow.add_edge("save_source", END)
-# workflow.add_conditional_edges(
-#     "save_source", trigger_transformations, ["transform_content"]
-# )
-# workflow.add_edge("transform_content", END)
+workflow.add_conditional_edges(
+    "save_source", trigger_transformations, ["transform_content"]
+)
+workflow.add_edge("transform_content", END)
 
 # Compile the graph
 source_graph = workflow.compile()

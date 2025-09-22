@@ -177,12 +177,11 @@ async def stream_chat(chat_request: ChatRequest):
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
-async def create_session_for_notebook(notebook_id: str, session_name: str = None):
+async def create_session_for_notebook(notebook_id: str, session_id: str):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    title = f"Chat Session {current_time}" if not session_name else session_name
-    chat_session = ChatSession(title=title)
-    await chat_session.save()
-    await chat_session.relate_to_notebook(notebook_id)
+    title = f"Chat Session {current_time}" 
+    chat_session = ChatSession(id=session_id, title=title, notebook_id=notebook_id)
+    await chat_session.save(provided_id=True)
     return chat_session
 
 async def _get_graph_state(graph, thread_id: str):
@@ -195,35 +194,19 @@ async def _get_graph_state(graph, thread_id: str):
         snap = graph.get_state({"configurable": {"thread_id": thread_id}})
     return getattr(snap, "values", {}) if snap else {}
 
-async def get_session(current_notebook: Notebook, session_id) -> Union[ChatSession, None]:
+async def get_session(current_notebook: Notebook, session_id: str) -> Union[ChatSession, None]:
     """Get the current chat session for the notebook."""
-    if session_id and 'chat_session:' not in session_id:
-        session_id = 'chat_session:' + session_id
-
+    print("session_id : ", session_id)
     chat_session: Union[ChatSession, None] = None
-    sessions: List[ChatSession] = []  # Define sessions early
 
     if session_id:
         try:
             chat_session = await ChatSession.get(session_id)
+            print("chat session existed: ", session_id)
         except Exception as e:
+            chat_session = await create_session_for_notebook(str(current_notebook.id), session_id=session_id)
             logger.warning(f"Could not fetch ChatSession {session_id}: {str(e)}")
     
-    if not chat_session:
-        try:
-            chat_session = await create_session_for_notebook(current_notebook.id, None)
-            sessions = await current_notebook.get_chat_sessions()
-            if sessions:
-                logger.debug(f"Multiple sessions found: {len(sessions)}. Using the last updated session.")
-                chat_session = sessions[0]
-        except Exception as e:
-            logger.warning(f"Could not fetch chat sessions for notebook {current_notebook.id}: {str(e)}")
-
-        logger.debug("Creating new chat session")
-    else:
-        # Don't use `sessions` here -just log the current session
-        logger.debug(f"Using existing session: {chat_session.id}")
-
     if not chat_session or chat_session.id is None:
         raise ValueError("Problem acquiring chat session")
     

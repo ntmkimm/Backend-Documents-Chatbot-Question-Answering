@@ -6,7 +6,7 @@ import uuid
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
 
-from open_notebook.database.repository import ensure_record_id, repo_query, repo_create, repo_relate
+from open_notebook.database.repository import ensure_record_id, repo_query, repo_create
 from open_notebook.domain.base import ObjectModel
 from open_notebook.domain.models import model_manager
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
@@ -31,9 +31,8 @@ class Notebook(ObjectModel):
         try:
             q = """
                 SELECT s.* 
-                FROM reference r
-                JOIN source s ON r.source_id = s.id
-                WHERE r.notebook_id = :id
+                FROM source s
+                WHERE s.notebook_id = :id
                 ORDER BY s.updated DESC
             """
             srcs = await repo_query(q, {"id": ensure_record_id(self.id)})
@@ -45,11 +44,10 @@ class Notebook(ObjectModel):
     async def get_chat_sessions(self) -> List["ChatSession"]:
         try:
             q = """
-                SELECT c.* 
-                FROM refers_to r
-                JOIN chat_session c ON r.chat_session_id = c.id
-                WHERE r.notebook_id = :id
-                ORDER BY c.id DESC
+                SELECT s.* 
+                FROM chat_session s
+                WHERE s.notebook_id = :id
+                ORDER BY s.updated DESC
             """
             rows = await repo_query(q, {"id": ensure_record_id(self.id)})
             return [ChatSession(**row) for row in rows] if rows else []
@@ -61,43 +59,6 @@ class Notebook(ObjectModel):
 class Asset(BaseModel):
     file_path: Optional[str] = None
     url: Optional[str] = None
-
-
-class SourceEmbedding(ObjectModel):
-    table_name: ClassVar[str] = "source_embedding"
-    content: str
-    id: str
-    source_id: Optional[str] = None
-    order: Optional[int] = None
-    embedding: Optional[List[float]] = None
-
-    async def get_source(self) -> "Source":
-        try:
-            q = "SELECT * FROM source WHERE id = :id"
-            rows = await repo_query(q, {"id": ensure_record_id(self.source_id)})
-            return Source(**rows[0]) if rows else None
-        except Exception as e:
-            logger.error(f"Error fetching source for embedding {self.id}: {str(e)}")
-            raise DatabaseOperationError(e)
-
-    @classmethod
-    async def get_context(cls, source_embedding_id: str, include_embedding: bool = False) -> Dict[str, Any]:
-        try:
-            rid = ensure_record_id(source_embedding_id)
-            if not rid:
-                return {}
-
-            if include_embedding:
-                q = "SELECT id, source_id, \"order\", content, embedding FROM source_embedding WHERE id = :id"
-            else:
-                q = "SELECT id, source_id, \"order\", content FROM source_embedding WHERE id = :id"
-
-            rows = await repo_query(q, {"id": rid})
-            return rows[0] if rows else {}
-        except Exception as e:
-            logger.error(f"Error fetching context for source embedding {source_embedding_id}: {str(e)}")
-            raise DatabaseOperationError(e)
-
 
 class SourceInsight(ObjectModel):
     table_name: ClassVar[str] = "source_insight"
@@ -116,6 +77,7 @@ class SourceInsight(ObjectModel):
 
 
 class Source(ObjectModel):
+    notebook_id: Optional[str] = None
     table_name: ClassVar[str] = "source"
     asset: Optional[Any] = None
     title: Optional[str] = None
@@ -153,11 +115,6 @@ class Source(ObjectModel):
         except Exception as e:
             logger.error(f"Error fetching insights for source {self.id}: {str(e)}")
             raise DatabaseOperationError("Failed to fetch insights for source")
-
-    async def add_to_notebook(self, notebook_id: str) -> Any:
-        if not notebook_id:
-            raise InvalidInputError("Notebook ID must be provided")
-        return await repo_relate(f"source:{self.id}", "reference", f"notebook:{notebook_id}")
 
     async def add_insight(self, insight_type: str, content: str) -> Any:
         if not insight_type or not content:
@@ -218,13 +175,10 @@ class Source(ObjectModel):
 
 
 class ChatSession(ObjectModel):
+    id: Optional[str] = None
+    notebook_id: Optional[str] = None
     table_name: ClassVar[str] = "chat_session"
     title: Optional[str] = None
-
-    async def relate_to_notebook(self, notebook_id: str) -> Any:
-        if not notebook_id:
-            raise InvalidInputError("Notebook ID must be provided")
-        return await repo_relate(f"chat_session:{self.id}", "refers_to", f"notebook:{notebook_id}")
 
 
 async def hybrid_search_in_notebook(

@@ -26,11 +26,28 @@ from loguru import logger
 
 # Run migration on startup
 from open_notebook.database.async_migrate import migrate_all
+from api import init_default_transformation_function
+import asyncio
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     await migrate_all()
     get_milvus_client()
+    
+    # Ensure the coroutine is awaited
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:  # No running loop
+        loop = None
+
+    if loop and loop.is_running():
+        # If there's an existing running loop, use `create_task`
+        asyncio.create_task(init_default_transformation_function())
+    else:
+        # Otherwise, run the coroutine normally
+        asyncio.run(init_default_transformation_function())
+    
     yield
     close_milvus_client()
 

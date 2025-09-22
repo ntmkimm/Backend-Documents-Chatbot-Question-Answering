@@ -232,7 +232,7 @@ def main():
         payload = {
             "chat_message": "hello",
             "notebook_id": notebook_id,
-            "session_id": "",
+            "session_id": str(uuid.uuid4()),
             "source_ids": [],
         }
         

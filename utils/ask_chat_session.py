@@ -1,4 +1,5 @@
 import requests, json
+import uuid
 
 API_BASE = "http://localhost:4427/api"
 headers = {"Content-Type": "application/json", "accept": "application/json"}
@@ -78,8 +79,7 @@ def load_notebook_id() -> str:
 payload = {
   "chat_message": "where is thailand?",
   "notebook_id": load_notebook_id(),
-  "session_id": "",
-#   "mode": "stream"  # stream
+  "session_id": str(uuid.uuid4()),
 }
 
 events = []

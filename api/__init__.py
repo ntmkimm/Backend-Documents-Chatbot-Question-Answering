@@ -72,18 +72,3 @@ async def init_default_transformation_function():
             )
         await new_transformation.save()
         logger.info(f"Default transformation '{transformation_data['name']}' created successfully.")
-
-import asyncio
-
-# Ensure the coroutine is awaited
-try:
-    loop = asyncio.get_running_loop()
-except RuntimeError:  # No running loop
-    loop = None
-
-if loop and loop.is_running():
-    # If there's an existing running loop, use `create_task`
-    asyncio.create_task(init_default_transformation_function())
-else:
-    # Otherwise, run the coroutine normally
-    asyncio.run(init_default_transformation_function())

@@ -1,23 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- 1. SOURCE
-CREATE TABLE IF NOT EXISTS source (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    asset TEXT,
-    title TEXT,
-    topics TEXT[],                -- array<string>
-    full_text TEXT,
-    created TIMESTAMPTZ DEFAULT now(),
-    updated TIMESTAMPTZ DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS source_insight (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    source_id UUID REFERENCES source(id) ON DELETE CASCADE,
-    insight_type TEXT NOT NULL,
-    content TEXT NOT NULL
-);
-
 -- NOTEBOOK
 CREATE TABLE IF NOT EXISTS notebook (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -28,26 +10,34 @@ CREATE TABLE IF NOT EXISTS notebook (
     updated TIMESTAMPTZ DEFAULT now()
 );
 
--- RELATION source -> notebook
-CREATE TABLE IF NOT EXISTS reference (
+-- SOURCE
+CREATE TABLE IF NOT EXISTS source (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    asset TEXT,
+    title TEXT,
+    topics TEXT[],                -- array<string>
+    full_text TEXT,
+    notebook_id UUID REFERENCES notebook(id) ON DELETE SET NULL, -- FK to notebook
+    created TIMESTAMPTZ DEFAULT now(),
+    updated TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS source_insight (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     source_id UUID REFERENCES source(id) ON DELETE CASCADE,
-    notebook_id UUID REFERENCES notebook(id) ON DELETE CASCADE,
-    UNIQUE (source_id, notebook_id)
+    insight_type TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created TIMESTAMPTZ DEFAULT now(),
+    updated TIMESTAMPTZ DEFAULT now()
 );
 
 -- CHAT_SESSION
 CREATE TABLE IF NOT EXISTS chat_session (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    payload JSONB   -- schema-less, so flexible JSON
-);
-
--- RELATION chat_session -> notebook
-CREATE TABLE IF NOT EXISTS refers_to (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    chat_session_id UUID REFERENCES chat_session(id) ON DELETE CASCADE,
-    notebook_id UUID REFERENCES notebook(id) ON DELETE CASCADE,
-    UNIQUE (chat_session_id, notebook_id)
+    notebook_id UUID REFERENCES notebook(id) ON DELETE SET NULL, -- FK to notebook
+    title TEXT NOT NULL,
+    created TIMESTAMPTZ DEFAULT now(),
+    updated TIMESTAMPTZ DEFAULT now()
 );
 
 -- TRANSFORMATION
@@ -85,64 +75,3 @@ You are my learning assistant and you help me process and transform content so t
 )
 ON CONFLICT (id) DO UPDATE
 SET transformation_instructions = EXCLUDED.transformation_instructions;
-
--- Insert default transformations
-INSERT INTO transformation (name, title, description, prompt, apply_default)
-VALUES
-(
-    'Analyze Paper',
-    'Paper Analysis',
-    'Analyses a technical/scientific paper',
-    '# IDENTITY and PURPOSE
-
-You are an insightful and analytical reader of academic papers, extracting the key components, significance, and broader implications. ...
-(Output omitted here for brevity – keep full prompt)',
-    FALSE
-),
-(
-    'Key Insights',
-    'Key Insights',
-    'Extracts important insights and actionable items',
-    '# IDENTITY and PURPOSE
-
-You extract surprising, powerful, and interesting insights from text content. ...
-(Output omitted here for brevity – keep full prompt)',
-    FALSE
-),
-(
-    'Dense Summary',
-    'Dense Summary',
-    'Creates a rich, deep summary of the content',
-    '# MISSION
-You are a Sparse Priming Representation (SPR) writer. ...
-(Output omitted here for brevity – keep full prompt)',
-    TRUE
-),
-(
-    'Reflections',
-    'Reflection Questions',
-    'Generates reflection questions from the document to help explore it further',
-    '# IDENTITY and PURPOSE
-
-You extract deep, thought-provoking, and meaningful reflections from text content. ...
-(Output omitted here for brevity – keep full prompt)',
-    FALSE
-),
-(
-    'Table of Contents',
-    'Table of Contents',
-    'Describes the different topics of the document',
-    '# SYSTEM ROLE
-You are a content analysis assistant ...
-(Output omitted here for brevity – keep full prompt)',
-    FALSE
-),
-(
-    'Simple Summary',
-    'Simple Summary',
-    'Generates a small summary of the content',
-    '# SYSTEM ROLE
-You are a content summarization assistant ...
-(Output omitted here for brevity – keep full prompt)',
-    FALSE
-);
