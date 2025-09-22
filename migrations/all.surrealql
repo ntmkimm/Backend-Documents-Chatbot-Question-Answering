@@ -17,23 +17,12 @@ DEFINE TABLE IF NOT EXISTS source_insight SCHEMAFULL;
 DEFINE FIELD IF NOT EXISTS source ON TABLE source_insight TYPE record<source>;
 DEFINE FIELD IF NOT EXISTS insight_type ON TABLE source_insight TYPE string;
 DEFINE FIELD IF NOT EXISTS content ON TABLE source_insight TYPE string;
-DEFINE FIELD IF NOT EXISTS embedding ON TABLE source_insight TYPE array<float>;
 
 
 DEFINE EVENT IF NOT EXISTS source_delete ON TABLE source WHEN ($after == NONE) THEN {
     -- delete source_embedding where source == $before.id;
     delete source_insight where source == $before.id;
 };
-
-DEFINE TABLE IF NOT EXISTS note SCHEMAFULL;
-
-DEFINE FIELD IF NOT EXISTS title ON TABLE note TYPE option<string>;
-DEFINE FIELD IF NOT EXISTS summary ON TABLE note TYPE option<string>;
-DEFINE FIELD IF NOT EXISTS content ON TABLE note TYPE option<string>;
-DEFINE FIELD IF NOT EXISTS embedding ON TABLE note TYPE array<float>;
-
-DEFINE FIELD IF NOT EXISTS created ON note DEFAULT time::now() VALUE $before OR time::now();
-DEFINE FIELD IF NOT EXISTS updated ON note DEFAULT time::now() VALUE time::now();
 
 DEFINE TABLE IF NOT EXISTS notebook SCHEMAFULL;
 
@@ -49,10 +38,6 @@ DEFINE TABLE IF NOT EXISTS reference
 TYPE RELATION 
 FROM source TO notebook;
 
-DEFINE TABLE IF NOT EXISTS artifact
-TYPE RELATION 
-FROM note TO notebook;
-
 -- entender o analyzer
 DEFINE ANALYZER IF NOT EXISTS my_analyzer TOKENIZERS blank,class,camel,punct FILTERS snowball(english), lowercase;
 
@@ -62,9 +47,6 @@ DEFINE INDEX IF NOT EXISTS idx_source_insight ON TABLE source_insight COLUMNS co
 DEFINE INDEX IF NOT EXISTS idx_note ON TABLE note COLUMNS content SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
 DEFINE INDEX IF NOT EXISTS idx_note_title ON TABLE note COLUMNS title SEARCH ANALYZER my_analyzer BM25 HIGHLIGHTS;
 
-
--- 2
-DEFINE FIELD IF NOT EXISTS note_type ON TABLE note TYPE option<string>;
 
 -- 3
 DEFINE TABLE IF NOT EXISTS chat_session SCHEMALESS;

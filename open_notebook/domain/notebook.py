@@ -261,20 +261,17 @@ class Source(ObjectModel):
         if not insight_type or not content:
             raise InvalidInputError("Insight type and content must be provided")
         try:
-            embedding = []
             return await repo_query(
                 """
                 CREATE source_insight CONTENT {
                         "source": $source_id,
                         "insight_type": $insight_type,
                         "content": $content,
-                        "embedding": $embedding,
                 };""",
                 {
                     "source_id": ensure_record_id(self.id),
                     "insight_type": insight_type,
                     "content": content,
-                    "embedding": embedding,
                 },
             )
         except Exception as e:
