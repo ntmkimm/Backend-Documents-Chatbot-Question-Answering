@@ -3,7 +3,7 @@ from loguru import logger
 
 from api.models import EmbedRequest, EmbedResponse
 from open_notebook.domain.models import model_manager
-from open_notebook.domain.notebook import Note, Source
+from open_notebook.domain.notebook import Source
 
 router = APIRouter()
 
@@ -46,13 +46,6 @@ async def embed_content(embed_request: EmbedRequest):
             # Perform embedding
             await source_item.vectorize()
             message = "Source embedded successfully"
-
-        elif item_type == "note":
-            note_item = await Note.get(item_id)
-            if not note_item:
-                raise HTTPException(status_code=404, detail="Note not found")
-
-            await note_item.vectorize()
 
         return EmbedResponse(
             success=True, message=message, item_id=item_id, item_type=item_type

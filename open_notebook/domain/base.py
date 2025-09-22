@@ -108,29 +108,6 @@ class ObjectModel(BaseModel):
 
     def get_embedding_content(self) -> Optional[str]:
         return None
-    
-    async def notebook_create(self, provided_id) -> None:
-        try:
-
-            self.model_validate(self.model_dump(), strict=True)
-            data = self._prepare_save_data()
-            data["updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-            data["id"] = provided_id
-            data["created"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            repo_result = await repo_create(self.__class__.table_name, data, set_id=True)
-            for key, value in repo_result[0].items():
-                if hasattr(self, key):
-                    if isinstance(getattr(self, key), BaseModel):
-                        setattr(self, key, type(getattr(self, key))(**value))
-                    else:
-                        setattr(self, key, value)
-        except ValidationError as e:
-            logger.error(f"Validation failed: {e}")
-            raise
-        except Exception as e:
-            logger.error(f"Error saving record: {e}")
-            raise DatabaseOperationError(e)
         
     async def save(self, provided_id: bool = False) -> None:
         from open_notebook.domain.models import model_manager

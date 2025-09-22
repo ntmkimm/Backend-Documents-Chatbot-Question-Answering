@@ -112,33 +112,6 @@ class TransformationExecuteResponse(BaseModel):
     # model_id: str = Field(..., description="Model ID used")
 
 
-# Notes API models
-class NoteCreate(BaseModel):
-    title: Optional[str] = Field(None, description="Note title")
-    content: str = Field(..., description="Note content")
-    note_type: Optional[str] = Field("human", description="Type of note (human, ai)")
-    notebook_id: Optional[str] = Field(None, description="Notebook ID to add the note to")
-
-
-class NoteUpdate(BaseModel):
-    title: Optional[str] = Field(None, description="Note title")
-    content: Optional[str] = Field(None, description="Note content")
-    note_type: Optional[str] = Field(None, description="Type of note (human, ai)")
-
-
-class NoteResponse(BaseModel):
-    id: str
-    title: Optional[str]
-    content: Optional[str]
-    note_type: Optional[str]
-    created: str
-    updated: str
-
-class NoteConvert(BaseModel):
-    note_id: str
-    notebook_id: str
-    embed: bool = True
-
 
 # Embedding API models
 class EmbedRequest(BaseModel):

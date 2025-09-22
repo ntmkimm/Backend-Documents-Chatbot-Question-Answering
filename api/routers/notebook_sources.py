@@ -68,8 +68,6 @@ async def create_source(form: NotebookSourceForm = Depends()):
                         status_code=404, detail=f"Transformation {trans_id} not found"
                     )
                 transformations.append(transformation)
-        print("File name", os.path.basename(file.filename))
-        print("File name", str(os.path.basename(file.filename)))
         # Process source using the source_graph
         result = await source_graph.ainvoke(
             {

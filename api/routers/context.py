@@ -5,7 +5,7 @@ from loguru import logger
 
 from api.models import ContextRequest, ContextResponse
 from open_notebook.domain.base import ObjectModel
-from open_notebook.domain.notebook import Note, Notebook, Source
+from open_notebook.domain.notebook import Notebook, Source
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
 from open_notebook.utils import token_count
 
@@ -56,27 +56,6 @@ async def get_notebook_context(notebook_id: str, context_request: ContextRequest
                     logger.warning(f"Error processing source {source_id}: {str(e)}")
                     continue
 
-            # Process notes
-            for note_id, status in context_request.context_config.notes.items():
-                if "not in" in status:
-                    continue
-
-                try:
-                    # Add table prefix if not present
-                    full_note_id = (
-                        note_id if note_id.startswith("note:") else f"note:{note_id}"
-                    )
-                    note = await Note.get(full_note_id)
-                    if not note:
-                        continue
-
-                    if "full content" in status:
-                        note_context = note.get_context(context_size="long")
-                        context_data["note"].append(note_context)
-                        total_content += str(note_context)
-                except Exception as e:
-                    logger.warning(f"Error processing note {note_id}: {str(e)}")
-                    continue
         else:
             # Default behavior - include all sources and notes with short context
             sources = await notebook.get_sources()

@@ -10,7 +10,7 @@ from open_notebook.domain.base import ObjectModel
 from open_notebook.domain.models import model_manager
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
 from open_notebook.utils import split_text
-from open_notebook.database.milvus_utils import MilvusService
+from open_notebook.database import milvus_services
 
 
 class Notebook(ObjectModel):
@@ -43,22 +43,6 @@ class Notebook(ObjectModel):
             logger.exception(e)
             raise DatabaseOperationError(e)
 
-    async def get_notes(self) -> List["Note"]:
-        try:
-            srcs = await repo_query(
-                """
-            select * omit note.content, note.embedding from (
-                select in as note from artifact where out=$id
-                fetch note
-            ) order by note.updated desc
-            """,
-                {"id": ensure_record_id(self.id)},
-            )
-            return [Note(**src["note"]) for src in srcs] if srcs else []
-        except Exception as e:
-            logger.error(f"Error fetching notes for notebook {self.id}: {str(e)}")
-            logger.exception(e)
-            raise DatabaseOperationError(e)
 
     async def get_chat_sessions(self) -> List["ChatSession"]:
         try:
@@ -156,16 +140,6 @@ class SourceInsight(ObjectModel):
             logger.exception(e)
             raise DatabaseOperationError(e)
 
-    async def save_as_note(self, notebook_id: str = None) -> Any:
-        source = await self.get_source()
-        note = Note(
-            title=f"{self.insight_type} from source {source.title}",
-            content=self.content,
-        )
-        await note.save()
-        if notebook_id:
-            await note.add_to_notebook(notebook_id)
-        return note
 
 
 class Source(ObjectModel):
@@ -192,16 +166,7 @@ class Source(ObjectModel):
 
     async def get_embedded_chunks(self) -> int:
         try:
-            result = await MilvusService.get_number_embeddings_ofsource(collection_name="source_embedding", source_id=self.id)
-            # result = await repo_query(
-            #     """
-            #     select count() as chunks from source_embedding where source=$id GROUP ALL
-            #     """,
-            #     {"id": ensure_record_id(self.id)},
-            # )
-            # if len(result) == 0:
-            #     return 0
-            # return result[0]["chunks"]
+            result = milvus_services.get_number_embeddings_ofsource(collection_name="source_embedding", source_id=self.id)
             return result
         except Exception as e:
             logger.error(f"Error fetching chunks count for source {self.id}: {str(e)}")
@@ -278,7 +243,7 @@ class Source(ObjectModel):
                         "source_id": self.id,
                         "notebook_id": notebook_id,
                     }
-                await MilvusService.insert_data(
+                milvus_services.insert_data(
                     collection_name="source_embedding",
                     data=data
                 )
@@ -292,16 +257,11 @@ class Source(ObjectModel):
 
 
     async def add_insight(self, insight_type: str, content: str) -> Any:
-        EMBEDDING_MODEL = await model_manager.get_embedding_model()
-        if not EMBEDDING_MODEL:
-            logger.warning("No embedding model found. Insight will not be searchable.")
 
         if not insight_type or not content:
             raise InvalidInputError("Insight type and content must be provided")
         try:
-            embedding = (
-                (await EMBEDDING_MODEL.aembed([content]))[0] if EMBEDDING_MODEL else []
-            )
+            embedding = []
             return await repo_query(
                 """
                 CREATE source_insight CONTENT {
@@ -321,42 +281,6 @@ class Source(ObjectModel):
             logger.error(f"Error adding insight to source {self.id}: {str(e)}")
             raise  # DatabaseOperationError(e)
 
-
-class Note(ObjectModel):
-    table_name: ClassVar[str] = "note"
-    title: Optional[str] = None
-    note_type: Optional[Literal["human", "ai"]] = None
-    content: Optional[str] = None
-
-    @field_validator("content")
-    @classmethod
-    def content_must_not_be_empty(cls, v):
-        if v is not None and not v.strip():
-            raise InvalidInputError("Note content cannot be empty")
-        return v
-
-    async def add_to_notebook(self, notebook_id: str) -> Any:
-        if not notebook_id:
-            raise InvalidInputError("Notebook ID must be provided")
-        return await self.relate("artifact", notebook_id)
-
-    def get_context(
-        self, context_size: Literal["short", "long"] = "short"
-    ) -> Dict[str, Any]:
-        if context_size == "long":
-            return dict(id=self.id, title=self.title, content=self.content)
-        else:
-            return dict(
-                id=self.id,
-                title=self.title,
-                content=self.content[:100] if self.content else None,
-            )
-
-    def needs_embedding(self) -> bool:
-        return True
-
-    def get_embedding_content(self) -> Optional[str]:
-        return self.content
 
 
 class ChatSession(ObjectModel):
@@ -391,7 +315,7 @@ async def hybrid_search_in_notebook(
             "limit": results,
             "source_ids": source_ids,
         }
-        results = await MilvusService.hybrid_search(**params)
+        results = milvus_services.hybrid_search(**params)
         return results
     except Exception as e:
         logger.error(f"Error performing hybrid search: {str(e)}")
@@ -417,7 +341,7 @@ async def text_search_in_notebook(
             "limit": results,
             "source_ids": source_ids,
         }
-        results = await MilvusService.full_text_search(**params)
+        results = milvus_services.full_text_search(**params)
         return results
     except Exception as e:
         logger.error(f"Error performing full text search: {str(e)}")
@@ -445,7 +369,7 @@ async def semantic_search_in_notebook(
             "limit": results,
             "source_ids": source_ids,
         }
-        results = await MilvusService.semantic_vector_search(**params)
+        results = milvus_services.semantic_vector_search(**params)
         return results
     except Exception as e:
         logger.error(f"Error performing full text search: {str(e)}")

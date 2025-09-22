@@ -153,44 +153,6 @@ class APIClient:
             "POST", "/api/transformations/execute", json=data, timeout=120.0
         )
 
-    # Notes API methods
-    def get_notes(self, notebook_id: Optional[str] = None) -> List[Dict]:
-        """Get all notes with optional notebook filtering."""
-        params = {}
-        if notebook_id:
-            params["notebook_id"] = notebook_id
-        return self._make_request("GET", "/api/notes", params=params)
-
-    def create_note(
-        self,
-        content: str,
-        title: Optional[str] = None,
-        note_type: str = "human",
-        notebook_id: Optional[str] = None,
-    ) -> Dict:
-        """Create a new note."""
-        data = {
-            "content": content,
-            "note_type": note_type,
-        }
-        if title:
-            data["title"] = title
-        if notebook_id:
-            data["notebook_id"] = notebook_id
-        return self._make_request("POST", "/api/notes", json=data)
-
-    def get_note(self, note_id: str) -> Dict:
-        """Get a specific note."""
-        return self._make_request("GET", f"/api/notes/{note_id}")
-
-    def update_note(self, note_id: str, **updates) -> Dict:
-        """Update a note."""
-        return self._make_request("PUT", f"/api/notes/{note_id}", json=updates)
-
-    def delete_note(self, note_id: str) -> Dict:
-        """Delete a note."""
-        return self._make_request("DELETE", f"/api/notes/{note_id}")
-
     # Embedding API methods
     def embed_content(self, item_id: str, item_type: str) -> Dict:
         """Embed content for vector search."""

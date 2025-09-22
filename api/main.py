@@ -5,6 +5,7 @@ import os
 print(os.getenv("MY_VARIABLE"))
 
 from fastapi import FastAPI
+from open_notebook.database.milvus_init import get_milvus_client, close_milvus_client
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.auth import PasswordAuthMiddleware
@@ -13,7 +14,6 @@ from api.routers import (
     embedding,
     insights,
     notebooks,
-    notes,
     search,
     sources,
     # sources_tabular,
@@ -30,13 +30,17 @@ from open_notebook.database.async_migrate import migrate_all
 async def lifespan(app: FastAPI):
     # Startup
     await migrate_all()
+    get_milvus_client()
     yield
+    close_milvus_client()
+
 app = FastAPI(
     title="Open Notebook API",
     description="API for Open Notebook - Research Assistant",
     version="0.2.2",
     lifespan=lifespan
 )
+
 
 # Add CORS middleware
 app.add_middleware(
@@ -54,7 +58,6 @@ app.add_middleware(PasswordAuthMiddleware)
 app.include_router(notebooks.router, prefix="/api", tags=["notebooks"])
 app.include_router(search.router, prefix="/api", tags=["search"])
 app.include_router(transformations.router, prefix="/api", tags=["transformations"])
-app.include_router(notes.router, prefix="/api", tags=["notes"])
 app.include_router(embedding.router, prefix="/api", tags=["embedding"])
 app.include_router(context.router, prefix="/api", tags=["context"])
 app.include_router(sources.router, prefix="/api", tags=["sources"])

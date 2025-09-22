@@ -3,8 +3,8 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 from loguru import logger
 
-from api.models import NoteResponse, SaveAsNoteRequest, SourceInsightResponse
-from open_notebook.domain.notebook import Note, SourceInsight
+from api.models import SaveAsNoteRequest, SourceInsightResponse
+from open_notebook.domain.notebook import SourceInsight
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
 
 router = APIRouter()
@@ -52,31 +52,3 @@ async def delete_insight(insight_id: str):
     except Exception as e:
         logger.error(f"Error deleting insight {insight_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error deleting insight: {str(e)}")
-
-
-@router.post("/insights/{insight_id}/save-as-note", response_model=NoteResponse)
-async def save_insight_as_note(insight_id: str, request: SaveAsNoteRequest):
-    """Convert an insight to a note."""
-    try:
-        insight = await SourceInsight.get(insight_id)
-        if not insight:
-            raise HTTPException(status_code=404, detail="Insight not found")
-        
-        # Use the existing save_as_note method from the domain model
-        note = await insight.save_as_note(request.notebook_id)
-        
-        return NoteResponse(
-            id=note.id,
-            title=note.title,
-            content=note.content,
-            note_type=note.note_type,
-            created=str(note.created),
-            updated=str(note.updated),
-        )
-    except HTTPException:
-        raise
-    except InvalidInputError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        logger.error(f"Error saving insight {insight_id} as note: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error saving insight as note: {str(e)}")

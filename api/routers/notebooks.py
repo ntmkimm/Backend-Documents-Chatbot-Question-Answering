@@ -47,6 +47,7 @@ async def create_notebook(notebook: NotebookCreate):
         nbid = nbid.hex
 
         new_notebook = Notebook(
+            id=nbid,
             name=notebook.name,
             description=notebook.description,
         )
