@@ -3,6 +3,7 @@ import asyncio
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Union
+from sqlalchemy.exc import IntegrityError
 
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
@@ -119,12 +120,21 @@ async def repo_create(
     sql = f"INSERT INTO {table} ({cols}) VALUES ({vals}) RETURNING *"
 
     async with db_connection() as s:
-        res = await s.execute(text(sql), data)
-        await s.commit()
-        row = res.mappings().first()
-        if not row:
-            raise RuntimeError(f"Failed to insert into {table}: {data}")
-        return _convert_uuid_id_to_string(dict(row))
+        try:
+            res = await s.execute(text(sql), data)
+            await s.commit()
+            row = res.mappings().first()
+            if not row:
+                raise RuntimeError(f"Failed to insert into {table}: {data}")
+            return _convert_uuid_id_to_string(dict(row))
+
+        except IntegrityError as e:
+            # Kiểm tra lỗi có phải do duplicate key không
+            if "duplicate key value violates unique constraint" in str(e.orig):
+                raise RuntimeError("Invalid ID: The ID already exists") from None
+            else:
+                # Nếu là lỗi khác thì re-raise lại
+                raise
 
 
 async def repo_update(table: str, id_value: Any, data: Dict[str, Any], id_col: str = "id") -> Dict[str, Any]:

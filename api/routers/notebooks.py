@@ -6,7 +6,7 @@ from loguru import logger
 from api.models import ErrorResponse, NotebookCreate, NotebookResponse, NotebookUpdate
 from open_notebook.domain.notebook import Notebook
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
-
+from .sources import delete_source
 router = APIRouter()
 
 
@@ -132,7 +132,9 @@ async def delete_notebook(notebook_id: str):
         notebook = await Notebook.get(notebook_id)
         if not notebook:
             raise HTTPException(status_code=404, detail="Notebook not found")
-        
+        nb_sources = await notebook.get_sources()
+        for source in nb_sources:
+            await delete_source(source.id)
         await notebook.delete()
         
         return {"message": "Notebook deleted successfully"}

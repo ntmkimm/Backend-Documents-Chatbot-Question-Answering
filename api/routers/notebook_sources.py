@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from typing import List
 import uuid
-
+import json
 import os
 from pathlib import Path
 from loguru import logger
@@ -89,16 +89,16 @@ async def create_source(form: NotebookSourceForm = Depends()):
                 os.remove(file_path)
             except Exception as e:
                 logger.error(f"Error deleting file {file_path}: {str(e)}")
-
+        asset =  AssetModel(**json.loads(source.asset))
         return SourceResponse(
             id=source.id,
             title=source.title,
             topics=source.topics or [],
             asset=AssetModel(
-                file_path=source.asset.file_path if source.asset else None,
-                url=source.asset.url if source.asset else None,
+                file_path=asset.file_path if asset.url else None,
+                url=asset.url if asset.url else None,
             )
-            if source.asset
+            if asset.file_path or asset.url
             else None,
             full_text=source.full_text,
             embedded_chunks=await source.get_embedded_chunks(),

@@ -101,7 +101,7 @@ class Source(ObjectModel):
         try:
             return milvus_services.get_number_embeddings_ofsource(
                 collection_name="source_embedding",
-                source_id=self.id
+                source_id=str(self.id)
             )
         except Exception as e:
             logger.error(f"Error fetching chunks count for source {self.id}: {str(e)}")

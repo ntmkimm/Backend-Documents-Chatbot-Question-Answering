@@ -56,7 +56,7 @@ class ChatRequest(BaseModel):
     chat_message: str = Field(..., description="Message content")
 
 class ChatResponse(BaseModel):
-    notebook_id: str = Field(..., description="ID of the notebook")
+    notebook_id: uuid.UUID = Field(..., description="ID of the notebook")
     session_id: str = Field(..., description="ID of the chat session")
     ai_message: str = Field(..., description="AI-generated message content")
     reference_sources: Optional[List[str]] = Field(..., description="List of source references used in the response")

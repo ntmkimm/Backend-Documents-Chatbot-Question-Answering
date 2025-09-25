@@ -6,8 +6,14 @@ import os
 
 def get_number_embeddings_ofsource(collection_name: str, source_id: str) -> int:
     client = get_milvus_client()
-    return len(client.query(collection_name, filter=f'source_id == "{source_id}"',
-                                output_fields=[]))
+
+    client.flush(collection_name)
+    client.load_collection(collection_name)
+    query = client.query(collection_name, filter=f'source_id == "{source_id}"',
+                                output_fields=["primary_key"])
+    num_chunks = len(query)
+    return num_chunks
+
 
 def get_source_embedding_byid(collection_name: str, key: Union[str, List[str]]):
     if isinstance(key, str):
@@ -169,42 +175,19 @@ def hybrid_search(
             # print(f"ID: {hit.id}, Distance: {hit.distance}, Primary Key: {primary_key}, Content: {content}")
     return results
 
-def init_new_milvus_collection():
-    collec_name = "source_embedding"
-    client = get_milvus_client()
 
-    if client.has_collection(collec_name):
-        print(f"{collec_name} is already exist.")
-        return
 
-    schema = MilvusClient.create_schema(auto_id=True, enable_dynamic_field=False)
-    schema.add_field("primary_key", DataType.INT64, is_primary=True)
-    schema.add_field("dense_vector", DataType.FLOAT_VECTOR, dim=int(os.getenv("EMBEDDING_DIMENSION", "1536")))
-    schema.add_field("sparse_vector", DataType.SPARSE_FLOAT_VECTOR)
-    schema.add_field("content", DataType.VARCHAR, enable_analyzer=True, max_length=3500)
-    schema.add_field("order", DataType.INT64)
-    schema.add_field("source_id", DataType.VARCHAR, max_length=64)
-    schema.add_field("notebook_id", DataType.VARCHAR, max_length=64)
+def get_all_collection():
+    client = get_milvus_client()  
+    collections = client.list_collections()
+    return collections
 
-    bm25_function = Function(
-        name="text_bm25_emb",
-        input_field_names=["content"],
-        output_field_names=["sparse_vector"],
-        function_type=FunctionType.BM25,
-    )
-    schema.add_function(bm25_function)
-
-    index_params = client.prepare_index_params()
-    index_params.add_index("dense_vector", "AUTOINDEX", metric_type="COSINE")
-    index_params.add_index("sparse_vector", "SPARSE_INVERTED_INDEX", metric_type="BM25",
-                            params={"inverted_index_algo": "DAAT_MAXSCORE"})
-    index_params.add_index("source_id", "INVERTED")
-    index_params.add_index("notebook_id", "INVERTED")
-
-    client.create_collection(
-        collection_name=collec_name,
-        schema=schema,
-        index_params=index_params
-    )
-
-    print(f"Initialize Collection({collec_name}) sucessfull")
+def drop_all_collections():
+    client = get_milvus_client()  
+    
+    collections = client.list_collections()
+    for name in collections:
+        print(f"Dropping collection: {name}")
+        client.drop_collection(name)
+    
+    print("All collections dropped.")
