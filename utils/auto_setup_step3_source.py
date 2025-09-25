@@ -187,33 +187,44 @@ def delete_existing_sources(sources: List[Dict], notebook_id: str):
     
     print()
 
-def create_text_source(notebook_id: str, content: str, transformation_id: str) -> str:
-    """Create new text source and return its ID"""
-    print_colored("Step 4: Creating new text source...", Colors.YELLOW)
-    
+def create_file_source(notebook_id: str, filepath: str, transformation_id: str) -> str:
+    """Create new file source via /notebook/sources and return its ID"""
+    print_colored("Step 4: Creating new file source...", Colors.YELLOW)
+
+    url = f"{API_BASE}/notebook/sources"
+    headers = {
+        'accept': 'application/json',
+        'Authorization': f'Bearer {AUTH_TOKEN}'
+    }
+
+    files = {
+        "file": (os.path.basename(filepath), open(filepath, "rb"), "application/octet-stream")
+    }
     data = {
         "notebook_id": notebook_id,
         "source_id": str(uuid.uuid4()),
-        "type": "text",
-        "content": content,
-        "transformations": [transformation_id],
-        "embed": True,
-        "delete_source": False
+        "embed": "true",
+        "transformations": [transformation_id]
     }
-    
-    response = make_request('POST', '/sources', data)
-    print("Text source creation response:")
-    print(json.dumps(response, indent=2))
-    
-    source_id = response.get('id')
-    if not source_id:
-        print_colored("Failed to create text source", Colors.RED)
-        sys.exit(1)
-    
-    print_colored(f"Created text source with ID: {source_id}", Colors.GREEN)
-    print()
-    
-    return source_id
+
+    try:
+        response = requests.post(url, headers=headers, data=data, files=files)
+        response.raise_for_status()
+        result = response.json()
+
+        print("File source creation response:")
+        print(json.dumps(result, indent=2))
+
+        source_id = result.get('id')
+        if not source_id:
+            print_colored("Failed to create file source", Colors.RED)
+            sys.exit(1)
+
+        print_colored(f"Created file source with ID: {source_id}", Colors.GREEN)
+        print()
+        return source_id
+    finally:
+        files["file"][1].close()  # always close file handle
 
 def verify_final_setup(notebook_id: str):
     """Verify final setup by getting sources list"""
@@ -252,7 +263,7 @@ def main():
         delete_existing_sources(existing_sources, notebook_id)
         
         # Step 4: Create new text source
-        source_id = create_text_source(notebook_id, content, transformation_id)
+        source_id = create_file_source(notebook_id, EXAMPLE_SOURCE_FILE, transformation_id)
         
         # Step 5: Verify final setup
         verify_final_setup(notebook_id)

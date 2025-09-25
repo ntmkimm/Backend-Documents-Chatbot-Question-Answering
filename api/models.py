@@ -117,7 +117,7 @@ class TransformationExecuteResponse(BaseModel):
 # Embedding API models
 class EmbedRequest(BaseModel):
     item_id: str = Field(..., description="ID of the item to embed")
-    item_type: str = Field(..., description="Type of item (source, note)")
+    item_type: str = Field(..., description="Type of item (source)")
 
 
 class EmbedResponse(BaseModel):

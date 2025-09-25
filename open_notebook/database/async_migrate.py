@@ -84,7 +84,9 @@ class AsyncMigrationManager:
         self.up_migrations = [
             AsyncMigration.from_file("migrations/all.sql"),  # your converted schema
         ]
-        self.down_migrations = []
+        self.down_migrations = [
+            AsyncMigration.from_file("migrations/down_all.sql"),
+        ]
         self.runner = AsyncMigrationRunner(self.up_migrations, self.down_migrations)
 
     async def get_current_version(self) -> int:
@@ -109,6 +111,22 @@ class AsyncMigrationManager:
         else:
             logger.info("Database is already at the latest version")
 
+    async def run_migration_down(self):
+        """Rollback ALL migrations down to version 0."""
+        current_version = await self.get_current_version()
+        logger.info(f"Starting rollback from version {current_version}")
+
+        while current_version > 0:
+            try:
+                logger.info(f"Rolling back migration {current_version}")
+                await self.runner.run_one_down()
+                current_version = await self.get_current_version()
+                logger.info(f"Rolled back. Current version: {current_version}")
+            except Exception as e:
+                logger.error(f"Rollback failed at version {current_version}: {str(e)}")
+                raise
+
+        logger.info("All migrations rolled back. Database is at version 0.")
 
 async def ensure_migrations_table():
     """Make sure the _sbl_migrations table exists."""
@@ -152,5 +170,11 @@ async def migrate_all():
     mgr = AsyncMigrationManager()
     print("Current version before:", await mgr.get_current_version())
     await mgr.run_migration_up()
+    print("Done. Current version after:", await mgr.get_current_version())
+    
+async def down_migrate_all():
+    mgr = AsyncMigrationManager()
+    print("Current version before:", await mgr.get_current_version())
+    await mgr.run_migration_down()
     print("Done. Current version after:", await mgr.get_current_version())
 

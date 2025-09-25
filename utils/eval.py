@@ -246,11 +246,11 @@ def main():
             note = _qa.get("note", "")
             if not note:
                 count_out_source += 1
-                if count_out_source > 30:
+                if count_out_source > 20:
                     continue
             else:
                 count_in_source += 1
-                if count_out_source > 30:
+                if count_in_source > 20:
                     continue
             
             payload = {

@@ -108,8 +108,8 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
         param = {
             "keyword": term,
             "results": k,
-            "source_ids": [str(sid) for sid in source_ids],
-            "notebook_id":str(nb_id),
+            "source_ids": [str(sid) for sid in source_ids] if source_ids else [],
+            "notebook_id": str(nb_id),
         }
         res = await hybrid_search_in_notebook(
             **param

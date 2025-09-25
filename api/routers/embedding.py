@@ -23,9 +23,9 @@ async def embed_content(embed_request: EmbedRequest):
         item_type = embed_request.item_type.lower()
 
         # Validate item type
-        if item_type not in ["source", "note"]:
+        if item_type not in ["source"]:
             raise HTTPException(
-                status_code=400, detail="Item type must be either 'source' or 'note'"
+                status_code=400, detail="Item type must be either 'source' "
             )
 
         # Get the item and embed it
@@ -44,7 +44,7 @@ async def embed_content(embed_request: EmbedRequest):
                 )
 
             # Perform embedding
-            await source_item.vectorize()
+            await source_item.vectorize(source_item.notebook_id)
             message = "Source embedded successfully"
 
         return EmbedResponse(
