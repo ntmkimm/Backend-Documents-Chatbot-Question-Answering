@@ -240,7 +240,6 @@ async def delete_source(source_id: str):
         source = await Source.get(source_id)
         if not source:
             raise HTTPException(status_code=404, detail="Source not found")
-        milvus_services.delete_embedding(source_id)
         await source.delete()
 
         return {"message": "Source deleted successfully"}

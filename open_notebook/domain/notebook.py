@@ -12,6 +12,17 @@ from open_notebook.domain.models import model_manager
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
 from open_notebook.utils import split_text
 from open_notebook.database import milvus_services
+from open_notebook.graphs.utils import _memory_agent_milvus
+
+from open_notebook.database.repository import (
+    ensure_record_id,
+    repo_create,
+    repo_delete,
+    repo_query,
+    repo_relate,
+    repo_update,
+    repo_upsert,
+)
 
 
 class Notebook(ObjectModel):
@@ -54,6 +65,26 @@ class Notebook(ObjectModel):
         except Exception as e:
             logger.error(f"Error fetching chat sessions for notebook {self.id}: {str(e)}")
             raise DatabaseOperationError(e)
+        
+    async def delete(self) -> bool:
+        """
+        override function 
+        """
+        if self.id is None:
+            raise InvalidInputError("Cannot delete without an ID")
+        try:
+            chat_sessions = await self.get_chat_sessions()
+            for chat_session in chat_sessions:
+                _memory_agent_milvus.delete(thread_id=chat_session.id)
+            
+            sources = await self.get_sources()
+            for source in sources:
+                milvus_services.delete_embedding(source_id=source.id)
+            
+            return await repo_delete(self.__class__.table_name, self.id)
+        except Exception as e:
+            logger.error(f"Error deleting {self.__class__.table_name} {self.id}: {e}")
+            raise DatabaseOperationError(e)
 
 
 class Asset(BaseModel):
@@ -83,6 +114,19 @@ class Source(ObjectModel):
     title: Optional[str] = None
     topics: Optional[List[str]] = Field(default_factory=list)
     full_text: Optional[str] = None
+    
+    async def delete(self) -> bool:
+        """
+        override function 
+        """
+        if self.id is None:
+            raise InvalidInputError("Cannot delete without an ID")
+        try:
+            milvus_services.delete_embedding(str(self.id))
+            return await repo_delete(self.__class__.table_name, self.id)
+        except Exception as e:
+            logger.error(f"Error deleting {self.__class__.table_name} {self.id}: {e}")
+            raise DatabaseOperationError(e)
 
     async def get_context(self, context_size: Literal["short", "long"] = "short") -> Dict[str, Any]:
         insights_list = await self.get_insights()
@@ -179,6 +223,19 @@ class ChatSession(ObjectModel):
     notebook_id: Optional[str] = None
     table_name: ClassVar[str] = "chat_session"
     title: Optional[str] = None
+    
+    async def delete(self) -> bool:
+        """
+        override function 
+        """
+        if self.id is None:
+            raise InvalidInputError("Cannot delete without an ID")
+        try:
+            _memory_agent_milvus.delete(thread_id=str(self.id))
+            return await repo_delete(self.__class__.table_name, self.id)
+        except Exception as e:
+            logger.error(f"Error deleting {self.__class__.table_name} {self.id}: {e}")
+            raise DatabaseOperationError(e)
 
 
 async def hybrid_search_in_notebook(

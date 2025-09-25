@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS source (
     title TEXT,
     topics TEXT[],                -- array<string>
     full_text TEXT,
-    notebook_id UUID REFERENCES notebook(id) ON DELETE SET NULL, -- FK to notebook
+    notebook_id UUID REFERENCES notebook(id) ON DELETE CASCADE, -- FK to notebook
     created TIMESTAMPTZ DEFAULT now(),
     updated TIMESTAMPTZ DEFAULT now()
 );
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS source_insight (
 -- CHAT_SESSION
 CREATE TABLE IF NOT EXISTS chat_session (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    notebook_id UUID REFERENCES notebook(id) ON DELETE SET NULL, -- FK to notebook
+    notebook_id UUID REFERENCES notebook(id) ON DELETE CASCADE, -- FK to notebook
     title TEXT NOT NULL,
     created TIMESTAMPTZ DEFAULT now(),
     updated TIMESTAMPTZ DEFAULT now()

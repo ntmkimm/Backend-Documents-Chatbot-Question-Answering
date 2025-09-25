@@ -16,10 +16,6 @@ from api.context_service import context_service
 from api.models import ChatRequest, ChatResponse
 
 from open_notebook.graphs.ask_chat import get_conversation_graph
-from open_notebook.domain.notebook import hybrid_search_in_notebook, text_search_in_notebook
-
-from open_notebook.utils import parse_thinking_content, token_count
-from pages.stream_app.utils import convert_source_references
 
 router = APIRouter()
 
