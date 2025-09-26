@@ -21,7 +21,7 @@ def init_new_milvus_collection(client):
     schema.add_field("primary_key", DataType.INT64, is_primary=True)
     schema.add_field("dense_vector", DataType.FLOAT_VECTOR, dim=int(os.getenv("EMBEDDING_DIMENSION", "1536")))
     schema.add_field("sparse_vector", DataType.SPARSE_FLOAT_VECTOR)
-    schema.add_field("content", DataType.VARCHAR, enable_analyzer=True, max_length=3500)
+    schema.add_field("content", DataType.VARCHAR, enable_analyzer=True, max_length=32768)
     schema.add_field("order", DataType.INT64)
     schema.add_field("source_id", DataType.VARCHAR, max_length=64)
     schema.add_field("notebook_id", DataType.VARCHAR, max_length=64)

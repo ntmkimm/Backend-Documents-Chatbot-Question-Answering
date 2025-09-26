@@ -3,12 +3,14 @@ import unicodedata
 from importlib.metadata import PackageNotFoundError, version
 from typing import Tuple
 from urllib.parse import urlparse
-
+import os
 import requests
 import tomli
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from packaging.version import parse as parse_version
 
+tiktoken_cache_dir = "tiktoken" 
+os.environ["TIKTOKEN_CACHE_DIR"] = tiktoken_cache_dir
 
 def token_count(input_string) -> int:
     """
