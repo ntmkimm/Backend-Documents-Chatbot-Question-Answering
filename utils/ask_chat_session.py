@@ -83,9 +83,9 @@ payload = {
 }
 
 events = []
-with requests.post(API_BASE + "/notebooks/ask_chat/stream",
+with requests.post(API_BASE + "/notebooks/ask_chat",
                    headers=headers, json=payload, stream=True) as r:
-    r.raise_for_status()
+    # r.raise_for_status()
     for line in r.iter_lines(decode_unicode=True):
         if not line:
             continue

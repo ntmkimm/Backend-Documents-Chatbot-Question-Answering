@@ -23,10 +23,11 @@ from uuid import uuid4
 
 @router.post("/notebooks/ask_chat")
 async def send_message(chat_request: ChatRequest):
+    current_notebook = await Notebook.get(chat_request.notebook_id)
+    if not current_notebook:
+        raise HTTPException(status_code=404, detail="Notebook not found")
+            
     try:
-        # LẤY notebook & session như cũ
-        current_notebook = await Notebook.get(chat_request.notebook_id)
-
         # Check valid of source_ids
         list_sources_in_nb = await current_notebook.get_sources()
         list_sources_in_nb = [source.id for source in list_sources_in_nb]
@@ -96,6 +97,12 @@ async def stream_chat(chat_request: ChatRequest):
     async def event_generator():
         try:
             current_notebook = await Notebook.get(chat_request.notebook_id)
+        except:
+            error_data = {"type": "error", "message": f"Notebook {chat_request.notebook_id} not found"}
+            yield f"data: {json.dumps(error_data)}\n\n"
+            return
+            
+        try:
             current_session, current_state = await get_session(current_notebook, chat_request.session_id)
             thread_id = current_session.id
             # Check valid of source_ids

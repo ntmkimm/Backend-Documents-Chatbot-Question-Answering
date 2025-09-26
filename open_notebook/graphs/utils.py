@@ -143,7 +143,7 @@ class MemoryAgentMilvus:
         fields = [
             FieldSchema(name="id", dtype=DataType.INT64, is_primary=True, auto_id=True),
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=self.dim),
-            FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=3072),#2048),
+            FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=32768),
             FieldSchema(name="thread_id", dtype=DataType.VARCHAR, max_length=256),
             FieldSchema(name="ts", dtype=DataType.VARCHAR, max_length=64)
         ]
