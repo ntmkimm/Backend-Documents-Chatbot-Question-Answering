@@ -13,6 +13,7 @@ from langgraph.graph import START, END, StateGraph
 from langgraph.types import Send
 from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, AIMessageChunk
+from open_notebook.config import DB_URI, connection_kwargs
 
 from langchain.chains import ConversationalRetrievalChain
 from open_notebook.graphs.utils import (
@@ -189,19 +190,6 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
 
 _checkpointer: Optional[AsyncPostgresSaver] = None
 _pool: Optional[AsyncConnectionPool] = None  # Optional global to keep the pool alive
-
-connection_kwargs = {
-    "autocommit": True,
-    "prepare_threshold": None,
-}
-
-POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "notebook")
-POSTGRES_ADDRESS = os.getenv("POSTGRES_ADDRESS", "db")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
-POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres")
-
-DB_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_ADDRESS}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 from psycopg import OperationalError
 import asyncio

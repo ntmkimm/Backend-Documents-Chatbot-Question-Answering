@@ -2,7 +2,7 @@ import os
 import asyncio
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, AsyncGenerator
 from sqlalchemy.exc import IntegrityError
 
 from dotenv import load_dotenv
@@ -13,15 +13,11 @@ from sqlalchemy import text
 import uuid
 from typing import Union
 
+from open_notebook.config import POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT, POSTGRES_ADDRESS, POSTGRES_DB
 load_dotenv()
 
 def get_database_url() -> str:
-    POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "notebook")
-    POSTGRES_HOST = os.getenv("POSTGRES_ADDRESS", "db")
-    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
-    POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres")
-    return f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+    return f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_ADDRESS}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 _engine: Optional[AsyncEngine] = None
 _session_factory: Optional[sessionmaker] = None
@@ -40,7 +36,7 @@ def _ensure_engine() -> AsyncEngine:
     return _engine
 
 @asynccontextmanager
-async def db_connection() -> AsyncSession:
+async def db_connection() -> AsyncGenerator[AsyncSession, None]:
     _ensure_engine()
     assert _session_factory is not None
     async with _session_factory() as session:
@@ -129,6 +125,7 @@ async def repo_create(
             return _convert_uuid_id_to_string(dict(row))
 
         except IntegrityError as e:
+            await s.rollback()
             # Kiểm tra lỗi có phải do duplicate key không
             if "duplicate key value violates unique constraint" in str(e.orig):
                 raise RuntimeError("Invalid ID: The ID already exists") from None
@@ -254,4 +251,19 @@ async def pg_execute(sql: str, params: Optional[Dict[str, Any]] = None) -> int:
         r = await s.execute(text(sql), params or {}) 
         await s.commit() 
         return r.rowcount or 0
+
+@asynccontextmanager
+async def transaction():
+    """
+    Provides a transactional scope for a series of database operations.
+    Ensures that all operations within the context are committed atomically.
+    """
+    async with db_connection() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception as e:
+            print("error",e)
+            await session.rollback()
+            raise e
 

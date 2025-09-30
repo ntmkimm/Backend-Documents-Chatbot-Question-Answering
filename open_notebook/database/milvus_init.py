@@ -2,11 +2,8 @@ from pymilvus import MilvusClient
 from pymilvus import MilvusClient, DataType, AnnSearchRequest, RRFRanker, Function, FunctionType
 
 import os
-from dotenv import load_dotenv
-load_dotenv()
-MILVUS_ADDRESS = os.getenv("MILVUS_ADDRESS", "192.168.20.156")
-MILVUS_PORT = int(os.getenv("MILVUS_PORT", "19530"))
-MILVUS_URL = os.getenv("MILVUS_URI", f"http://{MILVUS_ADDRESS}:{MILVUS_PORT}")
+from open_notebook.config import MILVUS_URI
+
 
 milvus_client: MilvusClient | None = None
 
@@ -51,7 +48,7 @@ def init_new_milvus_collection(client):
 def get_milvus_client() -> MilvusClient:
     global milvus_client
     if milvus_client is None:
-        milvus_client = MilvusClient(uri=MILVUS_URL,
+        milvus_client = MilvusClient(uri=MILVUS_URI,
                                      token="root:Milvus")
         init_new_milvus_collection(milvus_client)
     return milvus_client

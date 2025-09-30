@@ -20,20 +20,13 @@ import os, logging
 from dotenv import load_dotenv
 load_dotenv()
 
+from open_notebook.config import DB_URI, MILVUS_PORT, MILVUS_ADDRESS
 from datetime import datetime
 from langchain.memory import ConversationBufferWindowMemory
-from langchain_community.chat_message_histories import PostgresChatMessageHistory
 from pymilvus import (
     connections, FieldSchema, CollectionSchema, DataType, Collection, utility
 )
 
-POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "notebook")
-POSTGRES_ADDRESS = os.getenv("POSTGRES_ADDRESS", "db")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
-POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres")
-
-DB_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_ADDRESS}:{POSTGRES_PORT}/{POSTGRES_DB}"
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import (
     BaseMessage,
@@ -130,8 +123,6 @@ def get_postgres_short_memory(thread_id: str, k: int = 4) -> ConversationBufferW
     )
 
 logger = logging.getLogger(__name__)
-MILVUS_ADDRESS = os.getenv("MILVUS_ADDRESS", "192.168.20.156")
-MILVUS_PORT = int(os.getenv("MILVUS_PORT", "19530"))
 
 class MemoryAgentMilvus:
     def __init__(self, collection_name: str = "agent_memory1"):
