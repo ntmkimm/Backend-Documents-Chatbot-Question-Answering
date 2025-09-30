@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS source (
     topics TEXT[],                -- array<string>
     full_text TEXT,
     notebook_id UUID REFERENCES notebook(id) ON DELETE CASCADE, -- FK to notebook
+    n_embedding_chunks INT,
     created TIMESTAMPTZ DEFAULT now(),
     updated TIMESTAMPTZ DEFAULT now()
 );

@@ -34,7 +34,14 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from dotenv import load_dotenv
 load_dotenv()
 import os
+import asyncio
 
+
+async def run_in_thread(func, *args, **kwargs):
+    sem = asyncio.Semaphore(10)  # limit concurrency (adjust as needed)
+    async with sem:  # ensure only N run at the same time
+        return await asyncio.to_thread(func, *args, **kwargs)
+    
 class Search(BaseModel):
     term: str
     instructions: str = Field(
@@ -103,17 +110,23 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
         return {"context": {}}
 
     # aggregated: list[dict] = []
-    context_dict = {}
-    for term in terms:
-        param = {
+    params_list = [
+        {
             "keyword": term,
             "results": k,
             "source_ids": [str(sid) for sid in source_ids] if source_ids else [],
             "notebook_id": str(nb_id),
         }
-        res = await hybrid_search_in_notebook(
-            **param
-        )
+        for term in terms
+    ]
+
+    # Launch all searches concurrently
+    tasks = [hybrid_search_in_notebook(**param) for param in params_list]
+    results_list = await asyncio.gather(*tasks)
+
+    # Merge all results into one dict
+    context_dict = {}
+    for res in results_list:
         context_dict.update(res)
 
     return {"context": context_dict}
@@ -190,14 +203,40 @@ POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres")
 
 DB_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_ADDRESS}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
-async def get_checkpointer() -> AsyncPostgresSaver:
+from psycopg import OperationalError
+import asyncio
+
+async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSaver:
+    """
+    Tạo hoặc lấy checkpointer, retry nếu connection fail.
+    :param retries: số lần thử lại
+    :param delay: thời gian chờ giữa các lần thử
+    """
     global _checkpointer, _pool
-    if _checkpointer is None:
-        _pool = AsyncConnectionPool(DB_URI, kwargs=connection_kwargs)
-        checkpointer = AsyncPostgresSaver(_pool)
-        await checkpointer.setup()
-        _checkpointer = checkpointer
-    return _checkpointer
+
+    for attempt in range(retries):
+        try:
+            if _checkpointer is None:
+                _pool = AsyncConnectionPool(
+                    DB_URI,
+                    min_size=1,
+                    max_size=10,
+                    kwargs=connection_kwargs,
+                    timeout=30,
+                )
+                checkpointer = AsyncPostgresSaver(_pool)
+                await checkpointer.setup()
+                _checkpointer = checkpointer
+            return _checkpointer
+
+        except OperationalError as e:
+            print(f"[get_checkpointer] OperationalError: {e}. Attempt {attempt+1}/{retries}")
+            _checkpointer = None
+            _pool = None
+            if attempt < retries - 1:
+                await asyncio.sleep(delay)
+            else:
+                raise  # ném lỗi ra ngoài nếu retry thất bại
 
 async def build_ask_chat_graph(state: ThreadState, config: RunnableConfig) -> StateGraph:
     agent_state = StateGraph(ThreadState)

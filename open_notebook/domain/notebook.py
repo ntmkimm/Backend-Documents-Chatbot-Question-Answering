@@ -114,6 +114,7 @@ class Source(ObjectModel):
     title: Optional[str] = None
     topics: Optional[List[str]] = Field(default_factory=list)
     full_text: Optional[str] = None
+    n_embedding_chunks: int = 0
     
     async def delete(self) -> bool:
         """
@@ -177,7 +178,7 @@ class Source(ObjectModel):
             logger.error(f"Error adding insight to source {self.id}: {str(e)}")
             raise DatabaseOperationError(e)
 
-    async def vectorize(self, notebook_id: str) -> None:
+    async def vectorize(self, notebook_id: str) -> int:
         print("func vectorize")
         logger.info(f"Starting vectorization for source {self.id}")
         EMBEDDING_MODEL = await model_manager.get_embedding_model()
@@ -201,22 +202,31 @@ class Source(ObjectModel):
                     raise
 
             results = await asyncio.gather(*[process_chunk(i, c) for i, c in enumerate(chunks)])
+            list_data = []
             for idx, embedding, content in results:
                 data = {
                     "dense_vector": embedding,
                     "content": content,
                     "order": idx,
-                    "source_id": self.id,
-                    "notebook_id": notebook_id,
+                    "source_id": str(self.id),
+                    "notebook_id": str(notebook_id),
                 }
-                milvus_services.insert_data(collection_name="source_embedding", data=data)
+                list_data.append(data)
+            
+            milvus_services.insert_data(collection_name="source_embedding", data=list_data)
 
             logger.info(f"Vectorization complete for source {self.id}")
-
+            return len(results)
         except Exception as e:
             logger.error(f"Error vectorizing source {self.id}: {str(e)}")
+            await self.remove_embedding()
             raise DatabaseOperationError(e)
-
+    async def remove_embedding(self):
+        try:
+            milvus_services.delete_embedding(self.id)
+        except Exception as e:
+            logger.error(f"Error remove embedding {self.id}: {str(e)}")
+            raise DatabaseOperationError(e)
 
 class ChatSession(ObjectModel):
     id: Optional[str] = None

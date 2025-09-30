@@ -53,7 +53,7 @@ async def get_sources(
                     )
                     if asset.file_path or asset.url
                     else None,
-                    embedded_chunks=await source.get_embedded_chunks(),
+                    embedded_chunks=source.n_embedding_chunks,
                     insights_count=len(insights),
                     created=str(source.created),
                     updated=str(source.updated),
@@ -73,6 +73,13 @@ async def create_source(source_data: SourceCreate):
     """Create a new source."""
     try:
         # Verify notebook exists
+        check_source = None
+        try:
+            check_source = await Source.get(source_data.source_id)
+        except:
+            pass
+        if check_source:
+            raise KeyError(f"Source {source_data.source_id} already exists")
         sourceid = uuid.UUID(source_data.source_id) # if not uuid, raise error
         # sourceid = sourceid.hex
         notebook = await Notebook.get(source_data.notebook_id)
@@ -146,7 +153,7 @@ async def create_source(source_data: SourceCreate):
             if asset.file_path or asset.url
             else None,
             full_text=source.full_text,
-            embedded_chunks=await source.get_embedded_chunks(),
+            embedded_chunks= source.n_embedding_chunks,
             created=str(source.created),
             updated=str(source.updated),
         )
@@ -181,7 +188,7 @@ async def get_source(source_id: str):
             if asset.file_path or asset.url
             else None,
             full_text=source.full_text,
-            embedded_chunks=await source.get_embedded_chunks(),
+            embedded_chunks=source.n_embedding_chunks,
             created=str(source.created),
             updated=str(source.updated),
         )
@@ -220,7 +227,7 @@ async def update_source(source_id: str, source_update: SourceUpdate):
             if asset.file_path or asset.url
             else None,
             full_text=source.full_text,
-            embedded_chunks=await source.get_embedded_chunks(),
+            embedded_chunks=source.n_embedding_chunks,
             created=str(source.created),
             updated=str(source.updated),
         )

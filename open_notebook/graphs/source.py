@@ -10,6 +10,7 @@ from langgraph.types import Send
 from loguru import logger
 from typing_extensions import Annotated, TypedDict
 
+from open_notebook.database.repository import transaction
 from open_notebook.domain.content_settings import ContentSettings
 from open_notebook.domain.notebook import Asset, Source
 from open_notebook.domain.transformation import Transformation
@@ -60,7 +61,7 @@ async def save_source(state: SourceState) -> dict:
         id=state["source_id"],
         notebook_id=state["notebook_id"]
     )
-    await source.save(provided_id=True)
+
 
     if state["notebook_id"]:
         logger.debug(f"Adding source to notebook {state['notebook_id']}")
@@ -68,7 +69,16 @@ async def save_source(state: SourceState) -> dict:
 
     if state["embed"]:
         logger.debug("Embedding content for vector search")
-        await source.vectorize(state["notebook_id"])
+        try:
+            n_embeddings = await source.vectorize(state["notebook_id"])
+            source.n_embedding_chunks = n_embeddings
+        except Exception as e:
+            raise RuntimeError("Vectorize process error") from e
+    try:
+        await source.save(provided_id=True)
+    except Exception as e:
+        await source.remove_embedding()
+        raise RuntimeError(f"Error save source {e}") 
 
     return {"source": source}
 

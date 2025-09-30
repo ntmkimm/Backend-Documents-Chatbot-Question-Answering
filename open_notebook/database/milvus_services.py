@@ -2,7 +2,6 @@ from .milvus_init import get_milvus_client
 from typing import List, Dict, Union
 from pymilvus import MilvusClient, DataType, AnnSearchRequest, RRFRanker, Function, FunctionType
 from api.models import SourceEmbeddingResponse
-import os
 
 def get_number_embeddings_ofsource(collection_name: str, source_id: str) -> int:
     client = get_milvus_client()
@@ -40,18 +39,19 @@ def get_source_embedding_byid(collection_name: str, key: Union[str, List[str]]):
 
 def delete_embedding(source_id: str):
     client = get_milvus_client()
-    
-    return client.delete(
+    q = client.delete(
         collection_name="source_embedding",
         filter=f'source_id == "{source_id}"'
     )
+    return q
 
-def insert_data(collection_name: str, data: dict):
+def insert_data(collection_name: str, data: Union[Dict, List[Dict]]) -> int:
     client = get_milvus_client()
-    return client.insert(
+    insert_info = client.insert(
         collection_name=collection_name,
         data=data
     )
+    return insert_info["insert_count"]
 
 def semantic_vector_search(
     collection_name: str,
@@ -76,13 +76,11 @@ def semantic_vector_search(
         limit=limit,
         filter=filter_expr
     )
-    results = {}
-    for hits in res:
-        for hit in hits:
-            primary_key = f"source_embedding:{hit.entity.get('primary_key')}"
-            content = hit.entity.get("content")
-            results[primary_key] = content
-            # print(f"ID: {hit.id}, Distance: {hit.distance}, Primary Key: {primary_key}, Content: {content}")
+    results = {
+        f"source_embedding:{hit.entity.get('primary_key')}": hit.entity.get("content")
+        for hits in res
+        for hit in hits
+    }
     return results
 
 def full_text_search(
@@ -111,13 +109,11 @@ def full_text_search(
             search_params=search_params,
             filter=filter_expr
         )
-        results = {}
-        for hits in res:
-            for hit in hits:
-                primary_key = f"source_embedding:{hit.entity.get('primary_key')}"
-                content = hit.entity.get("content")
-                results[primary_key] = content
-                # print(f"ID: {hit.id}, Distance: {hit.distance}, Primary Key: {primary_key}, Content: {content}")
+        results = {
+            f"source_embedding:{hit.entity.get('primary_key')}": hit.entity.get("content")
+            for hits in res
+            for hit in hits
+        }
         return results
 def hybrid_search(
         collection_name: str,
@@ -166,13 +162,11 @@ def hybrid_search(
         limit=limit
     )
 
-    results = {}
-    for hits in res:
-        for hit in hits:
-            primary_key = f"source_embedding:{hit.entity.get('primary_key')}"
-            content = hit.entity.get("content")
-            results[primary_key] = content
-            # print(f"ID: {hit.id}, Distance: {hit.distance}, Primary Key: {primary_key}, Content: {content}")
+    results = {
+        f"source_embedding:{hit.entity.get('primary_key')}": hit.entity.get("content")
+        for hits in res
+        for hit in hits
+    }
     return results
 
 
