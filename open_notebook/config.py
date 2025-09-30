@@ -30,3 +30,9 @@ DB_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_ADDRESS}:{
 MILVUS_ADDRESS = os.getenv("MILVUS_ADDRESS", "192.168.20.156")
 MILVUS_PORT = int(os.getenv("MILVUS_PORT", "19530"))
 MILVUS_URI = os.getenv("MILVUS_URI", f"http://{MILVUS_ADDRESS}:{MILVUS_PORT}")
+
+
+# Default number of connections in the pool (N)
+POOL_SIZE = 10  # Modify this to set the desired number of connections in the pool
+MAX_OVERFLOW = 5  # Number of connections that can be created beyond the pool size if needed
+POOL_TIMEOUT = 30  # Timeout in seconds to wait for a connection from the pool

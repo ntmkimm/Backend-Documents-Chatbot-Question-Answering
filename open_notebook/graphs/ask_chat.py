@@ -13,7 +13,7 @@ from langgraph.graph import START, END, StateGraph
 from langgraph.types import Send
 from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, AIMessageChunk
-from open_notebook.config import DB_URI, connection_kwargs
+from open_notebook.config import DB_URI, connection_kwargs, POOL_TIMEOUT, POOL_SIZE
 
 from langchain.chains import ConversationalRetrievalChain
 from open_notebook.graphs.utils import (
@@ -24,7 +24,6 @@ from open_notebook.graphs.utils import (
 
 from open_notebook.domain.notebook import (
     hybrid_search_in_notebook,
-    text_search_in_notebook,
     Notebook,
 )
 from open_notebook.utils import clean_thinking_content 
@@ -32,11 +31,8 @@ from langchain_core.output_parsers.pydantic import PydanticOutputParser
 
 from psycopg_pool import AsyncConnectionPool
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-from dotenv import load_dotenv
-load_dotenv()
-import os
+from psycopg import OperationalError
 import asyncio
-
 
 async def run_in_thread(func, *args, **kwargs):
     sem = asyncio.Semaphore(10)  # limit concurrency (adjust as needed)
@@ -191,9 +187,6 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
 _checkpointer: Optional[AsyncPostgresSaver] = None
 _pool: Optional[AsyncConnectionPool] = None  # Optional global to keep the pool alive
 
-from psycopg import OperationalError
-import asyncio
-
 async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSaver:
     """
     Tạo hoặc lấy checkpointer, retry nếu connection fail.
@@ -208,9 +201,9 @@ async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSav
                 _pool = AsyncConnectionPool(
                     DB_URI,
                     min_size=1,
-                    max_size=10,
+                    max_size=POOL_SIZE,
                     kwargs=connection_kwargs,
-                    timeout=30,
+                    timeout=POOL_TIMEOUT,
                 )
                 checkpointer = AsyncPostgresSaver(_pool)
                 await checkpointer.setup()

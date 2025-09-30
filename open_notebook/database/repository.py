@@ -13,7 +13,7 @@ from sqlalchemy import text
 import uuid
 from typing import Union
 
-from open_notebook.config import POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT, POSTGRES_ADDRESS, POSTGRES_DB
+from open_notebook.config import POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT, POSTGRES_ADDRESS, POSTGRES_DB, POOL_SIZE, POOL_TIMEOUT, MAX_OVERFLOW
 load_dotenv()
 
 def get_database_url() -> str:
@@ -27,6 +27,9 @@ def _ensure_engine() -> AsyncEngine:
     if _engine is None:
         _engine = create_async_engine(
             get_database_url(),
+            pool_size=POOL_SIZE,
+            max_overflow=MAX_OVERFLOW,
+            pool_timeout=POOL_TIMEOUT,
             pool_pre_ping=True,
             future=True,
         )
