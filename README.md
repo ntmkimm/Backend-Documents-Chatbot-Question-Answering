@@ -1,8 +1,4 @@
-## 🚀 Quick Start
-
-Ready to try Open Notebook? Choose your preferred method:
-
-### ⚡ Instant Setup
+### Setup
 
 ```bash
 docker network create --driver bridge my_network 
@@ -69,5 +65,6 @@ python utils/auto_setup_step2_notebooks.py
 python utils/auto_setup_step3_source/py
 python utils/ask_chat_session.py
 ```
+
 
 
