@@ -25,12 +25,6 @@ POSTGRES_ADDRESS=db # lưu ý, chỉnh thành localhost nếu chạy local, nế
 POSTGRES_DB=postgres
 
 API_BASE_URL=
-SURREAL_ADDRESS=surrealdb # lưu ý, chỉnh thành localhost nếu chạy local, nếu tạo network connect đến container suurealdb thì để nguyên
-SURREAL_PORT=8000
-SURREAL_USER=root
-SURREAL_PASSWORD=root
-SURREAL_NAMESPACE=open_notebook
-SURREAL_DATABASE=production
 
 OPENAI_API_KEY=
 OPENROUTER_API_KEY=
@@ -65,6 +59,7 @@ python utils/auto_setup_step2_notebooks.py
 python utils/auto_setup_step3_source/py
 python utils/ask_chat_session.py
 ```
+
 
 
 
