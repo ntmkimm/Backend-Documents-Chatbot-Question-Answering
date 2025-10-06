@@ -6,7 +6,7 @@ Ready to try Open Notebook? Choose your preferred method:
 
 ```bash
 docker network create --driver bridge my_network 
-docker-compose up -d # adjust when surrealdb when ur not root user (do not mount rocksdb), also consider port of postgres and surrealdb of your docker-compose
+docker-compose up -d # consider port of postgres, milvus of your docker-compose
 docker-compose down # when stop container
 ```
 
@@ -40,32 +40,33 @@ OPENAI_API_KEY=
 OPENROUTER_API_KEY=
 OPENROUTER_BASE_URL=https://api.studio.nebius.ai/v1
 
-DEFAULT_CHAT_MODEL=Qwen/Qwen2.5-32B-Instruct
-DEFAULT_TRANSFORMATION_MODEL=Qwen/Qwen2.5-32B-Instruct
-DEFAULT_LARGE_CONTEXT_MODEL=Qwen/Qwen2.5-32B-Instruct
+DEFAULT_CHAT_MODEL=Qwen/Qwen3-30B-A3B-Instruct-2507
+DEFAULT_TRANSFORMATION_MODEL=Qwen/Qwen3-30B-A3B-Instruct-2507
+DEFAULT_LARGE_CONTEXT_MODEL=Qwen/Qwen3-30B-A3B-Instruct-2507
 DEFAULT_TEXT_TO_SPEECH_MODEL=
 DEFAULT_SPEECH_TO_TEXT_MODEL=
+DEFAULT_TOOLS_MODEL=Qwen/Qwen3-30B-A3B-Instruct-2507
 DEFAULT_EMBEDDING_MODEL=text-embedding-3-small
-DEFAULT_TOOLS_MODEL=Qwen/Qwen2.5-32B-Instruct
+EMBEDDING_DIMENSION=1536
+
+# LANGUAGE_MODEL_PROVIDER=openai 
+LANGUAGE_MODEL_PROVIDER=openrouter
 ```
 
 ```bash
-python migrate.py # IMPORTANT: migrate function for query database in surrealdb
 bash run.sh
 ```
 
 **What gets created:**
 ```
-open-notebook/
-├── notebook_data/     # Your notebooks and research content
-└── surreal_data/      # Database files
+data/
+├── uploads/     # Your notebooks and research content
 ```
 
 **Simple run:**
 ```bash
-python utils/auto_***
+python utils/auto_setup_step2_notebooks.py
+python utils/auto_setup_step2_source/py
+python utils/ask_chat_session.py
 ```
 
-> **⚠️ Important**: 
-> 1. **Run from a dedicated folder**: Create and run this from inside a new `open-notebook` folder so your data volumes are properly organized
-> 2. **Volume persistence**: The volumes (`-v ./notebook_data:/app/data` and `-v ./surreal_data:/mydata`) are essential to persist your data between container restarts. Without them, you'll lose all your notebooks and research when the container stops. -->
