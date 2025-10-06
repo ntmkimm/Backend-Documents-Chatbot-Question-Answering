@@ -36,6 +36,8 @@ async def send_message(chat_request: ChatRequest):
                 raise Exception(
                     f"Invalid source_ids: {chat_request.source_ids}. They do not belong to notebook {chat_request.notebook_id}."
                 )
+            list_sources_in_nb = chat_request.source_ids
+            
         current_session, current_state = await get_session(current_notebook, chat_request.session_id)
         thread_id = current_session.id
         config = RunnableConfig(configurable={"thread_id": thread_id})
@@ -65,12 +67,17 @@ async def send_message(chat_request: ChatRequest):
                         )
                     elif end_node == "chat_agent":
                         reference_sources = await get_source_references(chunk["cleaned_content"])
+                        ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
+                        ref_set = set(ref_list)
+                        reference_sources = [
+                            int(s.split(":", 1)[1]) if ":" in s else int(s)
+                            for s in reference_sources
+                            if (int(s.split(":", 1)[1]) if ":" in s else int(s)) in ref_set
+                        ]
                         data_end['reference'] = reference_sources
-                        data_end['answer'] = chunk["cleaned_content"]
-                        # await graph.aupdate_state(
-                        #     config,
-                        #     {"messages": [AIMessage(content=chunk["cleaned_content"])]}
-                        # )
+                        pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
+                        # Remove pattern from answer
+                        data_end['answer'] = re.sub(pattern, '', chunk["cleaned_content"])
 
                 elif kind == 'on_chain_start' and event['name'] == 'LangGraph':
                     data_end['session_id'] = event['metadata']['thread_id']
@@ -113,6 +120,8 @@ async def stream_chat(chat_request: ChatRequest):
                     raise Exception(
                         f"Invalid source_ids: {chat_request.source_ids}. They do not belong to notebook {chat_request.notebook_id}."
                     )
+                list_sources_in_nb = chat_request.source_ids
+                
             config = RunnableConfig(configurable={"thread_id": thread_id})
             graph = await get_conversation_graph(state={}, config=config)
 
@@ -127,7 +136,7 @@ async def stream_chat(chat_request: ChatRequest):
 
             async for event in graph.astream_events(input_payload, config):
                 kind = event["event"]
-                # print(event, "\n\n")
+
                 if kind == 'on_chain_stream':
                     chunk = event["data"]["chunk"]
                     
@@ -141,11 +150,7 @@ async def stream_chat(chat_request: ChatRequest):
                         )
                     elif end_node == "chat_agent":
                         reference_sources = await get_source_references(chunk["cleaned_content"])
-                        ref_list = []
-                        if chat_request.source_ids:
-                            ref_list = await Source.get_all_chunk_ids_bulk(chat_request.source_ids)
-                        else:
-                            ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
+                        ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
                         ref_set = set(ref_list)
                         reference_sources = [
                             int(s.split(":", 1)[1]) if ":" in s else int(s)
@@ -153,14 +158,9 @@ async def stream_chat(chat_request: ChatRequest):
                             if (int(s.split(":", 1)[1]) if ":" in s else int(s)) in ref_set
                         ]
                         data_end['reference'] = reference_sources
-                        # data_end['answer'] = chunk["cleaned_content"]
                         pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
                         # Remove pattern from answer
                         data_end['answer'] = re.sub(pattern, '', chunk["cleaned_content"])
-                        # await graph.aupdate_state(
-                        #     config,
-                        #     {"messages": [AIMessage(content=chunk["cleaned_content"])]}
-                        # )
                         
                     if event['name'] == 'chat_agent':
                         text = chunk.get("content", "")
@@ -180,9 +180,6 @@ async def stream_chat(chat_request: ChatRequest):
                 elif kind == 'on_chain_start' and event['name'] == 'retrieve_context':
                     data = {'event_type': StreamEvent.TOOL_INPUT, 'content': "Building context by searching in notebook..."}
                     yield f"data: {json.dumps(data)}\n\n"
-                    
-                # else: 
-                #     print(event, "\n\n")
 
             await current_session.save()
             yield f"data: {json.dumps(data_end)}\n\n"
@@ -213,7 +210,7 @@ async def _get_graph_state(graph, thread_id: str):
 
 async def get_session(current_notebook: Notebook, session_id: str) -> Union[ChatSession, None]:
     """Get the current chat session for the notebook."""
-    print("session_id : ", session_id)
+
     chat_session: Union[ChatSession, None] = None
 
     if session_id:
@@ -222,7 +219,7 @@ async def get_session(current_notebook: Notebook, session_id: str) -> Union[Chat
             print("chat session existed: ", session_id)
         except Exception as e:
             chat_session = await create_session_for_notebook(str(current_notebook.id), session_id=session_id)
-            logger.warning(f"Could not fetch ChatSession {session_id}: {str(e)}")
+            logger.warning(f"Create new ChatSession {session_id}: {str(e)}")
     
     if not chat_session or chat_session.id is None:
         raise ValueError("Problem acquiring chat session")
