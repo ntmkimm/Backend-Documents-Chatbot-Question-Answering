@@ -3,6 +3,23 @@ from typing import List, Dict, Union
 from pymilvus import MilvusClient, DataType, AnnSearchRequest, RRFRanker, Function, FunctionType
 from api.models import SourceEmbeddingResponse
 
+
+def get_valid_id(collection_name: str, key: Union[str, List[str]]) -> List[str]:
+    if isinstance(key, str):
+        key = [key]
+    key = [int(s.split(":", 1)[1]) if ":" in s else int(s) for s in key]
+
+    client = get_milvus_client()
+    res = client.get(
+        collection_name=collection_name,
+        ids=key,
+        output_fields=["primary_key"]
+    )
+
+    found_ids = {row["primary_key"] for row in res}
+
+    return [f"source_embedding:{pk}" for pk in found_ids]
+
 def get_number_embeddings_ofsource(collection_name: str, source_id: str) -> int:
     client = get_milvus_client()
 
@@ -45,13 +62,14 @@ def delete_embedding(source_id: str):
     )
     return q
 
-def insert_data(collection_name: str, data: Union[Dict, List[Dict]]) -> int:
+def insert_data(collection_name: str, data: Union[Dict, List[Dict]]):
     client = get_milvus_client()
     insert_info = client.insert(
         collection_name=collection_name,
         data=data
     )
-    return insert_info["insert_count"]
+    # Trả về danh sách primary key đã insert
+    return list(insert_info["ids"])
 
 def semantic_vector_search(
     collection_name: str,

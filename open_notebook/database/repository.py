@@ -86,6 +86,23 @@ async def repo_query(query_str: str, vars: Optional[Dict[str, Any]] = None) -> L
 
 import uuid
 
+async def repo_insert(table: str, data: Dict[str, Any]) -> None:
+    cols = ", ".join(data.keys())
+    vals = ", ".join([f":{k}" for k in data.keys()])
+    sql = f"""
+        INSERT INTO {table} ({cols})
+        VALUES ({vals})
+        ON CONFLICT DO NOTHING
+    """
+    async with db_connection() as s:
+        await s.execute(text(sql), data)
+        await s.commit()
+
+async def repo_execute(sql: str, params: dict):
+    async with db_connection() as s:
+        await s.execute(text(sql), params)
+        await s.commit()
+
 async def repo_create(
     table: str,
     data: Dict[str, Any],

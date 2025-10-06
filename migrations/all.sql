@@ -31,6 +31,11 @@ CREATE TABLE IF NOT EXISTS source_insight (
     created TIMESTAMPTZ DEFAULT now(),
     updated TIMESTAMPTZ DEFAULT now()
 );
+-- SOURCE EMBEDDING IDS
+CREATE TABLE IF NOT EXISTS source_embedding_ids (
+    source_embedding_id BIGINT PRIMARY KEY,
+    source_id UUID REFERENCES source(id) ON DELETE CASCADE
+);
 
 -- CHAT_SESSION
 CREATE TABLE IF NOT EXISTS chat_session (
@@ -76,3 +81,4 @@ You are my learning assistant and you help me process and transform content so t
 )
 ON CONFLICT (id) DO UPDATE
 SET transformation_instructions = EXCLUDED.transformation_instructions;
+

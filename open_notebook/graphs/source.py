@@ -70,14 +70,17 @@ async def save_source(state: SourceState) -> dict:
     if state["embed"]:
         logger.debug("Embedding content for vector search")
         try:
-            n_embeddings = await source.vectorize(state["notebook_id"])
-            source.n_embedding_chunks = n_embeddings
+            embeddings_chunk = await source.vectorize(state["notebook_id"])
+            
+            source.n_embedding_chunks = len(embeddings_chunk)
+
         except Exception as e:
             raise RuntimeError("Vectorize process error") from e
     try:
         await source.save(provided_id=True)
+        await source.save_embedding_ids(embeddings_chunk)
     except Exception as e:
-        await source.remove_embedding()
+        await source.delete()
         raise RuntimeError(f"Error save source {e}") 
 
     return {"source": source}

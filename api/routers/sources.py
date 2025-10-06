@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
 import uuid
 import json
+import asyncio
 from api.models import (
     AssetModel,
     CreateSourceInsightRequest,
@@ -334,7 +335,13 @@ async def create_source_insight(
 async def get_source_embedding(source_embedding_id: str):
     """Get source_embedding context for a specific id."""
     try:
-        source_embedding = (milvus_services.get_source_embedding_byid("source_embedding", source_embedding_id))[0]
+        source_embedding = (
+                await asyncio.to_thread(
+                    milvus_services.get_source_embedding_byid, 
+                    "source_embedding", 
+                    source_embedding_id
+                )
+            )[0]
         if not source_embedding:
             raise HTTPException(status_code=404, detail="Source embedding not found")
         return source_embedding

@@ -12,10 +12,13 @@ DROP TABLE IF EXISTS open_notebook_default_prompts CASCADE;
 DROP TABLE IF EXISTS transformation CASCADE;
 DROP TABLE IF EXISTS chat_session CASCADE;
 DROP TABLE IF EXISTS source_insight CASCADE;
+DROP TABLE IF EXISTS source_embedding_ids CASCADE;
 DROP TABLE IF EXISTS source CASCADE;
 DROP TABLE IF EXISTS notebook CASCADE;
 
 DROP TABLE IF EXISTS _sbl_migrations CASCADE;
+
+
 
 -- Optionally drop extension if you want bare DB
 -- DROP EXTENSION IF EXISTS "pgcrypto";

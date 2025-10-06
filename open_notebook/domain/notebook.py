@@ -6,7 +6,7 @@ import uuid
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
 
-from open_notebook.database.repository import ensure_record_id, repo_query, repo_create
+from open_notebook.database.repository import ensure_record_id, repo_query, repo_create,transaction
 from open_notebook.domain.base import ObjectModel
 from open_notebook.domain.models import model_manager
 from open_notebook.exceptions import DatabaseOperationError, InvalidInputError
@@ -19,9 +19,11 @@ from open_notebook.database.repository import (
     repo_create,
     repo_delete,
     repo_query,
+    repo_execute,
     repo_relate,
     repo_update,
     repo_upsert,
+    repo_insert,
 )
 
 
@@ -79,7 +81,8 @@ class Notebook(ObjectModel):
             
             sources = await self.get_sources()
             for source in sources:
-                milvus_services.delete_embedding(source_id=source.id)
+                await asyncio.to_thread(milvus_services.delete_embedding, source_id=source.id)
+
             
             return await repo_delete(self.__class__.table_name, self.id)
         except Exception as e:
@@ -90,6 +93,13 @@ class Notebook(ObjectModel):
 class Asset(BaseModel):
     file_path: Optional[str] = None
     url: Optional[str] = None
+
+class SourceEmbeddingChunks(BaseModel):
+    table_name: ClassVar[str] = "source_embedding_ids" 
+    source_id: uuid.UUID
+    source_embedding_id: List[int]
+
+
 
 class SourceInsight(ObjectModel):
     table_name: ClassVar[str] = "source_insight"
@@ -115,7 +125,63 @@ class Source(ObjectModel):
     topics: Optional[List[str]] = Field(default_factory=list)
     full_text: Optional[str] = None
     n_embedding_chunks: int = 0
-    
+
+    async def delete_all_embedding_ids(self):
+        try:
+            q = """
+                DELETE FROM source_embedding_ids
+                WHERE source_id = :source_id
+            """
+            await repo_execute(q, {"source_id": ensure_record_id(self.id)})
+
+        except Exception as e:
+            logger.error(f"Error deleting all source embedding chunk ids for source {self.id}: {str(e)}")
+            raise DatabaseOperationError(e)
+    async def save_embedding_ids(self, list_chunkids: List[int]):
+        try:
+            q = """
+                INSERT INTO source_embedding_ids (source_embedding_id, source_id)
+                VALUES (:chunkid, :source_id)
+                ON CONFLICT (source_embedding_id) DO NOTHING
+            """
+
+            for cid in list_chunkids:
+                await repo_execute(q, {
+                    "chunkid": cid,
+                    "source_id": ensure_record_id(self.id)
+                })
+
+        except Exception as e:
+            logger.error(f"Error saving source embedding chunk ids for source {self.id}: {str(e)}")
+            raise DatabaseOperationError(e)
+    async def get_all_chunk_ids(self) -> List[int]:
+        try:
+            q = """
+                SELECT source_embedding_id
+                FROM source_embedding_ids
+                WHERE source_id = :id
+            """
+            rows = await repo_query(q, {"id": ensure_record_id(self.id)})
+
+            # Nếu rows là list of dict
+            return [row["source_embedding_id"] for row in rows]
+        except Exception as e:
+            logger.error(f"Error fetching source embedding chunk id {self.id}: {str(e)}")
+            raise DatabaseOperationError(e)
+    @classmethod
+    async def get_all_chunk_ids_bulk(cls, source_ids: list):
+        try:
+            q = """
+                SELECT source_embedding_id
+                FROM source_embedding_ids
+                WHERE source_id = ANY(:source_ids)
+            """
+            rows = await repo_query(q, {"source_ids": source_ids})
+            # flatten thành list id
+            return [row["source_embedding_id"] for row in rows]
+        except Exception as e:
+            logger.error(f"Error query all source embedding chunk ids for source_ids {source_ids}: {str(e)}")
+            raise DatabaseOperationError(e)
     async def delete(self) -> bool:
         """
         override function 
@@ -123,7 +189,7 @@ class Source(ObjectModel):
         if self.id is None:
             raise InvalidInputError("Cannot delete without an ID")
         try:
-            milvus_services.delete_embedding(str(self.id))
+            await asyncio.to_thread(milvus_services.delete_embedding, str(self.id))
             return await repo_delete(self.__class__.table_name, self.id)
         except Exception as e:
             logger.error(f"Error deleting {self.__class__.table_name} {self.id}: {e}")
@@ -144,7 +210,8 @@ class Source(ObjectModel):
 
     async def get_embedded_chunks(self) -> int:
         try:
-            return milvus_services.get_number_embeddings_ofsource(
+            return await asyncio.to_thread(
+                milvus_services.get_number_embeddings_ofsource,
                 collection_name="source_embedding",
                 source_id=str(self.id)
             )
@@ -178,7 +245,7 @@ class Source(ObjectModel):
             logger.error(f"Error adding insight to source {self.id}: {str(e)}")
             raise DatabaseOperationError(e)
 
-    async def vectorize(self, notebook_id: str) -> int:
+    async def vectorize(self, notebook_id: str):
         print("func vectorize")
         logger.info(f"Starting vectorization for source {self.id}")
         EMBEDDING_MODEL = await model_manager.get_embedding_model()
@@ -212,18 +279,23 @@ class Source(ObjectModel):
                     "notebook_id": str(notebook_id),
                 }
                 list_data.append(data)
+            chunk_ids = await asyncio.to_thread(
+                milvus_services.insert_data,
+                collection_name="source_embedding",
+                data=list_data
+            )
             
-            milvus_services.insert_data(collection_name="source_embedding", data=list_data)
-
             logger.info(f"Vectorization complete for source {self.id}")
-            return len(results)
+            return chunk_ids
         except Exception as e:
             logger.error(f"Error vectorizing source {self.id}: {str(e)}")
             await self.remove_embedding()
             raise DatabaseOperationError(e)
     async def remove_embedding(self):
         try:
-            milvus_services.delete_embedding(self.id)
+            await asyncio.to_thread(milvus_services.delete_embedding, self.id)
+            await self.delete_all_embedding_ids()
+            self.n_embedding_chunks = 0
         except Exception as e:
             logger.error(f"Error remove embedding {self.id}: {str(e)}")
             raise DatabaseOperationError(e)
@@ -269,7 +341,7 @@ async def hybrid_search_in_notebook(
             "limit": results,
             "source_ids": source_ids,
         }
-        results = milvus_services.hybrid_search(**params)
+        results = await asyncio.to_thread(milvus_services.hybrid_search, **params)
         return results
     except Exception as e:
         logger.error(f"Error performing hybrid search: {str(e)}")
@@ -295,7 +367,7 @@ async def text_search_in_notebook(
             "limit": results,
             "source_ids": source_ids,
         }
-        results = milvus_services.full_text_search(**params)
+        results = await asyncio.to_thread(milvus_services.full_text_search, **params)
         return results
     except Exception as e:
         logger.error(f"Error performing full text search: {str(e)}")
@@ -323,7 +395,7 @@ async def semantic_search_in_notebook(
             "limit": results,
             "source_ids": source_ids,
         }
-        results = milvus_services.semantic_vector_search(**params)
+        results = await asyncio.to_thread(milvus_services.semantic_vector_search, **params)
         return results
     except Exception as e:
         logger.error(f"Error performing full text search: {str(e)}")

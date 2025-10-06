@@ -14,7 +14,7 @@ from open_notebook.exceptions import DatabaseOperationError
 from open_notebook.domain.notebook import ChatSession, Notebook, Source
 from api.context_service import context_service
 from api.models import ChatRequest, ChatResponse
-
+from open_notebook.database import milvus_services
 from open_notebook.graphs.ask_chat import get_conversation_graph
 
 router = APIRouter()
@@ -141,8 +141,22 @@ async def stream_chat(chat_request: ChatRequest):
                         )
                     elif end_node == "chat_agent":
                         reference_sources = await get_source_references(chunk["cleaned_content"])
+                        ref_list = []
+                        if chat_request.source_ids:
+                            ref_list = await Source.get_all_chunk_ids_bulk(chat_request.source_ids)
+                        else:
+                            ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
+                        ref_set = set(ref_list)
+                        reference_sources = [
+                            int(s.split(":", 1)[1]) if ":" in s else int(s)
+                            for s in reference_sources
+                            if (int(s.split(":", 1)[1]) if ":" in s else int(s)) in ref_set
+                        ]
                         data_end['reference'] = reference_sources
-                        data_end['answer'] = chunk["cleaned_content"]
+                        # data_end['answer'] = chunk["cleaned_content"]
+                        pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
+                        # Remove pattern from answer
+                        data_end['answer'] = re.sub(pattern, '', chunk["cleaned_content"])
                         # await graph.aupdate_state(
                         #     config,
                         #     {"messages": [AIMessage(content=chunk["cleaned_content"])]}

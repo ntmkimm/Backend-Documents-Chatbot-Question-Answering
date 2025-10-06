@@ -144,7 +144,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     
     search_results = await _memory_agent_milvus.search_long_term_memory(query=state.get("message", HumanMessage(content="")).content, top_k=4, thread_id=thread_id)
     chat_history = search_results + short_memory.buffer
-    print("chat history:", chat_history)
+    # print("chat history:", chat_history)
     
     searches = state.get("strategy", {}).searches if state.get("strategy") else []
     first_search = searches[0] if searches else Search(term="default", instructions="")

@@ -11,7 +11,7 @@ from api.models import (
     SourceResponse,
     NotebookSourceCreateRequest
 )
-from open_notebook.domain.notebook import Notebook
+from open_notebook.domain.notebook import Notebook, Source
 from open_notebook.domain.transformation import Transformation
 from open_notebook.exceptions import InvalidInputError
 from open_notebook.graphs.source import source_graph
@@ -40,6 +40,7 @@ class NotebookSourceForm:
 @router.post("/notebook/sources")
 async def create_source(form: NotebookSourceForm = Depends()):
     try:
+
         file = form.file
         model = form.model
         file_path = Path(UPLOAD_FOLDER) / Path(file.filename).name
@@ -49,7 +50,13 @@ async def create_source(form: NotebookSourceForm = Depends()):
 
         notebook = await Notebook.get(model.notebook_id)
         sourceid = uuid.UUID(model.source_id) # if not uuid, raise error
-        sourceid = sourceid.hex
+        check_source = None
+        try:
+            check_source = await Source.get(model.source_id)
+        except:
+            pass
+        if check_source:
+            raise KeyError(f"Source {model.source_id} already exists")
         if not notebook:
             raise HTTPException(status_code=404, detail="Notebook not found")
 
@@ -101,7 +108,7 @@ async def create_source(form: NotebookSourceForm = Depends()):
             if asset.file_path or asset.url
             else None,
             full_text=source.full_text,
-            embedded_chunks=await source.get_embedded_chunks(),
+            embedded_chunks=source.n_embedding_chunks,
             created=str(source.created),
             updated=str(source.updated),
         )
