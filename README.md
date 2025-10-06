@@ -66,7 +66,8 @@ data/
 **Simple run:**
 ```bash
 python utils/auto_setup_step2_notebooks.py
-python utils/auto_setup_step2_source/py
+python utils/auto_setup_step3_source/py
 python utils/ask_chat_session.py
 ```
+
 
