@@ -73,9 +73,9 @@ async def send_message(chat_request: ChatRequest):
                     elif end_node == "chat_agent":
                         await graph.aupdate_state(
                             config,
-                            {"ai_message": chunk["cleaned_content"]}
+                            {"ai_message": chunk["ai_message"]}
                         )
-                        reference_sources = await get_source_references(chunk["cleaned_content"])
+                        reference_sources = await get_source_references(chunk["ai_message"])
                         ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
                         ref_set = set(ref_list)
                         reference_sources = [
@@ -86,7 +86,7 @@ async def send_message(chat_request: ChatRequest):
                         data_end['reference'] = reference_sources
                         pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
                         # Remove pattern from answer
-                        data_end['answer'] = re.sub(pattern, '', chunk["cleaned_content"])
+                        data_end['answer'] = re.sub(pattern, '', chunk["ai_message"])
 
                 elif kind == 'on_chain_start' and event['name'] == 'LangGraph':
                     data_end['session_id'] = event['metadata']['thread_id']
@@ -165,9 +165,9 @@ async def stream_chat(chat_request: ChatRequest):
                     elif end_node == "chat_agent":
                         await graph.aupdate_state(
                             config,
-                            {"ai_message": chunk["cleaned_content"]}
+                            {"ai_message": chunk["ai_message"]}
                         )
-                        reference_sources = await get_source_references(chunk["cleaned_content"])
+                        reference_sources = await get_source_references(chunk["ai_message"])
                         ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
                         ref_set = set(ref_list)
                         reference_sources = [
@@ -178,7 +178,7 @@ async def stream_chat(chat_request: ChatRequest):
                         data_end['reference'] = reference_sources
                         pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
                         # Remove pattern from answer
-                        data_end['answer'] = re.sub(pattern, '', chunk["cleaned_content"])
+                        data_end['answer'] = re.sub(pattern, '', chunk["ai_message"])
                         
                     if event['name'] == 'chat_agent':
                         text = chunk.get("content", "")

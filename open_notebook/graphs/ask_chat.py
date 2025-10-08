@@ -15,7 +15,7 @@ from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, AIMessageChunk
 from open_notebook.config import DB_URI, connection_kwargs, POOL_TIMEOUT, POOL_SIZE
 
-from langchain.chains import ConversationalRetrievalChain
+from langchain.memory import ConversationBufferWindowMemory
 from open_notebook.graphs.utils import (
     provision_langchain_model, 
     _memory_agent_milvus,
@@ -57,9 +57,11 @@ class ThreadState(TypedDict, total=False):
     context: Optional[Dict[str, str]]
     context_config: Optional[dict]
     source_ids: Optional[List[str]]
+    
     # fields for strategy & retrieval
     strategy: Strategy
     retrieval_limit: int
+    chat_history: Optional[List] = []
     
     reflection: Optional[Reflection]
     ai_message: Optional[str]
@@ -70,6 +72,21 @@ class Reflection(BaseModel):
     need_more: bool = Field(..., description="Whether we should try another search turn")
     reasons: str = Field(..., description="Short rationale")
 
+async def retrieve_chat_history(state: ThreadState, config: RunnableConfig):
+    """
+    Node lấy chat history
+    """
+    thread_id = config.get("configurable", {}).get("thread_id")
+    
+    short_memory = get_postgres_short_memory(
+        thread_id=thread_id,
+        k=4,
+    )
+    
+    search_results = await _memory_agent_milvus.search_long_term_memory(query=state.get("message", HumanMessage(content="")).content, top_k=4, thread_id=thread_id)
+    chat_history = search_results + short_memory.buffer
+    
+    return {"chat_history": chat_history}
 
 async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     """LLM tạo chiến lược và các search terms trước khi build context."""
@@ -143,15 +160,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     Node sinh câu trả lời và STREAM từng token ra ngoài.
     - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
     """
-    thread_id = config.get("configurable", {}).get("thread_id")
-    
-    short_memory = get_postgres_short_memory(
-        thread_id=thread_id,
-        k=4,
-    )
-    
-    search_results = await _memory_agent_milvus.search_long_term_memory(query=state.get("message", HumanMessage(content="")).content, top_k=4, thread_id=thread_id)
-    chat_history = search_results + short_memory.buffer
+    chat_history = state.get("chat_history")
     
     searches = state.get("strategy", {}).searches if state.get("strategy") else []
     retry = state.get("retry", 0)
@@ -188,17 +197,14 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     raw = "".join(parts)
 
     cleaned = clean_thinking_content(raw)
-    # await _memory_agent_milvus.upsert_long_term_memory(user_text=state.get("message", HumanMessage(content="")).content, ai_text=cleaned, thread_id=thread_id)
-    # short_memory.chat_memory.add_user_message(message=state.get("message"))
-    # short_memory.chat_memory.add_ai_message(message=AIMessage(content=cleaned))
     
-    yield {"end_node": "chat_agent", "cleaned_content": cleaned}
+    yield {"end_node": "chat_agent", "ai_message": cleaned}
     
 async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
     """
     Reflection by LLM
     """
-    ai_answer = state.get("cleaned_content", "")
+    ai_message = state.get("ai_message", "")
     
     context = state.get("context", {})
     
@@ -210,7 +216,7 @@ async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
             "results": context if context else [],
             "ids": context.keys() if context else {},
             "chat_history": [],
-            "answer": ai_answer
+            "answer": ai_message
         }
     )
 
@@ -229,17 +235,15 @@ async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
             continue
 
         parts.append(content)
-        print(content)
         yield {"content": content}
     
     raw = "".join(parts)
     cleaned = clean_thinking_content(raw)
     reflection = parser.parse(cleaned)
-    print("reflection: ", reflection)
     
     yield {"end_node": "reflect_answer", "reflection": reflection}
 
-def route_after_reflection(state: ThreadState) -> str:
+async def route_after_reflection(state: ThreadState, config: RunnableConfig) -> str:
     max_tries = 5
 
     retry = int(state.get("retry", 0))
@@ -248,13 +252,28 @@ def route_after_reflection(state: ThreadState) -> str:
     # only retry if reflection wants more AND we still have unused searches
     if need_more and (retry + 1) < max_tries:
         return "retry"
+    
+    # update memory if done
+    print(state)
+    message = state.get("message", HumanMessage(content=""))
+    ai_message = AIMessage(content=state.get("ai_message", ))
+    thread_id = config.get("configurable", {}).get("thread_id")
+
+    short_memory = get_postgres_short_memory(
+        thread_id=thread_id,
+        k=4,
+    )
+    await _memory_agent_milvus.upsert_long_term_memory(user_text=message.content, ai_text=ai_message.content, thread_id=thread_id)
+    short_memory.chat_memory.add_user_message(message=message)
+    short_memory.chat_memory.add_ai_message(message=ai_message)
+    
     return "done"
 
 async def inc_retry(state: ThreadState, config: RunnableConfig) -> dict:
     return {"retry": int(state.get("retry", 0)) + 1}
 
 _checkpointer: Optional[AsyncPostgresSaver] = None
-_pool: Optional[AsyncConnectionPool] = None  # Optional global to keep the pool alive
+_pool: Optional[AsyncConnectionPool] = None  
 
 async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSaver:
     """
@@ -290,6 +309,7 @@ async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSav
 
 async def build_ask_chat_graph(state: ThreadState, config: RunnableConfig) -> StateGraph:
     agent_state = StateGraph(ThreadState)
+    agent_state.add_node("retrieve_chat_history", retrieve_chat_history)
     agent_state.add_node("plan_strategy", plan_strategy)
     agent_state.add_node("retrieve_context", retrieve_context)
     agent_state.add_node("chat_agent", chat_agent)
@@ -299,7 +319,8 @@ async def build_ask_chat_graph(state: ThreadState, config: RunnableConfig) -> St
     agent_state.add_node("inc_retry", inc_retry)
 
     # Flow: plan -> retrieve -> chat -> reflect -> (retry -> inc_retry -> plan) / (done -> END)
-    agent_state.add_edge(START, "plan_strategy")
+    agent_state.add_edge(START, "retrieve_chat_history")
+    agent_state.add_edge("retrieve_chat_history", "plan_strategy")
     agent_state.add_edge("plan_strategy", "retrieve_context")
     agent_state.add_edge("retrieve_context", "chat_agent")
 
