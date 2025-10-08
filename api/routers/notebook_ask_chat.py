@@ -65,7 +65,16 @@ async def send_message(chat_request: ChatRequest):
                             config,
                             {"strategy": chunk["strategy"]}
                         )
+                    if end_node == "reflect_answer": 
+                        await graph.aupdate_state(
+                            config,
+                            {"reflection": chunk["reflection"]}
+                        )
                     elif end_node == "chat_agent":
+                        await graph.aupdate_state(
+                            config,
+                            {"ai_message": chunk["cleaned_content"]}
+                        )
                         reference_sources = await get_source_references(chunk["cleaned_content"])
                         ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
                         ref_set = set(ref_list)
@@ -148,7 +157,16 @@ async def stream_chat(chat_request: ChatRequest):
                             config,
                             {"strategy": chunk["strategy"]}
                         )
+                    elif end_node == "reflect_answer": 
+                        await graph.aupdate_state(
+                            config,
+                            {"reflection": chunk["reflection"]}
+                        )
                     elif end_node == "chat_agent":
+                        await graph.aupdate_state(
+                            config,
+                            {"ai_message": chunk["cleaned_content"]}
+                        )
                         reference_sources = await get_source_references(chunk["cleaned_content"])
                         ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
                         ref_set = set(ref_list)
