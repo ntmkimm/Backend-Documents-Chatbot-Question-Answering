@@ -186,7 +186,7 @@ async def stream_chat(chat_request: ChatRequest):
                         if text:
                             yield f"data: {json.dumps({'event_type': StreamEvent.TEXT_GENERATION, 'content': text, 'thinking': False})}\n\n"
                     
-                    if event['name'] == 'plan_strategy':
+                    if event['name'] == 'plan_strategy' or event['name'] == 'reflect_answer':
                         text = chunk.get("content", "")
                         if text:
                             yield f"data: {json.dumps({'event_type': StreamEvent.TEXT_GENERATION, 'content': text, 'thinking': True})}\n\n"
