@@ -88,6 +88,42 @@ async def retrieve_chat_history(state: ThreadState, config: RunnableConfig):
     
     return {"chat_history": chat_history}
 
+async def chat_agent_easy(state: ThreadState, config: RunnableConfig):
+    """
+    Node sinh câu trả lời và STREAM từng token ra ngoài.
+    - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
+    """
+    chat_history = state.get("chat_history")
+    
+    system_prompt = Prompter(prompt_template="ask/chat_easy").render(
+        data={
+            "question": state.get("message", HumanMessage(content="")).content,
+            "chat_history": chat_history
+        }
+    )
+
+    model = await provision_langchain_model(
+        system_prompt,
+        config.get("configurable", {}).get("model_id"),
+        "chat",
+        max_tokens=10000,
+    )
+
+    parts = []
+    async for chunk in model.astream(system_prompt):
+        content = getattr(chunk, "content", None)
+        if not content:
+            continue
+
+        parts.append(content)
+        yield {"content": content}
+
+    raw = "".join(parts)
+
+    cleaned = clean_thinking_content(raw)
+    
+    yield {"end_node": "chat_agent", "ai_message": cleaned}
+
 async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     """LLM tạo chiến lược và các search terms trước khi build context."""
     parser = PydanticOutputParser(pydantic_object=Strategy)
@@ -163,9 +199,8 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     chat_history = state.get("chat_history")
     
     searches = state.get("strategy", {}).searches if state.get("strategy") else []
-    retry = state.get("retry", 0)
     context = state.get("context", {})
-    search = searches[retry] if searches else Search(term="default", instructions="")
+    search = searches[0] if searches else Search(term="default", instructions="")
     
     system_prompt = Prompter(prompt_template="ask/chat").render(
         data={
@@ -205,7 +240,7 @@ async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
     Reflection by LLM
     """
     ai_message = state.get("ai_message", "")
-    
+    chat_history = state.get("chat_history", [])
     context = state.get("context", {})
     
     parser = PydanticOutputParser(pydantic_object=Reflection)
@@ -215,7 +250,7 @@ async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
             "question": state.get("message", HumanMessage(content="")).content,
             "results": context if context else [],
             "ids": context.keys() if context else {},
-            "chat_history": [],
+            "chat_history": chat_history,
             "answer": ai_message
         }
     )
@@ -249,12 +284,13 @@ async def route_after_reflection(state: ThreadState, config: RunnableConfig) -> 
     retry = int(state.get("retry", 0))
     need_more = state.get("reflection").need_more
 
+    # print(state)
+    
     # only retry if reflection wants more AND we still have unused searches
     if need_more and (retry + 1) < max_tries:
         return "retry"
     
     # update memory if done
-    print(state)
     message = state.get("message", HumanMessage(content=""))
     ai_message = AIMessage(content=state.get("ai_message", ))
     thread_id = config.get("configurable", {}).get("thread_id")
@@ -310,21 +346,22 @@ async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSav
 async def build_ask_chat_graph(state: ThreadState, config: RunnableConfig) -> StateGraph:
     agent_state = StateGraph(ThreadState)
     agent_state.add_node("retrieve_chat_history", retrieve_chat_history)
+    agent_state.add_node("chat_agent_easy", chat_agent_easy)
     agent_state.add_node("plan_strategy", plan_strategy)
     agent_state.add_node("retrieve_context", retrieve_context)
     agent_state.add_node("chat_agent", chat_agent)
-
-    # NEW nodes
     agent_state.add_node("reflect_answer", reflect_answer)
     agent_state.add_node("inc_retry", inc_retry)
 
-    # Flow: plan -> retrieve -> chat -> reflect -> (retry -> inc_retry -> plan) / (done -> END)
+    # Flow: chat_history -> chat_easy -> reflect (done -> end) -> plan -> retrieve -> chat -> reflect -> (retry -> inc_retry -> plan) / (done -> END)
     agent_state.add_edge(START, "retrieve_chat_history")
-    agent_state.add_edge("retrieve_chat_history", "plan_strategy")
+    agent_state.add_edge("retrieve_chat_history", "chat_agent_easy")
+    # agent_state.add_edge("retrieve_chat_history", "plan_strategy")
     agent_state.add_edge("plan_strategy", "retrieve_context")
     agent_state.add_edge("retrieve_context", "chat_agent")
 
     # after chat, run reflection
+    agent_state.add_edge("chat_agent_easy", "reflect_answer")
     agent_state.add_edge("chat_agent", "reflect_answer")
 
     # conditional routing with the retry guard
