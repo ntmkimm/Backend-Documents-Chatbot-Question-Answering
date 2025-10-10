@@ -26,7 +26,7 @@ from open_notebook.domain.notebook import (
     hybrid_search_in_notebook,
     Notebook,
 )
-from open_notebook.utils import clean_thinking_content 
+from open_notebook.utils import clean_thinking_content, time_node
 from langchain_core.output_parsers.pydantic import PydanticOutputParser
 
 from psycopg_pool import AsyncConnectionPool
@@ -66,8 +66,8 @@ class ThreadState(TypedDict, total=False):
     source_ids: Optional[List[str]]
     
     # fields for strategy & retrieval
-    strategy: Strategy
-    retrieval_limit: int
+    strategy: Optional[Strategy]
+    retrieval_limit: int = 5
     chat_history: Optional[List] = []
     
     reflection: Optional[Reflection]
@@ -79,6 +79,7 @@ class Reflection(BaseModel):
     need_more: bool = Field(..., description="Whether we should try another search turn")
     reasons: str = Field(..., description="Short rationale")
 
+@time_node
 async def retrieve_chat_history(state: ThreadState, config: RunnableConfig):
     """
     Node lấy chat history
@@ -92,9 +93,9 @@ async def retrieve_chat_history(state: ThreadState, config: RunnableConfig):
     
     search_results = await _memory_agent_milvus.search_long_term_memory(query=state.get("message", HumanMessage(content="")).content, top_k=4, thread_id=thread_id)
     chat_history = search_results + short_memory.buffer
-    
     return {"chat_history": chat_history}
 
+@time_node
 async def chat_agent_easy(state: ThreadState, config: RunnableConfig):
     """
     Node sinh câu trả lời và STREAM từng token ra ngoài.
@@ -131,8 +132,10 @@ async def chat_agent_easy(state: ThreadState, config: RunnableConfig):
     
     yield {"end_node": "chat_agent", "ai_message": cleaned}
 
+@time_node
 async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     """LLM tạo chiến lược và các search terms trước khi build context."""
+    print("retry: ", state.get("retry", 0))
     parser = PydanticOutputParser(pydantic_object=Strategy)
     system_prompt = Prompter(prompt_template="ask/entry", parser=parser).render(
         data={"question": state.get("message", HumanMessage(content=""))}
@@ -160,7 +163,7 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
 
     yield {"end_node": "plan_strategy", "strategy": strategy}
 
-
+@time_node
 async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     """Thực thi text+vector search theo search_terms và build context dict."""
     strategy = state.get("strategy")
@@ -263,7 +266,7 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     }
 
 
-
+@time_node
 async def chat_agent(state: ThreadState, config: RunnableConfig):
     """
     Node sinh câu trả lời và STREAM từng token ra ngoài.
@@ -274,12 +277,13 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     searches = state.get("strategy", {}).searches if state.get("strategy") else []
     context = state.get("context", {})
     search = searches[0] if searches else Search(term="default", instructions="")
+    strategy = state.get("strategy", {})
     # print("context", context)
     system_prompt = Prompter(prompt_template="ask/chat").render(
         data={
             "question": state.get("message", HumanMessage(content="")).content,
             "term": search.term,
-            "instruction": search.instructions,
+            "instruction": strategy.reasoning,
             "results": context["content"] if context else {},
             "ids": context["id"] if context else [],
             "chat_history": chat_history
@@ -307,6 +311,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     
     yield {"end_node": "chat_agent", "ai_message": cleaned}
     
+@time_node
 async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
     """
     Reflection by LLM
@@ -314,6 +319,9 @@ async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
     ai_message = state.get("ai_message", "")
     chat_history = state.get("chat_history", [])
     context = state.get("context", {})
+    searches = state.get("strategy", {}).searches if state.get("strategy") else []
+    search = searches[0] if searches else Search(term="default", instructions="")
+    strategy = state.get("strategy", {})
     
     parser = PydanticOutputParser(pydantic_object=Reflection)
 
@@ -323,7 +331,9 @@ async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
             "results": context if context else [],
             "ids": context.keys() if context else {},
             "chat_history": chat_history,
-            "answer": ai_message
+            "answer": ai_message,
+            "term": search.term,
+            "instruction": strategy.reasoning,
         }
     )
 
@@ -351,8 +361,8 @@ async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
     yield {"end_node": "reflect_answer", "reflection": reflection}
 
 async def route_after_reflection(state: ThreadState, config: RunnableConfig) -> str:
-    max_tries = 5
-
+    max_tries = 3
+    
     retry = int(state.get("retry", 0))
     need_more = state.get("reflection").need_more
 
@@ -366,7 +376,6 @@ async def route_after_reflection(state: ThreadState, config: RunnableConfig) -> 
     message = state.get("message", HumanMessage(content=""))
     ai_message = AIMessage(content=state.get("ai_message", ))
     thread_id = config.get("configurable", {}).get("thread_id")
-
     short_memory = get_postgres_short_memory(
         thread_id=thread_id,
         k=4,
@@ -374,7 +383,7 @@ async def route_after_reflection(state: ThreadState, config: RunnableConfig) -> 
     await _memory_agent_milvus.upsert_long_term_memory(user_text=message.content, ai_text=ai_message.content, thread_id=thread_id)
     short_memory.chat_memory.add_user_message(message=message)
     short_memory.chat_memory.add_ai_message(message=ai_message)
-    
+
     return "done"
 
 async def inc_retry(state: ThreadState, config: RunnableConfig) -> dict:
@@ -427,8 +436,8 @@ async def build_ask_chat_graph(state: ThreadState, config: RunnableConfig) -> St
 
     # Flow: chat_history -> chat_easy -> reflect (done -> end) -> plan -> retrieve -> chat -> reflect -> (retry -> inc_retry -> plan) / (done -> END)
     agent_state.add_edge(START, "retrieve_chat_history")
-    agent_state.add_edge("retrieve_chat_history", "chat_agent_easy")
-    # agent_state.add_edge("retrieve_chat_history", "plan_strategy")
+    # agent_state.add_edge("retrieve_chat_history", "chat_agent_easy")
+    agent_state.add_edge("retrieve_chat_history", "plan_strategy")
     agent_state.add_edge("plan_strategy", "retrieve_context")
     agent_state.add_edge("retrieve_context", "chat_agent")
 

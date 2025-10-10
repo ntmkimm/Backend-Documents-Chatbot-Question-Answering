@@ -6,6 +6,7 @@ import json
 from open_notebook.domain.models import model_manager
 from open_notebook.utils import token_count
 from typing import List
+import asyncio
 
 async def provision_langchain_model(
     content, model_id, default_type, **kwargs
@@ -180,18 +181,27 @@ class MemoryAgentMilvus:
             logger.warning("No embedding model found. Cannot search.")
             return []
 
+        # tạo embedding
         query_vec = (await EMBEDDING_MODEL.aembed([query]))[0]
 
-        self.collection.load()
-        results = self.collection.search(
-            data=[query_vec],
-            anns_field="embedding",
-            param={"metric_type": "COSINE", "params": {"ef": 64}},
-            limit=top_k,
-            output_fields=["text"],
-            expr=f'thread_id == "{thread_id}"'
-        )
-        return results
+        # chạy phần blocking trong thread
+        def blocking_search():
+            self.collection.load()
+            return self.collection.search(
+                data=[query_vec],
+                anns_field="embedding",
+                param={"metric_type": "COSINE", "params": {"ef": 64}},
+                limit=top_k,
+                output_fields=["text"],
+                expr=f'thread_id == "{thread_id}"'
+            )
+
+        results = await asyncio.to_thread(blocking_search)
+
+        # flatten và lấy text
+        flattened = [hit['entity']['text'] for batch in results for hit in batch]
+        return flattened
+
     
     def delete(self, thread_id: str):
         """

@@ -12,6 +12,36 @@ from packaging.version import parse as parse_version
 tiktoken_cache_dir = "tiktoken" 
 os.environ["TIKTOKEN_CACHE_DIR"] = tiktoken_cache_dir
 
+import time
+import functools
+import inspect
+
+def time_node(func):
+    """Measure node runtime for LangGraph — works with both async functions & generators."""
+    if inspect.isasyncgenfunction(func):
+        # Case 1: async generator node
+        @functools.wraps(func)
+        async def gen_wrapper(*args, **kwargs):
+            node_name = func.__name__
+            start = time.perf_counter()
+            async for item in func(*args, **kwargs):
+                yield item
+            duration = time.perf_counter() - start
+            print(f"Node {node_name} process: {duration:.2f} seconds")
+        return gen_wrapper
+    else:
+        # Case 2: normal async node
+        @functools.wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            node_name = func.__name__
+            start = time.perf_counter()
+            result = await func(*args, **kwargs)
+            duration = time.perf_counter() - start
+            print(f"Node {node_name} process: {duration:.2f} seconds")
+            return result
+        return async_wrapper
+
+
 def token_count(input_string) -> int:
     """
     Count the number of tokens in the input string using the 'o200k_base' encoding.

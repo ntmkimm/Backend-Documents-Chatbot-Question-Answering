@@ -49,6 +49,11 @@ async def send_message(chat_request: ChatRequest):
             "notebook_id": chat_request.notebook_id,
             "retrieval_limit": 5,
             "source_ids": chat_request.source_ids,  
+            "retry": 0,
+            "ai_message": "",
+            "reflection": None,
+            "strategy": None,
+            "context": None,
         }
 
         data_end = {'event_type': StreamEvent.STREAM_END}
@@ -139,6 +144,11 @@ async def stream_chat(chat_request: ChatRequest):
                 "notebook_id": chat_request.notebook_id,
                 "retrieval_limit": 5,
                 "source_ids": chat_request.source_ids,  
+                "retry": 0,
+                "ai_message": "",
+                "reflection": None,
+                "strategy": None,
+                "context": None,
             }
 
             data_end = {'event_type': StreamEvent.STREAM_END}

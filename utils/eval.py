@@ -10,7 +10,7 @@ API_BASE = "http://localhost:4427/api"
 AUTH_TOKEN = "1234567890"
 NOTEBOOK_NAME = "yuu"
 NOTEBOOK_DESCRIPTION = "empty"
-ID_FILE = "id_notebook"
+ID_FILE = "utils/id_notebook"
 
 # Colors for console output
 class Colors:
