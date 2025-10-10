@@ -1,7 +1,7 @@
 
 # open_notebook/graphs/ask_chat.py
 from __future__ import annotations
-
+import json
 import operator
 from typing import Annotated, List, Optional, Dict, Any
 
@@ -38,7 +38,14 @@ async def run_in_thread(func, *args, **kwargs):
     sem = asyncio.Semaphore(10)  # limit concurrency (adjust as needed)
     async with sem:  # ensure only N run at the same time
         return await asyncio.to_thread(func, *args, **kwargs)
-    
+
+class RerankItem(BaseModel):
+    id: str = Field(..., description="ID của chunk")
+    score: float = Field(..., description="Điểm liên quan, từ 0 đến 10")
+
+class RerankResult(BaseModel):
+    items: List[RerankItem]
+
 class Search(BaseModel):
     term: str
     instructions: str = Field(
@@ -174,6 +181,7 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
             "results": k,
             "source_ids": [str(sid) for sid in source_ids] if source_ids else [],
             "notebook_id": str(nb_id),
+            "return_score": True,
         }
         for term in terms
     ]
@@ -187,7 +195,72 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     for res in results_list:
         context_dict.update(res)
 
-    return {"context": context_dict}
+
+    chunks_text = "\n\n".join(
+        [f"ID: {cid}\nCONTENT: {data['content']}" for cid, data in context_dict.items()]
+    )
+    system_prompt = Prompter(prompt_template="ask/rerank").render(
+        data={"question": state.get("message", HumanMessage(content="")),
+              "chunks": chunks_text}
+    )
+    model = await provision_langchain_model(
+        system_prompt,
+        config.get("configurable", {}).get("model_id"),
+        "tools",
+        max_tokens=2000,
+        structured=RerankResult,
+    )
+    messages = [SystemMessage(content=system_prompt)]
+    result = await model.ainvoke(messages)
+    ranked_context_str = ""
+    ranked_ids = []
+    try:
+        raw_output = result.content.strip("` \n")  
+        parsed = json.loads(raw_output)
+        rerank_result = RerankResult(items=[RerankItem(**item) for item in parsed])
+    except Exception  as e:
+        rerank_result = None
+
+    if rerank_result:
+        scored_chunks = []
+
+        for item in rerank_result.items:
+            chunk_id = item.id
+            score_rerank = item.score / 10  # đưa về 0–1
+            score_retrieve = context_dict.get(chunk_id, {}).get("score", 0.0)
+
+            final_score = 0.6 * score_retrieve + 0.4 * score_rerank
+
+            scored_chunks.append({
+                "id": chunk_id,
+                "final_score": final_score
+            })
+
+        # Sắp xếp giảm dần theo final_score
+        scored_chunks.sort(key=lambda x: x["final_score"], reverse=True)
+
+    else:
+        # === Case 2: Không có rerank, fallback theo score gốc ===
+        scored_chunks = [
+            {"id": cid, "final_score": data.get("score", 0.0)}
+            for cid, data in context_dict.items()
+        ]
+        scored_chunks.sort(key=lambda x: x["final_score"], reverse=True)
+
+
+    # === Build ranked string and id list ===
+    for rank, item in enumerate(scored_chunks, start=1):
+        cid = item["id"]
+        content = context_dict.get(cid, {}).get("content", "").strip()
+        ranked_ids.append(cid)
+        ranked_context_str += f"{rank}. [ID: {cid}] {content}\n\n"
+
+    return {
+        "context": {
+            "id": ranked_ids,
+            "content": ranked_context_str.strip()
+        }
+    }
 
 
 
@@ -201,18 +274,17 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     searches = state.get("strategy", {}).searches if state.get("strategy") else []
     context = state.get("context", {})
     search = searches[0] if searches else Search(term="default", instructions="")
-    
+    # print("context", context)
     system_prompt = Prompter(prompt_template="ask/chat").render(
         data={
             "question": state.get("message", HumanMessage(content="")).content,
             "term": search.term,
             "instruction": search.instructions,
-            "results": context if context else {},
-            "ids": context.keys() if context else [],
+            "results": context["content"] if context else {},
+            "ids": context["id"] if context else [],
             "chat_history": chat_history
         }
     )
-
     model = await provision_langchain_model(
         system_prompt,
         config.get("configurable", {}).get("model_id"),

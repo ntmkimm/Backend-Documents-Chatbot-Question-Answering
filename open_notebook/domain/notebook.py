@@ -325,6 +325,7 @@ async def hybrid_search_in_notebook(
     results: int,
     notebook_id: str, 
     source_ids: List[str] = [],
+    return_score = False,
 ):
     if not keyword:
         raise InvalidInputError("Search keyword cannot be empty")
@@ -340,6 +341,7 @@ async def hybrid_search_in_notebook(
             "notebook_id": notebook_id,
             "limit": results,
             "source_ids": source_ids,
+            "return_score": return_score,
         }
         results = await asyncio.to_thread(milvus_services.hybrid_search, **params)
         return results

@@ -139,8 +139,9 @@ def hybrid_search(
         query_keyword,
         limit: int,
         notebook_id: str,
-        source_ids: List[str] = []
-    ) -> Dict[str, str]:
+        source_ids: List[str] = [],
+        return_score = False,
+    ):
 
     filter_expr = (
         f'notebook_id == "{notebook_id}"'
@@ -168,7 +169,16 @@ def hybrid_search(
     )
 
     # Combine
-    ranker = RRFRanker(100)
+    ranker = Function(
+        name="weight",
+        input_field_names=[], # Must be an empty list
+        function_type=FunctionType.RERANK,
+        params={
+            "reranker": "weighted", 
+            "weights": [0.5, 0.5],
+            "norm_score": True  
+        }
+    )
 
     client = get_milvus_client()
 
@@ -180,11 +190,22 @@ def hybrid_search(
         limit=limit
     )
 
-    results = {
-        f"source_embedding:{hit.entity.get('primary_key')}": hit.entity.get("content")
-        for hits in res
-        for hit in hits
-    }
+    if return_score:
+        results = {
+            f"source_embedding:{hit.entity.get('primary_key')}": {
+                "content": hit.entity.get("content"),
+                "score": hit.score
+            }
+            for hits in res
+            for hit in hits
+        }
+    else:
+        results = {
+            f"source_embedding:{hit.entity.get('primary_key')}": hit.entity.get("content")
+            for hits in res
+            for hit in hits
+        }
+
     return results
 
 
