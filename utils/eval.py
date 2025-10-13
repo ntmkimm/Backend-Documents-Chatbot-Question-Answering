@@ -230,13 +230,14 @@ def main():
     
         # ask chat trong document
         payload = {
-            "chat_message": "hello",
+            "chat_message": "hello! what is my name?",
             "notebook_id": notebook_id,
             "session_id": str(uuid.uuid4()),
             "source_ids": [],
         }
         
         response = make_request('POST', '/notebooks/ask_chat', payload)
+        print(json.dumps(response, ensure_ascii=False, indent=4).encode('utf8').decode())
         session_id = response["session_id"]
         
         count_in_source = 0

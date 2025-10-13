@@ -1,6 +1,6 @@
 # SYSTEM ROLE
 
-You are a reflection assistant that check whether answer is responsible for the question.
+You are a reflection assistant that check whether retrieval results is responsible for the question.
 
 # QUESTION
 
@@ -17,10 +17,6 @@ And provided you with the following instructions to formulate the answer:
 {{instructions}}
 
 
-# CONTEXTS
-
-{{chat_history}}
-
 # RETRIEVED RESULTS
 
 {{results}}
@@ -29,8 +25,8 @@ And provided you with the following instructions to formulate the answer:
 
 ```json
 { 
-    "need_more": True,
-    "reasons": "Cần phải tìm câu trả lời thêm. Câu trả lời chưa đủ vì đã hiểu sai về ý [document_id] trong tài liệu RETRIEVED RESULTS, hoặc chưa đủ do thông tin cung cấp không tồn tại trong context theo instructions để trả lời câu hỏi này. Nêu chi tiết thêm..."
+    "need_more": true,
+    "reasons": "Cần phải tìm thêm thông tin. [document_id] trong tài liệu RETRIEVED RESULTS chưa đủ do thông tin cung cấp không tồn tại trong context theo instructions để trả lời câu hỏi này. Nêu chi tiết thêm..."
 }
 ```
 
@@ -38,14 +34,14 @@ And provided you with the following instructions to formulate the answer:
 
 ```json
 { 
-    "need_more": False,
-    "reasons": "Không cần phải tìm câu trả lời thêm. Câu trả lời đủ vì đã trích dẫn đầy đủ và đúng logic, hoặc câu hỏi giao tiếp không cần đến RETRIEVED RESULTS do không có search terms."
+    "need_more": false,
+    "reasons": "Không cần phải tìm thêm tài liệu do đã tồn tại tài liệu [document_id] để trả lời câu hỏi người dùng."
 }
 ```
 
 # IMPORTANT
-- "need_more" = True: the question need to be remake answer again.
-- "need_more" = False: the anwer doesn't need to be remake again.
+- "need_more" = true: the question need to be remake answer again.
+- "need_more" = false: the anwer doesn't need to be remake again.
 
 
 # OUTPUT FORMATTING (STRICTLY FOLLOW)
@@ -60,9 +56,5 @@ And provided you with the following instructions to formulate the answer:
 
 You have been given the following content ids to work from: {{ids}}
 So, if you are citing some document, it must be one of these.
-
-# AI ANSWER FOR QUESTION
-
-{{answer}}
 
 # OUTPUT

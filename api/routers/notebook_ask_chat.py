@@ -191,7 +191,7 @@ async def stream_chat(chat_request: ChatRequest):
                         data_end['answer'] = re.sub(pattern, '', chunk["ai_message"])
                     
                     # check token streaming only
-                    if event['name'] == 'chat_agent' or event['name'] == 'chat_agent_easy':
+                    if event['name'] == 'chat_agent':
                         text = chunk.get("content", "")
                         if text:
                             yield f"data: {json.dumps({'event_type': StreamEvent.TEXT_GENERATION, 'content': text, 'thinking': False})}\n\n"

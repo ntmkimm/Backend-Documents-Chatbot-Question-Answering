@@ -13,7 +13,7 @@ Step 2: formulate your search queries (searches)
 
 Return both the reasoning and searches as a JSON object, like in the EXAMPLE below.
 
-# EXAMPLE
+# EXAMPLE 1
 
 User: Can you tell me more about the concept of "RAG" and how it can be applied to generate answers to user questions via LLM?
 
@@ -27,6 +27,17 @@ Your answer could be something like:
         { "term": "Retrieval Augmented Generation", "instructions": "Mô tả khái niệm và ứng dụng của RAG." },
         { "term": "Vector Search", "instructions": "Mô tả cách RAG sử dụng vector search." }
     ]
+}
+```
+
+# EXAMPLE 2
+
+User: Hello! How are you today?
+
+```json
+{ 
+    "reasoning": "Đây là các câu giao tiếp thông thường, tôi chưa cần tài liệu gì để trả lời câu hỏi này.", 
+    "searches": []
 }
 ```
 
