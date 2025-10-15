@@ -247,11 +247,11 @@ def main():
             note = _qa.get("note", "")
             if not note:
                 count_out_source += 1
-                if count_out_source > 20:
+                if count_out_source >= 5:
                     continue
             else:
                 count_in_source += 1
-                if count_in_source > 20:
+                if count_in_source >= 20:
                     continue
             
             payload = {
@@ -260,12 +260,15 @@ def main():
                 "session_id": session_id,
                 "source_ids": [],
             }
+            
+            t0 = time.time()
             response = make_request('POST', '/notebooks/ask_chat', payload)
+            t1 = time.time()
             response['question'] = _qa['question']
             response['gt'] = _qa['answer']
             response['difficulty'] = _qa['difficulty']
             response["note"] = _qa.get("note", "Câu hỏi không nằm trong document.")
-        
+            response["time"] = t1 - t0
             print(json.dumps(response, ensure_ascii=False, indent=4).encode('utf8').decode())
     
         # xóa hết document trong đây
