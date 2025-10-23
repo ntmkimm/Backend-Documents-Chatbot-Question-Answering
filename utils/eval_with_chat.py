@@ -183,96 +183,66 @@ def delete_existing_sources(sources: List[Dict], notebook_id: str):
     
 def main():
     DATA = Path(
-        "/mlcv2/WorkingSpace/Personal/quannh/Project/Project/TRNS-AI/ntmkim/Work/DocsQA/data/test-data"
+        "/mlcv2/WorkingSpace/Personal/quannh/Project/Project/TRNS-AI/ntmkim/Work/DocsQA/data/test-chat"
     )
-    QA_JSON_FILE = Path(
-        "/mlcv2/WorkingSpace/Personal/quannh/Project/Project/TRNS-AI/ntmkim/Work/DocsQA/data/qa_with_new.json"
-    )
-    with open(QA_JSON_FILE, "r") as fi:
-        qa_data = json.load(fi)
         
     notebook_id = create_notebook()
     save_notebook_id(notebook_id=notebook_id)
     sources = get_existing_sources(notebook_id=notebook_id)
     delete_existing_sources(sources=sources, notebook_id=notebook_id)
     
-    _qas = []
-    batch_size = 1
     file_paths = []
-    for ext in ["*.doc", "*.pdf"]:
+    for ext in ["*.docx", "*.pdf", "*.doc"]:
         file_paths.extend(DATA.glob(ext))
         
-    for i in range(0, len(file_paths), batch_size):
-        print(f"\n\n\n\nProcessing new {batch_size} files")
+    for file_path in file_paths:
         
-        # update đủ batch size data
-        for file_path in file_paths[i:i+batch_size]:
-            print("ADDING FILE: ", file_path.name)
-            payload = {
-                "notebook_id": notebook_id,
-                "source_id": str(uuid.uuid4()),
-                "type": 'upload',
-                "file_path": str(file_path),
-                "content": None,
-                "title": None,
-                "transformations": [],
-                "embed": True,
-                "delete_source": False,
-            }   
-            
-            make_request('POST', '/sources', payload)
-            
-            for _qa in qa_data:
-                if _qa['doc'] == file_path.name: 
-                    _qa['note'] = "Câu hỏi của document."
-    
-        # ask chat trong document
+        print("ADDING FILE: ", file_path.name)
         payload = {
-            "chat_message": "hello! what is my name?",
             "notebook_id": notebook_id,
-            "session_id": str(uuid.uuid4()),
+            "source_id": str(uuid.uuid4()),
+            "type": 'upload',
+            "file_path": str(file_path),
+            "content": None,
+            "title": None,
+            "transformations": [],
+            "embed": True,
+            "delete_source": False,
+        }   
+        
+        make_request('POST', '/sources', payload)
+    
+    # init ask chat trong document
+    payload = {
+        "chat_message": "xin chào",
+        "notebook_id": notebook_id,
+        "session_id": str(uuid.uuid4()),
+        "source_ids": [],
+    }
+    
+    response = make_request('POST', '/notebooks/ask_chat', payload)
+    print(json.dumps(response, ensure_ascii=False, indent=4).encode('utf8').decode())
+    session_id = response["session_id"]
+    
+    while True:
+        message = input("Me Turn: ")
+        if message == 'exit': break
+        payload = {
+            "chat_message": message,
+            "notebook_id": notebook_id,
+            "session_id": session_id,
             "source_ids": [],
         }
         
+        t0 = time.time()
         response = make_request('POST', '/notebooks/ask_chat', payload)
+        t1 = time.time()
+        response["time"] = t1 - t0
         print(json.dumps(response, ensure_ascii=False, indent=4).encode('utf8').decode())
-        session_id = response["session_id"]
-        
-        count_in_source = 0
-        count_out_source = 0
-        for _id, _qa in enumerate(qa_data):
-            
-            note = _qa.get("note", "")
-            if not note:
-                count_out_source += 1
-                if count_out_source >= 30:
-                    continue
-            else:
-                count_in_source += 1
-                if count_in_source >= 30:
-                    continue
-            
-            payload = {
-                "chat_message": _qa['question'],
-                "notebook_id": notebook_id,
-                "session_id": session_id,
-                "source_ids": [],
-            }
-            
-            t0 = time.time()
-            response = make_request('POST', '/notebooks/ask_chat', payload)
-            t1 = time.time()
-            response['question'] = _qa['question']
-            response['gt'] = _qa['answer']
-            response['difficulty'] = _qa['difficulty']
-            response["note"] = _qa.get("note", "Câu hỏi không nằm trong document.")
-            response["time"] = t1 - t0
-            print(json.dumps(response, ensure_ascii=False, indent=4).encode('utf8').decode())
     
-        # xóa hết document trong đây
-        sources = get_existing_sources(notebook_id=notebook_id)
-        delete_existing_sources(sources=sources, notebook_id=notebook_id)
-        break
+    # xóa hết document trong notebook_id
+    sources = get_existing_sources(notebook_id=notebook_id)
+    delete_existing_sources(sources=sources, notebook_id=notebook_id)
         
         
 if __name__ == "__main__":
