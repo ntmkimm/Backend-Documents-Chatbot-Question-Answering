@@ -6,6 +6,7 @@ print(os.getenv("MY_VARIABLE"))
 
 from fastapi import FastAPI
 from open_notebook.database.milvus_init import get_milvus_client, close_milvus_client
+from open_notebook.graphs.utils import close_pool
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.auth import PasswordAuthMiddleware
@@ -49,6 +50,7 @@ async def lifespan(app: FastAPI):
         asyncio.run(init_default_transformation_function())
     
     yield
+    await close_pool()
     close_milvus_client()
 
 app = FastAPI(

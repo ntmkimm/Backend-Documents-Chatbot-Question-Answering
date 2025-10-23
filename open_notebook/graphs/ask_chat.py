@@ -20,6 +20,7 @@ from open_notebook.graphs.utils import (
     provision_langchain_model, 
     _memory_agent_milvus,
     get_postgres_short_memory,
+    get_checkpointer
 )
 
 from open_notebook.domain.notebook import (
@@ -29,22 +30,7 @@ from open_notebook.domain.notebook import (
 from open_notebook.utils import clean_thinking_content, time_node
 from langchain_core.output_parsers.pydantic import PydanticOutputParser
 
-from psycopg_pool import AsyncConnectionPool
-from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-from psycopg import OperationalError
 import asyncio
-
-async def run_in_thread(func, *args, **kwargs):
-    sem = asyncio.Semaphore(10)  # limit concurrency (adjust as needed)
-    async with sem:  # ensure only N run at the same time
-        return await asyncio.to_thread(func, *args, **kwargs)
-
-class RerankItem(BaseModel):
-    id: str = Field(..., description="ID của chunk")
-    score: float = Field(..., description="Điểm liên quan, từ 0 đến 10")
-
-class RerankResult(BaseModel):
-    items: List[RerankItem]
 
 class Search(BaseModel):
     term: str
@@ -161,72 +147,7 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
     for res in results_list:
         context_dict.update(res)
 
-
-    chunks_text = "\n\n".join(
-        [f"ID: {cid}\nCONTENT: {data['content']}" for cid, data in context_dict.items()]
-    )
-    system_prompt = Prompter(prompt_template="ask/rerank").render(
-        data={"question": state.get("message", HumanMessage(content="")),
-              "chunks": chunks_text}
-    )
-    model = await provision_langchain_model(
-        system_prompt,
-        config.get("configurable", {}).get("model_id"),
-        "tools",
-        max_tokens=2000,
-        structured=RerankResult,
-    )
-    messages = [SystemMessage(content=system_prompt)]
-    result = await model.ainvoke(messages)
-    ranked_context_str = ""
-    ranked_ids = []
-    try:
-        raw_output = result.content.strip("` \n")  
-        parsed = json.loads(raw_output)
-        rerank_result = RerankResult(items=[RerankItem(**item) for item in parsed])
-    except Exception  as e:
-        rerank_result = None
-
-    if rerank_result:
-        scored_chunks = []
-
-        for item in rerank_result.items:
-            chunk_id = item.id
-            score_rerank = item.score / 10  # đưa về 0–1
-            score_retrieve = context_dict.get(chunk_id, {}).get("score", 0.0)
-
-            final_score = 0.6 * score_retrieve + 0.4 * score_rerank
-
-            scored_chunks.append({
-                "id": chunk_id,
-                "final_score": final_score
-            })
-
-        # Sắp xếp giảm dần theo final_score
-        scored_chunks.sort(key=lambda x: x["final_score"], reverse=True)
-
-    else:
-        # === Case 2: Không có rerank, fallback theo score gốc ===
-        scored_chunks = [
-            {"id": cid, "final_score": data.get("score", 0.0)}
-            for cid, data in context_dict.items()
-        ]
-        scored_chunks.sort(key=lambda x: x["final_score"], reverse=True)
-
-
-    # === Build ranked string and id list ===
-    for rank, item in enumerate(scored_chunks, start=1):
-        cid = item["id"]
-        content = context_dict.get(cid, {}).get("content", "").strip()
-        ranked_ids.append(cid)
-        ranked_context_str += f"{rank}. [ID: {cid}] {content}\n\n"
-
-    return {
-        "context": {
-            "id": ranked_ids,
-            "content": ranked_context_str.strip()
-        }
-    }
+    return { "context": context_dict }
 
 
 @time_node
@@ -345,58 +266,6 @@ async def route_after_reflection(state: ThreadState, config: RunnableConfig) -> 
 
 async def inc_retry(state: ThreadState, config: RunnableConfig) -> dict:
     return {"retry": int(state.get("retry", 0)) + 1}
-
-_checkpointer: Optional[AsyncPostgresSaver] = None
-_pool: Optional[AsyncConnectionPool] = None  
-_lock = asyncio.Lock()
-
-async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSaver:
-    """
-    Lấy hoặc tạo lại checkpointer, auto reconnect khi pool chết.
-    Cực kỳ ổn định cho deploy 24/7.
-    """
-    global _checkpointer, _pool
-
-    async with _lock:
-        # Nếu pool và checkpointer còn sống -> reuse 
-        if _checkpointer is not None and _pool is not None:
-            try:
-                async with (await _pool.getconn()) as conn:
-                    await conn.execute("SELECT 1;")
-                return _checkpointer
-            except Exception as e:
-                print(f"[get_checkpointer] Existing pool invalid: {e}, recreating...")
-
-        # Reconnect logic retry
-        for attempt in range(retries):
-            try:
-                print(f"[get_checkpointer] (Re)initializing pool, attempt {attempt+1}/{retries}")
-
-                _pool = AsyncConnectionPool(
-                    conninfo=DB_URI,
-                    min_size=1,
-                    max_size=POOL_SIZE,
-                    kwargs=connection_kwargs,
-                    timeout=POOL_TIMEOUT,
-                    reconnect_timeout=5,   # tự reconnect khi fail
-                    max_lifetime=600,      # recycle connection sau 10 phút
-                )
-
-                checkpointer = AsyncPostgresSaver(_pool)
-                await checkpointer.setup()
-                _checkpointer = checkpointer
-
-                print("[get_checkpointer] Checkpointer ready")
-                return _checkpointer
-
-            except OperationalError as e:
-                print(f"[get_checkpointer] OperationalError: {e}. Attempt {attempt+1}/{retries}")
-                _checkpointer = None
-                _pool = None
-                if attempt < retries - 1:
-                    await asyncio.sleep(delay)
-                else:
-                    raise  # hết retry thì throw lỗi
 
 _agent_state = None
 

@@ -1,12 +1,45 @@
-from esperanto import LanguageModel
-from langchain_core.language_models.chat_models import BaseChatModel
-from loguru import logger
+import os
 import json
+import asyncio
+import logging
+from datetime import datetime
+from typing import Annotated, List, Optional, Dict, Any
 
+from dotenv import load_dotenv
+from loguru import logger
+from psycopg import OperationalError
+from psycopg_pool import AsyncConnectionPool
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.messages import (
+    BaseMessage,
+    message_to_dict,
+    messages_from_dict,
+)
+from langchain.memory import ConversationBufferWindowMemory
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from pymilvus import (
+    connections,
+    FieldSchema,
+    CollectionSchema,
+    DataType,
+    Collection,
+    utility,
+)
+from esperanto import LanguageModel
+
+from open_notebook.config import (
+    DB_URI,
+    connection_kwargs,
+    POOL_TIMEOUT,
+    POOL_SIZE,
+    MILVUS_PORT,
+    MILVUS_ADDRESS,
+)
 from open_notebook.domain.models import model_manager
 from open_notebook.utils import token_count
-from typing import List
-import asyncio
+
+load_dotenv()
 
 async def provision_langchain_model(
     content, model_id, default_type, **kwargs
@@ -17,23 +50,6 @@ async def provision_langchain_model(
     assert isinstance(model, LanguageModel), f"Model is not a LanguageModel: {model}"
     return model.to_langchain()
 
-import os, logging
-from dotenv import load_dotenv
-load_dotenv()
-
-from open_notebook.config import DB_URI, MILVUS_PORT, MILVUS_ADDRESS
-from datetime import datetime
-from langchain.memory import ConversationBufferWindowMemory
-from pymilvus import (
-    connections, FieldSchema, CollectionSchema, DataType, Collection, utility
-)
-
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.messages import (
-    BaseMessage,
-    message_to_dict,
-    messages_from_dict,
-)
 
 class NotebookPostgresChatMessageHistory(BaseChatMessageHistory):
     """Chat message history stored in a Postgres database.
@@ -224,3 +240,57 @@ class MemoryAgentMilvus:
 
 # Singleton instance
 _memory_agent_milvus = MemoryAgentMilvus()
+
+_checkpointer: Optional[AsyncPostgresSaver] = None
+_pool: Optional[AsyncConnectionPool] = None
+_lock = asyncio.Lock()
+
+async def close_pool():
+    global _pool
+    if _pool is not None:
+        await _pool.close()
+        _pool = None
+
+async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSaver:
+    global _checkpointer, _pool
+
+    async with _lock:
+        if _checkpointer and _pool:
+            try:
+                conn = await _pool.getconn()
+                try:
+                    await conn.execute("SELECT 1;")
+                    return _checkpointer
+                finally:
+                    await _pool.putconn(conn)
+            except Exception as e:
+                print(f"[get_checkpointer] Pool invalid: {e}, recreating...")
+                await _pool.close()
+                _checkpointer = None
+                _pool = None
+
+        for attempt in range(retries):
+            try:
+                print(f"[get_checkpointer] Init pool attempt {attempt+1}/{retries}")
+                _pool = AsyncConnectionPool(
+                    conninfo=DB_URI,
+                    min_size=1,
+                    max_size=POOL_SIZE,
+                    kwargs=connection_kwargs,
+                    timeout=POOL_TIMEOUT,
+                )
+                await _pool.open(wait=True)
+                _checkpointer = AsyncPostgresSaver(_pool)
+                await _checkpointer.setup()
+                print("[get_checkpointer] Ready")
+                return _checkpointer
+            except OperationalError as e:
+                print(f"[get_checkpointer] OperationalError: {e}")
+                if _pool:
+                    await _pool.close()
+                _checkpointer = None
+                _pool = None
+                if attempt < retries - 1:
+                    await asyncio.sleep(delay)
+                else:
+                    raise
