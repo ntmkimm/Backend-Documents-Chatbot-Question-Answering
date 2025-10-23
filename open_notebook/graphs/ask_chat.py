@@ -160,16 +160,17 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     
     searches = state.get("strategy", {}).searches if state.get("strategy") else []
     context = state.get("context", {})
+    if state.get("reflection") and state.get("reflection").need_more: context = {}
     search = searches[0] if searches else Search(term="default", instructions="")
     strategy = state.get("strategy", {})
-    # print("context", context)
+    
     system_prompt = Prompter(prompt_template="ask/chat").render(
         data={
             "question": state.get("message", HumanMessage(content="")).content,
             "term": search.term,
             "instruction": strategy.reasoning,
-            "results": context["content"] if context else {},
-            "ids": context["id"] if context else [],
+            "results": context if context else {},
+            "ids": context.keys() if context else [],
             "chat_history": chat_history
         }
     )
