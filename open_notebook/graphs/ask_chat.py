@@ -123,7 +123,7 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     raw = "".join(parts)
     cleaned = clean_thinking_content(raw)
     strategy = parser.parse(cleaned)
-    print(strategy)
+    # print(strategy)
     yield {"end_node": "plan_strategy", "strategy": strategy}
 
 @time_node
@@ -348,83 +348,96 @@ async def inc_retry(state: ThreadState, config: RunnableConfig) -> dict:
 
 _checkpointer: Optional[AsyncPostgresSaver] = None
 _pool: Optional[AsyncConnectionPool] = None  
+_lock = asyncio.Lock()
 
 async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSaver:
     """
-    Tạo hoặc lấy checkpointer, retry nếu connection fail.
-    :param retries: số lần thử lại
-    :param delay: thời gian chờ giữa các lần thử
+    Lấy hoặc tạo lại checkpointer, auto reconnect khi pool chết.
+    Cực kỳ ổn định cho deploy 24/7.
     """
     global _checkpointer, _pool
 
-    for attempt in range(retries):
-        try:
-            if _checkpointer is None:
+    async with _lock:
+        # Nếu pool và checkpointer còn sống -> reuse 
+        if _checkpointer is not None and _pool is not None:
+            try:
+                async with (await _pool.getconn()) as conn:
+                    await conn.execute("SELECT 1;")
+                return _checkpointer
+            except Exception as e:
+                print(f"[get_checkpointer] Existing pool invalid: {e}, recreating...")
+
+        # Reconnect logic retry
+        for attempt in range(retries):
+            try:
+                print(f"[get_checkpointer] (Re)initializing pool, attempt {attempt+1}/{retries}")
+
                 _pool = AsyncConnectionPool(
-                    DB_URI,
+                    conninfo=DB_URI,
                     min_size=1,
                     max_size=POOL_SIZE,
                     kwargs=connection_kwargs,
                     timeout=POOL_TIMEOUT,
+                    reconnect_timeout=5,   # tự reconnect khi fail
+                    max_lifetime=600,      # recycle connection sau 10 phút
                 )
+
                 checkpointer = AsyncPostgresSaver(_pool)
                 await checkpointer.setup()
                 _checkpointer = checkpointer
-            return _checkpointer
 
-        except OperationalError as e:
-            print(f"[get_checkpointer] OperationalError: {e}. Attempt {attempt+1}/{retries}")
-            _checkpointer = None
-            _pool = None
-            if attempt < retries - 1:
-                await asyncio.sleep(delay)
-            else:
-                raise  # ném lỗi ra ngoài nếu retry thất bại
+                print("[get_checkpointer] Checkpointer ready")
+                return _checkpointer
 
-async def build_ask_chat_graph(state: ThreadState, config: RunnableConfig) -> StateGraph:
-    agent_state = StateGraph(ThreadState)
-    agent_state.add_node("retrieve_chat_history", retrieve_chat_history)
-    agent_state.add_node("plan_strategy", plan_strategy)
-    agent_state.add_node("retrieve_context", retrieve_context)
-    agent_state.add_node("chat_agent", chat_agent)
-    agent_state.add_node("reflect_answer", reflect_answer)
-    agent_state.add_node("inc_retry", inc_retry)
+            except OperationalError as e:
+                print(f"[get_checkpointer] OperationalError: {e}. Attempt {attempt+1}/{retries}")
+                _checkpointer = None
+                _pool = None
+                if attempt < retries - 1:
+                    await asyncio.sleep(delay)
+                else:
+                    raise  # hết retry thì throw lỗi
 
-    # Flow:
-    agent_state.add_edge(START, "retrieve_chat_history")
-    agent_state.add_edge("retrieve_chat_history", "plan_strategy")
-    
-    # after build strategy, check whether we need to retrieve 
-    agent_state.add_conditional_edges(
-        "plan_strategy",
-        lambda state: "chat_agent" if not state["strategy"].searches else "retrieve_context"
-    )
-    # after retrieval, run reflection
-    agent_state.add_edge("retrieve_context", "reflect_answer")
+_agent_state = None
 
-    # conditional routing with the retry guard
-    
-    agent_state.add_conditional_edges(
-        "reflect_answer",
-        route_after_reflection,
-        {
-            "retry": "inc_retry",
-            "done": "chat_agent",
-        },
-    )
-    # if retrying, bump retry then go back to chat_agent
-    agent_state.add_edge("inc_retry", "plan_strategy")
-    # if not retrying, bump to chat agent -> end
-    agent_state.add_edge("chat_agent", END)
+async def get_conversation_graph(state: ThreadState, config: RunnableConfig) -> StateGraph:
+    global _agent_state
+    if _agent_state is None:
+        _agent_state = StateGraph(ThreadState)
+        _agent_state.add_node("retrieve_chat_history", retrieve_chat_history)
+        _agent_state.add_node("plan_strategy", plan_strategy)
+        _agent_state.add_node("retrieve_context", retrieve_context)
+        _agent_state.add_node("chat_agent", chat_agent)
+        _agent_state.add_node("reflect_answer", reflect_answer)
+        _agent_state.add_node("inc_retry", inc_retry)
+
+        # Flow:
+        _agent_state.add_edge(START, "retrieve_chat_history")
+        _agent_state.add_edge("retrieve_chat_history", "plan_strategy")
+        
+        # after build strategy, check whether we need to retrieve 
+        _agent_state.add_conditional_edges(
+            "plan_strategy",
+            lambda state: "chat_agent" if not state["strategy"].searches else "retrieve_context"
+        )
+        # after retrieval, run reflection
+        _agent_state.add_edge("retrieve_context", "reflect_answer")
+
+        # conditional routing with the retry guard
+        
+        _agent_state.add_conditional_edges(
+            "reflect_answer",
+            route_after_reflection,
+            {
+                "retry": "inc_retry",
+                "done": "chat_agent",
+            },
+        )
+        # if retrying, bump retry then go back to chat_agent
+        _agent_state.add_edge("inc_retry", "plan_strategy")
+        # if not retrying, bump to chat agent -> end
+        _agent_state.add_edge("chat_agent", END)
 
     checkpointer = await get_checkpointer()
-    return agent_state.compile(checkpointer=checkpointer)
+    return _agent_state.compile(checkpointer=checkpointer)
 
-_conversation_graph = None
-
-async def get_conversation_graph(state: ThreadState, config: RunnableConfig):
-    global _conversation_graph
-    if _conversation_graph is None:
-        _conversation_graph = await build_ask_chat_graph(state, config)
-    # print(f"Debug - _conversation_graph: {_conversation_graph}")
-    return _conversation_graph
