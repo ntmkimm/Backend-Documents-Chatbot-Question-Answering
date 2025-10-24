@@ -54,7 +54,7 @@ class ThreadState(TypedDict, total=False):
     # fields for strategy & retrieval
     strategy: Optional[Strategy]
     retrieval_limit: int = 5
-    chat_history: Optional[List] = []
+    chat_history: Optional[Dict] = {}
     
     reflection: Optional[Reflection]
     ai_message: Optional[str]
@@ -78,7 +78,10 @@ async def retrieve_chat_history(state: ThreadState, config: RunnableConfig):
     )
     
     search_results = await _memory_agent_milvus.search_long_term_memory(query=state.get("message", HumanMessage(content="")).content, top_k=4, thread_id=thread_id)
-    chat_history = search_results + short_memory.buffer
+    chat_history = {
+        "short_memory": short_memory.buffer,
+        "long_memory":search_results
+    }
     return {"chat_history": chat_history}
 
 @time_node
@@ -87,7 +90,10 @@ async def plan_strategy(state: ThreadState, config: RunnableConfig) -> dict:
     print("retry: ", state.get("retry", 0))
     parser = PydanticOutputParser(pydantic_object=Strategy)
     system_prompt = Prompter(prompt_template="ask/entry", parser=parser).render(
-        data={"question": state.get("message", HumanMessage(content=""))}
+        data={
+            "question": state.get("message", HumanMessage(content="")),
+            "short_memory": state.get("chat_history", {}).get("short_memory", [])
+        }
     )
     model = await provision_langchain_model(
         system_prompt,
@@ -156,7 +162,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     Node sinh câu trả lời và STREAM từng token ra ngoài.
     - GIỮ nguyên cách yield {"content": "..."} để router đang dùng 'on_chain_stream' nhận được.
     """
-    chat_history = state.get("chat_history")
+    chat_history = state.get("chat_history", {})
     
     searches = state.get("strategy", {}).searches if state.get("strategy") else []
     context = state.get("context", {})
@@ -171,7 +177,8 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
             "instruction": strategy.reasoning,
             "results": context if context else {},
             "ids": context.keys() if context else [],
-            "chat_history": chat_history
+            "short_memory": chat_history.get("short_memory", []),
+            "long_memory": chat_history.get("long_memory", [])
         }
     )
     model = await provision_langchain_model(
@@ -258,7 +265,7 @@ async def route_after_reflection(state: ThreadState, config: RunnableConfig) -> 
     retry = int(state.get("retry", 0))
     need_more = state.get("reflection").need_more
 
-    # print(state)
+    print(state)
     
     # only retry if reflection wants more AND we still have unused searches
     if need_more and (retry + 1) < max_tries:
