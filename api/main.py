@@ -57,7 +57,8 @@ app = FastAPI(
     title="Open Notebook API",
     description="API for Open Notebook - Research Assistant",
     version="0.2.2",
-    lifespan=lifespan
+    lifespan=lifespan,
+    redirect_slashes=False
 )
 
 

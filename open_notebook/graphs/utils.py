@@ -183,13 +183,12 @@ class MemoryAgentMilvus:
 
         embedding = (await EMBEDDING_MODEL.aembed([text]))[0]
 
-        self.collection.insert([
-            [embedding],     
-            [text],          
-            [thread_id],     
-            [ts], # timestamp  
-        ])
-        self.collection.flush()
+        # blocking Milvus calls chạy trong thread
+        def blocking_insert():
+            self.collection.insert([[embedding], [text], [thread_id], [ts]])
+            self.collection.flush()
+
+        await asyncio.to_thread(blocking_insert)
 
     async def search_long_term_memory(self, query: str, thread_id: str, top_k: int = 5):
         EMBEDDING_MODEL = await model_manager.get_embedding_model()
@@ -251,24 +250,23 @@ async def close_pool():
         await _pool.close()
         _pool = None
 
+
 async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSaver:
     global _checkpointer, _pool
 
     async with _lock:
-        if _checkpointer and _pool:
+        # Reuse valid pool if available
+        if _checkpointer and _pool and not _pool.closed:
             try:
-                conn = await _pool.getconn()
-                try:
+                async with _pool.connection() as conn:
                     await conn.execute("SELECT 1;")
-                    return _checkpointer
-                finally:
-                    await _pool.putconn(conn)
+                return _checkpointer
             except Exception as e:
                 print(f"[get_checkpointer] Pool invalid: {e}, recreating...")
-                await _pool.close()
+                await close_pool()
                 _checkpointer = None
-                _pool = None
 
+        # Retry creation
         for attempt in range(retries):
             try:
                 print(f"[get_checkpointer] Init pool attempt {attempt+1}/{retries}")
@@ -276,20 +274,21 @@ async def get_checkpointer(retries: int = 3, delay: int = 2) -> AsyncPostgresSav
                     conninfo=DB_URI,
                     min_size=1,
                     max_size=POOL_SIZE,
-                    kwargs=connection_kwargs,
                     timeout=POOL_TIMEOUT,
+                    kwargs=connection_kwargs,
+                    open=False,
                 )
                 await _pool.open(wait=True)
+
                 _checkpointer = AsyncPostgresSaver(_pool)
                 await _checkpointer.setup()
                 print("[get_checkpointer] Ready")
                 return _checkpointer
+
             except OperationalError as e:
                 print(f"[get_checkpointer] OperationalError: {e}")
-                if _pool:
-                    await _pool.close()
+                await close_pool()
                 _checkpointer = None
-                _pool = None
                 if attempt < retries - 1:
                     await asyncio.sleep(delay)
                 else:

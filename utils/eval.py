@@ -197,7 +197,7 @@ def main():
     delete_existing_sources(sources=sources, notebook_id=notebook_id)
     
     _qas = []
-    batch_size = 1
+    batch_size = 5
     file_paths = []
     for ext in ["*.doc", "*.pdf"]:
         file_paths.extend(DATA.glob(ext))
@@ -245,11 +245,11 @@ def main():
             note = _qa.get("note", "")
             if not note:
                 count_out_source += 1
-                if count_out_source >= 0:
+                if count_out_source >= 20:
                     continue
             else:
                 count_in_source += 1
-                if count_in_source >= 30:
+                if count_in_source >= 60:
                     continue
             
             payload = {
