@@ -1,5 +1,5 @@
 
-uvicorn api.main:app --host 0.0.0.0 --port 4427 --reload \
+uvicorn api.main:app --host 0.0.0.0 --port 9992 --reload \
  --reload-exclude 'utils/*'
 
 # gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:4427 api.main:app

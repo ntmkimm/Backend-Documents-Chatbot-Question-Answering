@@ -16,7 +16,8 @@ from langchain_core.messages import (
     message_to_dict,
     messages_from_dict,
 )
-from langchain.memory import ConversationBufferWindowMemory
+# from langchain.memory import ConversationBufferWindowMemory
+from langchain_classic.memory import ConversationBufferMemory
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from pymilvus import (
     connections,
@@ -127,8 +128,8 @@ class NotebookPostgresChatMessageHistory(BaseChatMessageHistory):
         if self.connection:
             self.connection.close()
 
-def get_postgres_short_memory(thread_id: str, k: int = 4) -> ConversationBufferWindowMemory:
-    return ConversationBufferWindowMemory(
+def get_postgres_short_memory(thread_id: str, k: int = 4) -> ConversationBufferMemory:
+    return ConversationBufferMemory(
         k=k,
         memory_key="chat_history",
         return_messages=True,

@@ -1,11 +1,10 @@
 from pymilvus import MilvusClient
 from pymilvus import MilvusClient, DataType, AnnSearchRequest, RRFRanker, Function, FunctionType
-
+from typing import Optional
 import os
 from open_notebook.config import MILVUS_URI
 
-
-milvus_client: MilvusClient | None = None
+milvus_client: Optional[MilvusClient] = None
 
 def init_new_milvus_collection(client):
     collec_name = "source_embedding"

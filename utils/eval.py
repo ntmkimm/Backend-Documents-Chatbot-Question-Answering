@@ -6,7 +6,7 @@ from pathlib import Path
 import time 
 
 # Configuration
-API_BASE = "http://localhost:4427/api"
+API_BASE = "http://localhost:9992/api"
 AUTH_TOKEN = "1234567890"
 NOTEBOOK_NAME = "yuu"
 NOTEBOOK_DESCRIPTION = "empty"
