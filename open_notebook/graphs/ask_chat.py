@@ -249,6 +249,9 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     await asyncio.to_thread(short_memory.chat_memory.add_user_message, message)
     ai_msg = AIMessage(content=cleaned)
     await asyncio.to_thread(short_memory.chat_memory.add_ai_message, ai_msg)
+    print(state.get("strategy"))
+    print(state.get("context"))
+    print(state.get("reflection"))
 
     yield {"end_node": "chat_agent", "ai_message": cleaned}
     
@@ -258,46 +261,46 @@ async def reflect_answer(state: ThreadState, config: RunnableConfig) -> dict:
     """
     Reflection by LLM, có try/except để tránh vỡ stream.
     """
-    context = state.get("context", {})
-    searches = state.get("strategy", {}).searches if state.get("strategy") else []
-    search = searches[0] if searches else Search(term="default", instructions="")
-    strategy = state.get("strategy", {})
+    # context = state.get("context", {})
+    # searches = state.get("strategy", {}).searches if state.get("strategy") else []
+    # search = searches[0] if searches else Search(term="default", instructions="")
+    # strategy = state.get("strategy", {})
 
-    parser = PydanticOutputParser(pydantic_object=Reflection)
-    system_prompt = Prompter(prompt_template="ask/reflect", parser=parser).render(
-        data={
-            "question": state.get("message", HumanMessage(content="")).content,
-            "results": context if context else [],
-            "ids": list(context.keys()) if context else [],
-            "term": search.term,
-            "instruction": strategy.reasoning,
-        }
-    )
+    # parser = PydanticOutputParser(pydantic_object=Reflection)
+    # system_prompt = Prompter(prompt_template="ask/reflect", parser=parser).render(
+    #     data={
+    #         "question": state.get("message", HumanMessage(content="")).content,
+    #         "results": context if context else [],
+    #         "ids": list(context.keys()) if context else [],
+    #         "term": search.term,
+    #         "instruction": strategy.reasoning,
+    #     }
+    # )
 
-    model = await provision_langchain_model(
-        system_prompt,
-        config.get("configurable", {}).get("model_id"),
-        "tools",
-        max_tokens=2000,
-        structured=dict(type="json"),
-    )
+    # model = await provision_langchain_model(
+    #     system_prompt,
+    #     config.get("configurable", {}).get("model_id"),
+    #     "tools",
+    #     max_tokens=2000,
+    #     structured=dict(type="json"),
+    # )
 
-    parts = []
-    async for chunk in safe_stream(model, system_prompt, parts):
-        yield chunk
+    # parts = []
+    # async for chunk in safe_stream(model, system_prompt, parts):
+    #     yield chunk
 
-    raw = "".join(parts)
-    cleaned = clean_thinking_content(raw)
-    cleaned = cleaned.replace("```json", "").replace("```", "")
+    # raw = "".join(parts)
+    # cleaned = clean_thinking_content(raw)
+    # cleaned = cleaned.replace("```json", "").replace("```", "")
     
-    try:
-        parsed = json.loads(cleaned)
-        reflection = Reflection(**parsed)
-    except Exception as e:
-        logger.error(f"Parse Reflection failed: {e}\nRaw={cleaned}")
-        # fallback an empty Reflection để tiếp tục pipeline
-        reflection = Reflection(need_more=True, reasons="Không thể parse phản hồi hợp lệ")
-
+    # try:
+    #     parsed = json.loads(cleaned)
+    #     reflection = Reflection(**parsed)
+    # except Exception as e:
+    #     logger.error(f"Parse Reflection failed: {e}\nRaw={cleaned}")
+    #     # fallback an empty Reflection để tiếp tục pipeline
+    #     reflection = Reflection(need_more=True, reasons="Không thể parse phản hồi hợp lệ")
+    reflection = Reflection(need_more=False, reasons="Auto-reflection disabled for testing.")
     yield {"end_node": "reflect_answer", "reflection": reflection}
 
 async def route_after_reflection(state: ThreadState, config: RunnableConfig) -> str:
