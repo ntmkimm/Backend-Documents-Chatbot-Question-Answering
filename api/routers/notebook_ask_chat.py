@@ -84,18 +84,8 @@ async def send_message(chat_request: ChatRequest):
                             config,
                             {"ai_message": chunk["ai_message"]}
                         )
-                        reference_sources = await get_source_references(chunk["ai_message"])
-                        ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
-                        ref_set = set(ref_list)
-                        reference_sources = [
-                            int(s.split(":", 1)[1]) if ":" in s else int(s)
-                            for s in reference_sources
-                            if (int(s.split(":", 1)[1]) if ":" in s else int(s)) in ref_set
-                        ]
-                        data_end['reference'] = reference_sources
-                        pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
-                        # Remove pattern from answer
-                        data_end['answer'] = re.sub(pattern, '', chunk["ai_message"])
+                        data_end['reference'] = chunk.get("reference", [])
+                        data_end['answer'] = chunk.get("ai_message", "")
 
                 elif kind == 'on_chain_start' and event['name'] == 'LangGraph':
                     data_end['session_id'] = event['metadata']['thread_id']
@@ -180,18 +170,9 @@ async def stream_chat(chat_request: ChatRequest):
                             config,
                             {"ai_message": chunk["ai_message"]}
                         )
-                        reference_sources = await get_source_references(chunk["ai_message"])
-                        ref_list = await Source.get_all_chunk_ids_bulk(list_sources_in_nb)
-                        ref_set = set(ref_list)
-                        reference_sources = [
-                            int(s.split(":", 1)[1]) if ":" in s else int(s)
-                            for s in reference_sources
-                            if (int(s.split(":", 1)[1]) if ":" in s else int(s)) in ref_set
-                        ]
-                        data_end['reference'] = reference_sources
-                        pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
-                        # Remove pattern from answer
-                        data_end['answer'] = re.sub(pattern, '', chunk["ai_message"])
+                        
+                        data_end['reference'] = chunk.get("reference", [])
+                        data_end['answer'] = chunk.get("ai_message", "")
                     
                     # check token streaming only
                     if event['name'] == 'chat_agent':
@@ -265,11 +246,3 @@ async def get_session(current_notebook: Notebook, session_id: str) -> Union[Chat
     return chat_session, current_state
 
 
-
-async def get_source_references(text: str):
-    """
-    Extract [source_insight:...], [note:...], [source:...], [source_embedding:...] IDs.
-    """
-    pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
-    matches = re.findall(pattern, text or "")
-    return list(set(matches))

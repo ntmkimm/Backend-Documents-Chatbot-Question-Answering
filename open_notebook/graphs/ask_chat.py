@@ -193,6 +193,15 @@ async def retrieve_context(state: ThreadState, config: RunnableConfig) -> dict:
 
     return { "context": context_dict }
 
+import re
+async def get_source_references(text: str):
+    """
+    Extract [source_insight:...], [note:...], [source:...], [source_embedding:...] IDs.
+    """
+    pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
+    matches = re.findall(pattern, text or "")
+    return list(set(matches))
+
 @time_node
 async def chat_agent(state: ThreadState, config: RunnableConfig):
     """
@@ -233,7 +242,17 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
 
     raw = "".join(parts)
     cleaned = clean_thinking_content(raw)
+    
+    reference_sources = await get_source_references(cleaned)
+    reference_sources = [
+        int(s.split(":", 1)[1]) if ":" in s else int(s)
+        for s in reference_sources
+    ]
 
+    pattern = r"\[((?:source_insight|note|source_embedding|source):[\w\d]+)\]"
+    # Remove pattern from answer
+    cleaned = re.sub(pattern, '', cleaned).strip()
+    
     message = state.get("message", HumanMessage(content=""))
     thread_id = config.get("configurable", {}).get("thread_id")
     short_memory = get_postgres_short_memory(thread_id=thread_id, k=4)
@@ -253,7 +272,7 @@ async def chat_agent(state: ThreadState, config: RunnableConfig):
     print(state.get("context"))
     print(state.get("reflection"))
 
-    yield {"end_node": "chat_agent", "ai_message": cleaned}
+    yield {"end_node": "chat_agent", "ai_message": cleaned, "reference": reference_sources}
     
     
 @time_node

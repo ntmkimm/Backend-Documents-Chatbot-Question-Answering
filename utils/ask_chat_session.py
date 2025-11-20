@@ -1,10 +1,9 @@
 import requests, json
 import uuid
 
-API_BASE = "http://localhost:4427/api"
+API_BASE = "http://localhost:9992/api"
 headers = {"Content-Type": "application/json", "accept": "application/json"}
 from typing import List, Union, AsyncGenerator, Dict, Optional
-API_BASE = "http://localhost:4427/api"
 AUTH_TOKEN = "1234567890"
 ID_NOTEBOOK_FILE = "utils/id_notebook"
 EXAMPLE_SOURCE_FILE = "utils/example_source.txt"

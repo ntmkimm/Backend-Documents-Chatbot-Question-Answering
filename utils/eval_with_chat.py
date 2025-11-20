@@ -191,26 +191,26 @@ def main():
     sources = get_existing_sources(notebook_id=notebook_id)
     delete_existing_sources(sources=sources, notebook_id=notebook_id)
     
-    file_paths = []
-    for ext in ["*.docx", "*.pdf", "*.doc"]:
-        file_paths.extend(DATA.glob(ext))
+    # file_paths = []
+    # for ext in ["*.docx", "*.pdf", "*.doc"]:
+    #     file_paths.extend(DATA.glob(ext))
         
-    for file_path in file_paths:
+    # for file_path in file_paths:
         
-        print("ADDING FILE: ", file_path.name)
-        payload = {
-            "notebook_id": notebook_id,
-            "source_id": str(uuid.uuid4()),
-            "type": 'upload',
-            "file_path": str(file_path),
-            "content": None,
-            "title": None,
-            "transformations": [],
-            "embed": True,
-            "delete_source": False,
-        }   
+    #     print("ADDING FILE: ", file_path.name)
+    #     payload = {
+    #         "notebook_id": notebook_id,
+    #         "source_id": str(uuid.uuid4()),
+    #         "type": 'upload',
+    #         "file_path": str(file_path),
+    #         "content": None,
+    #         "title": None,
+    #         "transformations": [],
+    #         "embed": True,
+    #         "delete_source": False,
+    #     }   
         
-        make_request('POST', '/sources', payload)
+    #     make_request('POST', '/sources', payload)
     
     # init ask chat trong document
     payload = {
