@@ -60,8 +60,12 @@ async def send_message(chat_request: ChatRequest):
         async for event in graph.astream_events(input_payload, config):
                 kind = event["event"]
                 if kind == 'on_chain_stream':
-                    chunk = event["data"]["chunk"]
-                    
+                    data = event.get("data", {})
+                    chunk = data.get("chunk", {})
+
+                    if not chunk:
+                        continue  # bỏ qua event không có chunk
+                                    
                     # check end_node
                     end_node = chunk.get("end_node", "")
                     if end_node == "plan_strategy":
@@ -155,7 +159,6 @@ async def stream_chat(chat_request: ChatRequest):
 
             async for event in graph.astream_events(input_payload, config):
                 kind = event["event"]
-
                 if kind == 'on_chain_stream':
                     chunk = event["data"]["chunk"]
                     
