@@ -8,8 +8,9 @@ docker-compose down # when stop container
 
 At the place where you call API for opennotebook, if work in container you should `docker network connect my_network <your-container>`
 ```bash
-pip install -r requirements.txt
+conda create -n notebook python==3.12.11
 apt-get update && apt-get install libpq-dev
+pip install -r requirements.txt
 ```
 
 Setup in .env
@@ -59,6 +60,7 @@ python utils/auto_setup_step2_notebooks.py
 python utils/auto_setup_step3_source/py
 python utils/ask_chat_session.py
 ```
+
 
 
 
